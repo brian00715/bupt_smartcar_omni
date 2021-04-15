@@ -1,30 +1,30 @@
 /*
  * inducercontrol.c
- * µç¸Ğ´¦Àíº¯Êı
+ * ç”µæ„Ÿå¤„ç†å‡½æ•°
  *
- *  Created on: 2021Äê4ÔÂ13ÈÕ
+ *  Created on: 2021å¹´4æœˆ13æ—¥
  *      Author: Z.yd
  */
 
 #include "headfile.h"
 
-uint8 InducerMax_Get_Start_Flag=1;         //µç¸Ğ×î´óÖµ»ñÈ¡¿ªÊ¼±êÖ¾,¿ÉÍ¨¹ı°´¼ü¿ØÖÆ¸Ã±êÖ¾Î»ÊµÏÖÖØĞÂÊÕ¼¯µç¸Ğ×î´óÖµ
-uint8 InducerMax_Get_End_Flag=0;           //µç¸Ğ×î´óÖµ»ñÈ¡½áÊø±êÖ¾£¬µ±¸Ã±êÖ¾Îª1Ê±£¬µç¸ĞÊı¾İ´¦Àíº¯Êı²Å»á´¦ÀíÊı¾İ
-uint16 Inducer_Get_Count=1000;             //Ã¿¸öµç¸Ğ»ñÈ¡×î´óÖµÊ±getµÄÊıÁ¿
+uint8 InducerMax_Get_Start_Flag=1;         //ç”µæ„Ÿæœ€å¤§å€¼è·å–å¼€å§‹æ ‡å¿—,å¯é€šè¿‡æŒ‰é”®æ§åˆ¶è¯¥æ ‡å¿—ä½å®ç°é‡æ–°æ”¶é›†ç”µæ„Ÿæœ€å¤§å€¼
+uint8 InducerMax_Get_End_Flag=0;           //ç”µæ„Ÿæœ€å¤§å€¼è·å–ç»“æŸæ ‡å¿—ï¼Œå½“è¯¥æ ‡å¿—ä¸º1æ—¶ï¼Œç”µæ„Ÿæ•°æ®å¤„ç†å‡½æ•°æ‰ä¼šå¤„ç†æ•°æ®
+uint16 Inducer_Get_Count=1000;             //æ¯ä¸ªç”µæ„Ÿè·å–æœ€å¤§å€¼æ—¶getçš„æ•°é‡
 uint16 InducerMax[7]={0,0,0,0,0,0,0};
 //uint16 Inducer_Get_Last[7]={0,0,0,0,0,0,0};
-uint16 Inducer_Get[7]={0,0,0,0,0,0,0};           //ADC¶ÁÈ¡µÄµç¸ĞÖµ
-float Inducer_Normalize[7]={0.0,0.0,0.0,0.0,0.0,0.0,0.0};  //¹éÒ»»¯ºóµÄµç¸ĞÖµ£¬ÎªInducer_Get[i]/InducerMax[i]
-//float Inducer_Duty[7]={-10,-9,-8,0,8,9,10};                //ÉèÖÃÃ¿¸öµç¸ĞµÄÈ¨Öµ,Ã¿¸öµç¸Ğ¹éÒ»»¯ºóµÄÖµ³ËÒÔÈ¨Öµ¼´Îª×îÖÕx·½ÏòÉÏµÄÖµ(ÌØÊâÇé¿öĞèÌØÊâ´¦Àí)
+uint16 Inducer_Get[7]={0,0,0,0,0,0,0};           //ADCè¯»å–çš„ç”µæ„Ÿå€¼
+float Inducer_Normalize[7]={0.0,0.0,0.0,0.0,0.0,0.0,0.0};  //å½’ä¸€åŒ–åçš„ç”µæ„Ÿå€¼ï¼Œä¸ºInducer_Get[i]/InducerMax[i]
+//float Inducer_Duty[7]={-10,-9,-8,0,8,9,10};                //è®¾ç½®æ¯ä¸ªç”µæ„Ÿçš„æƒå€¼,æ¯ä¸ªç”µæ„Ÿå½’ä¸€åŒ–åçš„å€¼ä¹˜ä»¥æƒå€¼å³ä¸ºæœ€ç»ˆxæ–¹å‘ä¸Šçš„å€¼(ç‰¹æ®Šæƒ…å†µéœ€ç‰¹æ®Šå¤„ç†)
 float Inducer_Duty[5]={-10,-8,0,8,10};
-float Inducer_Sum_x=0.0;                                   //µç¸ĞºÏ³ÉºóµÄx·½ÏòÖµ,Inducer_Normalize[i]*Inducer_Duty[i]µÄºÍ;
-float Inducer_Sum_y=3.0;                                   //×Ô¶¨ÒåµÄµç¸Ğy·½ÏòÖµ
-float Inducer_Slope_Float=0.0;                             //µç¸ĞÊı¾İ´¦ÀíºóµÃµ½µÄĞ±ÂÊ£¬Inducer_Sum_x/Inducer_Sum_y
-char Inducer_Slope_Str[20];                                //µç¸ĞÊı¾İ´¦ÀíºóµÃµ½µÄĞ±ÂÊ×ª±äÎª×Ö·û´®¹©´®¿Ú´«ËÍ,snprintf(Inducer_Slope_Str,15,"%f",Inducer_Slope_Float);
-int i=0,j=0;    //Ñ­»·´ÎÊı¸¨Öú
+float Inducer_Sum_x=0.0;                                   //ç”µæ„Ÿåˆæˆåçš„xæ–¹å‘å€¼,Inducer_Normalize[i]*Inducer_Duty[i]çš„å’Œ;
+float Inducer_Sum_y=3.0;                                   //è‡ªå®šä¹‰çš„ç”µæ„Ÿyæ–¹å‘å€¼
+float Inducer_Slope_Float=0.0;                             //ç”µæ„Ÿæ•°æ®å¤„ç†åå¾—åˆ°çš„æ–œç‡ï¼ŒInducer_Sum_x/Inducer_Sum_y
+char Inducer_Slope_Str[20];                                //ç”µæ„Ÿæ•°æ®å¤„ç†åå¾—åˆ°çš„æ–œç‡è½¬å˜ä¸ºå­—ç¬¦ä¸²ä¾›ä¸²å£ä¼ é€,snprintf(Inducer_Slope_Str,15,"%f",Inducer_Slope_Float);
+int i=0,j=0;    //å¾ªç¯æ¬¡æ•°è¾…åŠ©
 
 /************************************************************************************
-  * @brief        ½«Æß¸öµç¸ĞÖµÔÚoledÉÏÊµÊ±ÏÔÊ¾
+  * @brief        å°†ä¸ƒä¸ªç”µæ„Ÿå€¼åœ¨oledä¸Šå®æ—¶æ˜¾ç¤º
   * @param        NULL
   * @return       void
   * Sample usage:
@@ -36,23 +36,23 @@ void Inducer_Show_Oled(void)
     {
         Inducer_Get[i]=0;
     }
-    //InducerMax_Get();                              //ÊÕ¼¯µç¸Ğ×î´óÖµ£¬ÒÔ½øĞĞ¹éÒ»»¯
-    Inducer_Get[0]=adc_mean_filter(ADC_IN0_A0,ADC_12BIT,10);        //12BIT·Ö±æÂÊ,È¡Îå´ÎÆ½¾ù
+    //InducerMax_Get();                              //æ”¶é›†ç”µæ„Ÿæœ€å¤§å€¼ï¼Œä»¥è¿›è¡Œå½’ä¸€åŒ–
+    Inducer_Get[0]=adc_mean_filter(ADC_IN0_A0,ADC_12BIT,10);        //12BITåˆ†è¾¨ç‡,å–10æ¬¡å¹³å‡
     Inducer_Get[1]=adc_mean_filter(ADC_IN4_A4,ADC_12BIT,10);
     Inducer_Get[2]=adc_mean_filter(ADC_IN6_A6,ADC_12BIT,10);
     Inducer_Get[3]=adc_mean_filter(ADC_IN8_B0,ADC_12BIT,10);
     Inducer_Get[4]=adc_mean_filter(ADC_IN9_B1,ADC_12BIT,10);
-    //Inducer_Get[5]=adc_mean_filter(ADC_IN5_A5,ADC_12BIT,5);        //12BIT·Ö±æÂÊ,È¡Îå´ÎÆ½¾ù
-    //Inducer_Get[6]=adc_mean_filter(ADC_IN6_A6,ADC_12BIT,5);        //12BIT·Ö±æÂÊ,È¡Îå´ÎÆ½¾ù
+    //Inducer_Get[5]=adc_mean_filter(ADC_IN5_A5,ADC_12BIT,5);        //12BITåˆ†è¾¨ç‡,å–10æ¬¡å¹³å‡
+    //Inducer_Get[6]=adc_mean_filter(ADC_IN6_A6,ADC_12BIT,5);        //12BITåˆ†è¾¨ç‡,å–10æ¬¡å¹³å‡
 
-    for(i=0;i<5;i++)                 //ÏÔÊ¾ADC¶ÁÈ¡Ô­µç¸ĞÖµ
+    for(i=0;i<5;i++)                 //æ˜¾ç¤ºADCè¯»å–åŸç”µæ„Ÿå€¼
     {
         oled_uint16(0, i,Inducer_Get[i]);
        // printf("[%d]%d ",i,Inducer_Get[i]);
     }
     //printf("\r\n");
 
-    if(InducerMax_Get_End_Flag==1)       //ÏÔÊ¾¹éÒ»»¯ºóµÄµç¸ĞÖµ
+    if(InducerMax_Get_End_Flag==1)       //æ˜¾ç¤ºå½’ä¸€åŒ–åçš„ç”µæ„Ÿå€¼
     {
         for(i=0;i<5;i++)
         {
@@ -64,107 +64,107 @@ void Inducer_Show_Oled(void)
 
 
 /************************************************************************************
-  * @brief        »ñÈ¡Æß¸öµç¸Ğ×î´óÖµ£¬ÒÔ·½±ãºóĞø¹éÒ»»¯´¦Àí
+  * @brief        è·å–ä¸ƒä¸ªç”µæ„Ÿæœ€å¤§å€¼ï¼Œä»¥æ–¹ä¾¿åç»­å½’ä¸€åŒ–å¤„ç†
   * @param        NULL
   * @return       void
-  * Sample usage:          ¿ÉÍ¨¹ıĞŞ¸ÄInducer_Get_Count¸Ä±äÃ¿¸öµç¸ĞgetÖµµÄÊıÁ¿
+  * Sample usage:          å¯é€šè¿‡ä¿®æ”¹Inducer_Get_Countæ”¹å˜æ¯ä¸ªç”µæ„Ÿgetå€¼çš„æ•°é‡
   **********************************************************************************/
 void InducerMax_Get(void)
 {
-    if(InducerMax_Get_Start_Flag==1)        //Èç¹ûµç¸Ğ»ñÈ¡Öµ±êÖ¾Îª1Ôò»ñÈ¡µç¸Ğ×î´óÖµ
+    if(InducerMax_Get_Start_Flag==1)        //å¦‚æœç”µæ„Ÿè·å–å€¼æ ‡å¿—ä¸º1åˆ™è·å–ç”µæ„Ÿæœ€å¤§å€¼
     {
         oled_fill(0x00);
         oled_p6x8str(0, 0,"Wait 2s...");
         systick_delay_ms(2000);
-        InducerMax_Get_End_Flag=0;          //µç¸Ğ×î´óÖµ»ñÈ¡½áÊø±êÖ¾ÇåÁã
+        InducerMax_Get_End_Flag=0;          //ç”µæ„Ÿæœ€å¤§å€¼è·å–ç»“æŸæ ‡å¿—æ¸…é›¶
         oled_fill(0x00);
         oled_p6x8str(0, 0,"Inducer Getting");
         for(i=0;i<5;i++)
         {
-            InducerMax[i]=0;Inducer_Get[i]=0;    //Ïà¹Ø±äÁ¿ÇåÁã
+            InducerMax[i]=0;Inducer_Get[i]=0;    //ç›¸å…³å˜é‡æ¸…é›¶
         }
-        /***************µç¸Ğ0×î´óÖµ»ñÈ¡**********************************************************/
+        /***************ç”µæ„Ÿ0æœ€å¤§å€¼è·å–**********************************************************/
         oled_p6x8str(0, 1,"Inducer0:");
-        for(j=0;j<Inducer_Get_Count;j++)      //Ã¿¸öµç¸Ğ²É¼¯Êı¾İÊıÁ¿
+        for(j=0;j<Inducer_Get_Count;j++)      //æ¯ä¸ªç”µæ„Ÿé‡‡é›†æ•°æ®æ•°é‡
         {
-            Inducer_Get[0]=adc_mean_filter(ADC_IN0_A0,ADC_12BIT, 10);          //12BIT·Ö±æÂÊ,È¡Îå´ÎÆ½¾ù
+            Inducer_Get[0]=adc_mean_filter(ADC_IN0_A0,ADC_12BIT, 10);          //12BITåˆ†è¾¨ç‡,å–10æ¬¡å¹³å‡
             if(Inducer_Get[0]>InducerMax[0])
             {
                 InducerMax[0]=Inducer_Get[0];
                 oled_int16(90, 1, InducerMax[0]);
             }
-            systick_delay_ms(5);               //ÑÓÊ±5ms
+            systick_delay_ms(5);               //å»¶æ—¶5ms
         }
         oled_fill_page(1,0x00);
         oled_p6x8str(0,1,"Inducer0:");
         oled_uint16(90,1,InducerMax[0]);
-        /***************µç¸Ğ1×î´óÖµ»ñÈ¡*********************************************************/
+        /***************ç”µæ„Ÿ1æœ€å¤§å€¼è·å–*********************************************************/
         oled_p6x8str(0, 2,"Inducer1:");
-        for(j=0;j<Inducer_Get_Count;j++)      //Ã¿¸öµç¸Ğ²É¼¯Êı¾İÊıÁ¿
+        for(j=0;j<Inducer_Get_Count;j++)      //æ¯ä¸ªç”µæ„Ÿé‡‡é›†æ•°æ®æ•°é‡
         {
-            Inducer_Get[1]=adc_mean_filter(ADC_IN4_A4,ADC_12BIT, 10);          //12BIT·Ö±æÂÊ,È¡Îå´ÎÆ½¾ù
+            Inducer_Get[1]=adc_mean_filter(ADC_IN4_A4,ADC_12BIT, 10);          //12BITåˆ†è¾¨ç‡,å–10æ¬¡å¹³å‡
             if(Inducer_Get[1]>InducerMax[1])
             {
                 InducerMax[1]=Inducer_Get[1];
                 oled_int16(90, 2, InducerMax[1]);
             }
-            systick_delay_ms(5);               //ÑÓÊ±5ms
+            systick_delay_ms(5);               //å»¶æ—¶5ms
         }
         oled_fill_page(2,0x00);
         oled_p6x8str(0,2,"Inducer1:");
         oled_uint16(90,2,InducerMax[1]);
-        /***************µç¸Ğ2×î´óÖµ»ñÈ¡*********************************************************/
+        /***************ç”µæ„Ÿ2æœ€å¤§å€¼è·å–*********************************************************/
         oled_p6x8str(0, 3,"Inducer2:");
-        for(j=0;j<Inducer_Get_Count;j++)      //Ã¿¸öµç¸Ğ²É¼¯Êı¾İÊıÁ¿
+        for(j=0;j<Inducer_Get_Count;j++)      //æ¯ä¸ªç”µæ„Ÿé‡‡é›†æ•°æ®æ•°é‡
         {
-            Inducer_Get[2]=adc_mean_filter(ADC_IN6_A6,ADC_12BIT, 10);          //12BIT·Ö±æÂÊ,È¡Îå´ÎÆ½¾ù
+            Inducer_Get[2]=adc_mean_filter(ADC_IN6_A6,ADC_12BIT, 10);          //12BITåˆ†è¾¨ç‡,å–10æ¬¡å¹³å‡
             if(Inducer_Get[2]>InducerMax[2])
             {
                 InducerMax[2]=Inducer_Get[2];
                 oled_int16(90, 3, InducerMax[2]);
             }
-            systick_delay_ms(5);               //ÑÓÊ±5ms
+            systick_delay_ms(5);               //å»¶æ—¶5ms
         }
         oled_fill_page(3,0x00);
         oled_p6x8str(0,3,"Inducer2:");
         oled_uint16(90,3,InducerMax[2]);
-        /***************µç¸Ğ3×î´óÖµ»ñÈ¡********************************************************/
+        /***************ç”µæ„Ÿ3æœ€å¤§å€¼è·å–********************************************************/
         oled_p6x8str(0, 4,"Inducer3:");
-        for(j=0;j<Inducer_Get_Count;j++)      //Ã¿¸öµç¸Ğ²É¼¯Êı¾İÊıÁ¿
+        for(j=0;j<Inducer_Get_Count;j++)      //æ¯ä¸ªç”µæ„Ÿé‡‡é›†æ•°æ®æ•°é‡
         {
-            Inducer_Get[3]=adc_mean_filter(ADC_IN8_B0,ADC_12BIT, 10);          //12BIT·Ö±æÂÊ,È¡Îå´ÎÆ½¾ù
+            Inducer_Get[3]=adc_mean_filter(ADC_IN8_B0,ADC_12BIT, 10);          //12BITåˆ†è¾¨ç‡,å–10æ¬¡å¹³å‡
             if(Inducer_Get[3]>InducerMax[3])
             {
                 InducerMax[3]=Inducer_Get[3];
                 oled_int16(90, 4, InducerMax[3]);
             }
-            systick_delay_ms(5);               //ÑÓÊ±5ms
+            systick_delay_ms(5);               //å»¶æ—¶5ms
         }
         oled_fill_page(4,0x00);
         oled_p6x8str(0,4,"Inducer3:");
         oled_uint16(90,4,InducerMax[3]);
-        /***************µç¸Ğ4×î´óÖµ»ñÈ¡*******************************************************/
+        /***************ç”µæ„Ÿ4æœ€å¤§å€¼è·å–*******************************************************/
         oled_p6x8str(0, 5,"Inducer4:");
-        for(j=0;j<Inducer_Get_Count;j++)      //Ã¿¸öµç¸Ğ²É¼¯Êı¾İÊıÁ¿
+        for(j=0;j<Inducer_Get_Count;j++)      //æ¯ä¸ªç”µæ„Ÿé‡‡é›†æ•°æ®æ•°é‡
         {
-            Inducer_Get[4]=adc_mean_filter(ADC_IN9_B1,ADC_12BIT, 10);          //12BIT·Ö±æÂÊ,È¡Îå´ÎÆ½¾ù
+            Inducer_Get[4]=adc_mean_filter(ADC_IN9_B1,ADC_12BIT, 10);          //12BITåˆ†è¾¨ç‡,å–10æ¬¡å¹³å‡
             if(Inducer_Get[4]>InducerMax[4])
             {
                 InducerMax[4]=Inducer_Get[4];
                 oled_int16(90, 5, InducerMax[4]);
             }
-            systick_delay_ms(5);               //ÑÓÊ±5ms
+            systick_delay_ms(5);               //å»¶æ—¶5ms
         }
         oled_fill_page(5,0x00);
         oled_p6x8str(0,5,"Inducer4:");
         oled_uint16(90,5,InducerMax[4]);
 
-        /****************µç¸Ğ×î´óÖµ»ñÈ¡½áÊø**************************************************/
-        systick_delay_ms(3000);                  //ÑÓÊ±3Ãë£¬·½±ãÍ¨¹ıoled¶ÁÊı
-        if(InducerMax[0]!=0&&InducerMax[1]!=0&&InducerMax[2]!=0&&InducerMax[3]!=0&&InducerMax[4]!=0)//&&InducerMax[5]!=0&&InducerMax[6]!=0)//Èç¹ûÆäÖĞÓĞµç¸ĞÖµÎªÁã£¬Ôò²»Ëãµç¸Ğ×î´óÖµ»ñÈ¡Íê³É
+        /****************ç”µæ„Ÿæœ€å¤§å€¼è·å–ç»“æŸ**************************************************/
+        systick_delay_ms(3000);                  //å»¶æ—¶3ç§’ï¼Œæ–¹ä¾¿é€šè¿‡oledè¯»æ•°
+        if(InducerMax[0]!=0&&InducerMax[1]!=0&&InducerMax[2]!=0&&InducerMax[3]!=0&&InducerMax[4]!=0)//&&InducerMax[5]!=0&&InducerMax[6]!=0)//å¦‚æœå…¶ä¸­æœ‰ç”µæ„Ÿå€¼ä¸ºé›¶ï¼Œåˆ™ä¸ç®—ç”µæ„Ÿæœ€å¤§å€¼è·å–å®Œæˆ
         {
-            InducerMax_Get_End_Flag=1;                   //µç¸Ğ×î´óÖµ»ñÈ¡½áÊø£¬±êÖ¾Î»ÖÃ1
-            InducerMax_Get_Start_Flag=0;                 //µç¸Ğ»ñÈ¡¿ªÊ¼±êÖ¾ÇåÁã
+            InducerMax_Get_End_Flag=1;                   //ç”µæ„Ÿæœ€å¤§å€¼è·å–ç»“æŸï¼Œæ ‡å¿—ä½ç½®1
+            InducerMax_Get_Start_Flag=0;                 //ç”µæ„Ÿè·å–å¼€å§‹æ ‡å¿—æ¸…é›¶
             oled_fill(0x00);
             oled_p8x16str(0, 3, "Getting Complete!");
             systick_delay_ms(3000);
@@ -174,30 +174,30 @@ void InducerMax_Get(void)
 
 
 /************************************************************************************
-  * @brief        ´¦Àíµç¸ĞÖµ£¬»ñÈ¡Â·¾¶Ğ±ÂÊ¡¢ÌØÊâÂ·¿ö±êÖ¾£¬²¢½«Êı¾İÍ¨¹ı´®¿Ú·¢ËÍ¸øÖ÷Æ¬
+  * @brief        å¤„ç†ç”µæ„Ÿå€¼ï¼Œè·å–è·¯å¾„æ–œç‡ã€ç‰¹æ®Šè·¯å†µæ ‡å¿—ï¼Œå¹¶å°†æ•°æ®é€šè¿‡ä¸²å£å‘é€ç»™ä¸»ç‰‡
   * @param        NULL
   * @return       void
   * Sample usage:
   **********************************************************************************/
 void Inducer_Processing(void)
 {
-    //InducerMax_Get();                                //Èô»¹Î´»ñÈ¡µç¸Ğ×î´óÖµ£¬Ôò
-    if(InducerMax_Get_End_Flag==1)                   //µç¸Ğ»ñÈ¡×î´óÖµ±êÖ¾Îª1Ê±²Å½øĞĞÊı¾İ´¦Àí£¬±ÜÃâÓĞ×î´óÖµÎª0¡¢ºóĞø³ı·¨³ö´íµÄÎ£ÏÕ
+    //InducerMax_Get();                                //è‹¥è¿˜æœªè·å–ç”µæ„Ÿæœ€å¤§å€¼ï¼Œåˆ™
+    if(InducerMax_Get_End_Flag==1)                   //ç”µæ„Ÿè·å–æœ€å¤§å€¼æ ‡å¿—ä¸º1æ—¶æ‰è¿›è¡Œæ•°æ®å¤„ç†ï¼Œé¿å…æœ‰æœ€å¤§å€¼ä¸º0ã€åç»­é™¤æ³•å‡ºé”™çš„å±é™©
     {
-        Inducer_Sum_x=0.0;                           //³õÊ¼»¯µç¸Ğ³ËÒÔÈ¨ÖµºóµÄºÍ
-        Inducer_Slope_Float=0.0;                     //³õÊ¼»¯Êı¾İ´¦ÀíºóµÄĞ±ÂÊ
-        for(i=0;i<5;i++)                             //³õÊ¼»¯Êı¾İ
+        Inducer_Sum_x=0.0;                           //åˆå§‹åŒ–ç”µæ„Ÿä¹˜ä»¥æƒå€¼åçš„å’Œ
+        Inducer_Slope_Float=0.0;                     //åˆå§‹åŒ–æ•°æ®å¤„ç†åçš„æ–œç‡
+        for(i=0;i<5;i++)                             //åˆå§‹åŒ–æ•°æ®
         {
             Inducer_Get[i]=0;Inducer_Normalize[i]=0.0;
         }
-        Inducer_Get[0]=adc_mean_filter(ADC_IN0_A0, ADC_12BIT, 10);        //12BIT¾«¶È£¬È¡5´ÎAD×ª»»Æ½¾ùÖµ
-        Inducer_Get[1]=adc_mean_filter(ADC_IN4_A4, ADC_12BIT, 10);        //12BIT¾«¶È£¬È¡5´ÎAD×ª»»Æ½¾ùÖµ
-        Inducer_Get[2]=adc_mean_filter(ADC_IN6_A6, ADC_12BIT, 10);        //12BIT¾«¶È£¬È¡5´ÎAD×ª»»Æ½¾ùÖµ
-        Inducer_Get[3]=adc_mean_filter(ADC_IN8_B0, ADC_12BIT, 10);        //12BIT¾«¶È£¬È¡5´ÎAD×ª»»Æ½¾ùÖµ
-        Inducer_Get[4]=adc_mean_filter(ADC_IN9_B1, ADC_12BIT, 10);        //12BIT¾«¶È£¬È¡5´ÎAD×ª»»Æ½¾ùÖµ
-        //Inducer_Get[5]=adc_mean_filter(ADC_IN5_A5, ADC_12BIT, 5);        //12BIT¾«¶È£¬È¡5´ÎAD×ª»»Æ½¾ùÖµ
-        //Inducer_Get[6]=adc_mean_filter(ADC_IN6_A6, ADC_12BIT, 5);        //12BIT¾«¶È£¬È¡5´ÎAD×ª»»Æ½¾ùÖµ
-        for(i=0;i<5;i++)                 //¶Ô5¸öµç¸ĞÖµ½øĞĞ¹éÒ»»¯´¦Àí
+        Inducer_Get[0]=adc_mean_filter(ADC_IN0_A0, ADC_12BIT, 10);        //12BITç²¾åº¦ï¼Œå–10æ¬¡ADè½¬æ¢å¹³å‡å€¼
+        Inducer_Get[1]=adc_mean_filter(ADC_IN4_A4, ADC_12BIT, 10);        //12BITç²¾åº¦ï¼Œå–10æ¬¡ADè½¬æ¢å¹³å‡å€¼
+        Inducer_Get[2]=adc_mean_filter(ADC_IN6_A6, ADC_12BIT, 10);        //12BITç²¾åº¦ï¼Œå–10æ¬¡ADè½¬æ¢å¹³å‡å€¼
+        Inducer_Get[3]=adc_mean_filter(ADC_IN8_B0, ADC_12BIT, 10);        //12BITç²¾åº¦ï¼Œå–10æ¬¡ADè½¬æ¢å¹³å‡å€¼
+        Inducer_Get[4]=adc_mean_filter(ADC_IN9_B1, ADC_12BIT, 10);        //12BITç²¾åº¦ï¼Œå–10æ¬¡ADè½¬æ¢å¹³å‡å€¼
+        //Inducer_Get[5]=adc_mean_filter(ADC_IN5_A5, ADC_12BIT, 5);        //12BITç²¾åº¦ï¼Œå–10æ¬¡ADè½¬æ¢å¹³å‡å€¼
+        //Inducer_Get[6]=adc_mean_filter(ADC_IN6_A6, ADC_12BIT, 5);        //12BITç²¾åº¦ï¼Œå–10æ¬¡ADè½¬æ¢å¹³å‡å€¼
+        for(i=0;i<5;i++)                 //å¯¹5ä¸ªç”µæ„Ÿå€¼è¿›è¡Œå½’ä¸€åŒ–å¤„ç†
         {
             Inducer_Normalize[i]=1.0*Inducer_Get[i]/InducerMax[i];
         }
