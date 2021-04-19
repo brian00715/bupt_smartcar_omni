@@ -91,28 +91,10 @@
 
 //=================================结构体=================================
 
-typedef struct PID_t
-{
-    float KP;
-    float KD;
-    float KI;
-    float i;
-    float last_err;
-    float i_max;
-    float last_d;
-    float I_TIME; // PID周期（实际上决定积分时间，即积分的快慢）
-} PID_t;
 
 //=================================函数声明=================================
 
-float PID_Release(PID_t *PID, float target, float now);
-
-void reset_PID(PID_t *s);
-
-void PID_init();
-
 float AngleLimitPI(float angle);
-
 float AngleLimitDiff(float a, float b);
 
 #endif

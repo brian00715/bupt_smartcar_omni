@@ -33,52 +33,30 @@ rt_sem_t camera_sem;
 int
 main (void)
 {
-//  display_init ();
+  //  display_init ();
   ips114_init ();
-//    camera_sem = rt_sem_create("camera", 0, RT_IPC_FLAG_FIFO);
-//    mt9v03x_init();
-//    icm20602_init_spi();
-//    encoder_init();
-//    buzzer_init();
+  //    camera_sem = rt_sem_create("camera", 0, RT_IPC_FLAG_FIFO);
+  //    mt9v03x_init();
+  //    icm20602_init_spi();
+  //    encoder_init();
+  //    buzzer_init();
   //    elec_init();
   button_init ();
   Motor_Init ();
-//  timer_pit_init ();
+  //  timer_pit_init ();
   ips114_clear (WHITE);
-  ips114_showstr (IPS114_X_MAX / 2, IPS114_Y_MAX / 2, "Init Done");
-
+  static int16 duty = 0;
   while (1)
     {
-      ips114_showstr (0, 0, "forward rotate");
-//      Motor_SetDuty (500, 500, 500, 500);
-//      systick_delay_ms(2000);
-//      Motor_SetDuty (0, 0, 0, 0);
-//      systick_delay_ms(2000);
-//      ips114_showstr (0, 0, "reverse rotate");
-//      Motor_SetDuty (-500, -500, -500, -500);
-//      systick_delay_ms(2000);
       //等待摄像头采集完毕
-//        rt_sem_take(camera_sem, RT_WAITING_FOREVER);
-//        rt_thread_mdelay(10);
+      //        rt_sem_take(camera_sem, RT_WAITING_FOREVER);
+      //        rt_thread_mdelay(10);
       //开始处理摄像头图像
+      ips114_showstr (0, 0, "duty:");
+      ips114_showint16(0, 1, duty);
 
-      gpio_set (MOTOR1_A, 1);
-      pwm_duty (MOTOR1_B, 2000);
-      gpio_set (MOTOR2_A, 1);
-      pwm_duty (MOTOR2_B, 2000);
-      gpio_set (MOTOR3_A, 1);
-      pwm_duty (MOTOR3_B, 2000);
-      gpio_set (MOTOR4_A, 1);
-      pwm_duty (MOTOR4_B, 2000);
-      systick_delay_ms(2000);
-      gpio_set (MOTOR1_A, 0);
-      pwm_duty (MOTOR1_B, 3000);
-      gpio_set (MOTOR2_A, 0);
-      pwm_duty (MOTOR2_B, 3000);
-      gpio_set (MOTOR3_A, 0);
-      pwm_duty (MOTOR3_B, 3000);
-      gpio_set (MOTOR4_A, 0);
-      pwm_duty (MOTOR4_B, 3000);
-      systick_delay_ms(2000);
+      duty = (duty + 1000) % 10000;
+      Motor_SetDuty (duty, duty, duty, duty);
+      systick_delay_ms(100);
     }
 }
