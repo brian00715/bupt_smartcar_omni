@@ -165,18 +165,18 @@ char rt_hw_console_getchar(void)
 }
 
 
-void USART1_IRQHandler(void) __attribute__((interrupt()));
-void USART1_IRQHandler(void)
-{
-    uint8 dat;
-
-    rt_interrupt_enter();       //进入中断
-
-    if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-    {
-        uart_getchar(DEBUG_UART, &dat);
-        rt_mb_send(uart_mb, dat);           // 发送邮件
-    }
-
-    rt_interrupt_leave();       //退出中断
-}
+//void USART1_IRQHandler(void) __attribute__((interrupt()));
+//void USART1_IRQHandler(void)
+//{
+//    uint8 dat;
+//
+//    rt_interrupt_enter();       //进入中断
+//
+//    if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+//    {
+//        uart_getchar(DEBUG_UART, &dat);
+//        rt_mb_send(uart_mb, dat);           // 发送邮件
+//    }
+//
+//    rt_interrupt_leave();       //退出中断
+//}

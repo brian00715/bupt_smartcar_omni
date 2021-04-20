@@ -60,7 +60,7 @@ USER/main.o: ../USER/main.c ../Libraries/seekfree_libraries/headfile.h \
  ../Libraries/seekfree_libraries/zf_gpio.h \
  ../Libraries/seekfree_peripheral/SEEKFREE_ABSOLUTE_ENCODER.h \
  ../CODE/display.h ../CODE/timer_pit.h ../CODE/encoder.h ../CODE/buzzer.h \
- ../CODE/button.h ../CODE/motor.h ../CODE/elec.h
+ ../CODE/button.h ../CODE/motor.h ../CODE/elec.h ../CODE/cmd.h
 
 ../Libraries/seekfree_libraries/headfile.h:
 
@@ -199,3 +199,5 @@ D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_
 ../CODE/motor.h:
 
 ../CODE/elec.h:
+
+../CODE/cmd.h:

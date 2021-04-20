@@ -6,6 +6,7 @@
 C_SRCS += \
 ../CODE/button.c \
 ../CODE/buzzer.c \
+../CODE/cmd.c \
 ../CODE/display.c \
 ../CODE/elec.c \
 ../CODE/encoder.c \
@@ -18,6 +19,7 @@ C_SRCS += \
 OBJS += \
 ./CODE/button.o \
 ./CODE/buzzer.o \
+./CODE/cmd.o \
 ./CODE/display.o \
 ./CODE/elec.o \
 ./CODE/encoder.o \
@@ -30,6 +32,7 @@ OBJS += \
 C_DEPS += \
 ./CODE/button.d \
 ./CODE/buzzer.d \
+./CODE/cmd.d \
 ./CODE/display.d \
 ./CODE/elec.d \
 ./CODE/encoder.d \

@@ -17,11 +17,7 @@
  * @date            2020-12-04
  ********************************************************************************************************************/
 
-
 #include "headfile.h"
-
-
-
 
 void WWDG_IRQHandler(void) __attribute__((interrupt()));
 void HardFault_Handler(void) __attribute__((interrupt()));
@@ -63,263 +59,252 @@ void EXTI15_10_IRQHandler(void) __attribute__((interrupt()));
 
 void EXTI0_IRQHandler(void)
 {
-    rt_interrupt_enter();   //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(SET == EXTI_GetITStatus(EXTI_Line0))
-    {
+  if (SET == EXTI_GetITStatus(EXTI_Line0))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line0);
-    }
+    EXTI_ClearITPendingBit(EXTI_Line0);
+  }
 
-    rt_interrupt_leave();   //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void EXTI1_IRQHandler(void)
 {
-    rt_interrupt_enter();   //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(SET == EXTI_GetITStatus(EXTI_Line1))
-    {
-        if(camera_type == CAMERA_BIN_UART)
-            ov7725_uart_vsync();
-        else if(camera_type == CAMERA_GRAYSCALE)
-            mt9v03x_vsync();
-        EXTI_ClearITPendingBit(EXTI_Line1);
-    }
+  if (SET == EXTI_GetITStatus(EXTI_Line1))
+  {
+    if (camera_type == CAMERA_BIN_UART)
+      ov7725_uart_vsync();
+    else if (camera_type == CAMERA_GRAYSCALE)
+      mt9v03x_vsync();
+    EXTI_ClearITPendingBit(EXTI_Line1);
+  }
 
-    rt_interrupt_leave();   //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void EXTI2_IRQHandler(void)
 {
-    rt_interrupt_enter();    //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(SET == EXTI_GetITStatus(EXTI_Line2))
-    {
+  if (SET == EXTI_GetITStatus(EXTI_Line2))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line2);
-    }
+    EXTI_ClearITPendingBit(EXTI_Line2);
+  }
 
-    rt_interrupt_leave();    //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void EXTI3_IRQHandler(void)
 {
-    rt_interrupt_enter();   //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(SET == EXTI_GetITStatus(EXTI_Line3))
-    {
+  if (SET == EXTI_GetITStatus(EXTI_Line3))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line3);
-    }
+    EXTI_ClearITPendingBit(EXTI_Line3);
+  }
 
-    rt_interrupt_leave();   //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void EXTI4_IRQHandler(void)
 {
-    rt_interrupt_enter();    //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(SET == EXTI_GetITStatus(EXTI_Line4))
-    {
+  if (SET == EXTI_GetITStatus(EXTI_Line4))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line4);
-    }
+    EXTI_ClearITPendingBit(EXTI_Line4);
+  }
 
-    rt_interrupt_leave();    //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void EXTI9_5_IRQHandler(void)
 {
-    rt_interrupt_enter();   //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(SET == EXTI_GetITStatus(EXTI_Line9))
-    {
+  if (SET == EXTI_GetITStatus(EXTI_Line9))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line9);
-    }
-    else if(SET == EXTI_GetITStatus(EXTI_Line8))
-    {
+    EXTI_ClearITPendingBit(EXTI_Line9);
+  }
+  else if (SET == EXTI_GetITStatus(EXTI_Line8))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line8);
-    }
-    else if(SET == EXTI_GetITStatus(EXTI_Line7))
-    {
+    EXTI_ClearITPendingBit(EXTI_Line8);
+  }
+  else if (SET == EXTI_GetITStatus(EXTI_Line7))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line7);
-    }
-    else if(SET == EXTI_GetITStatus(EXTI_Line6))
-    {
+    EXTI_ClearITPendingBit(EXTI_Line7);
+  }
+  else if (SET == EXTI_GetITStatus(EXTI_Line6))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line6);
-    }
-    else if(SET == EXTI_GetITStatus(EXTI_Line5))
-    {
+    EXTI_ClearITPendingBit(EXTI_Line6);
+  }
+  else if (SET == EXTI_GetITStatus(EXTI_Line5))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line5);
-    }
+    EXTI_ClearITPendingBit(EXTI_Line5);
+  }
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void EXTI15_10_IRQHandler(void)
 {
-    rt_interrupt_enter();   //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(SET == EXTI_GetITStatus(EXTI_Line15))
-    {
+  if (SET == EXTI_GetITStatus(EXTI_Line15))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line15);
-    }
-    else if(SET == EXTI_GetITStatus(EXTI_Line14))
-    {
+    EXTI_ClearITPendingBit(EXTI_Line15);
+  }
+  else if (SET == EXTI_GetITStatus(EXTI_Line14))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line14);
-    }
-    else if(SET == EXTI_GetITStatus(EXTI_Line13))
-    {
+    EXTI_ClearITPendingBit(EXTI_Line14);
+  }
+  else if (SET == EXTI_GetITStatus(EXTI_Line13))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line13);
-    }
-    else if(SET == EXTI_GetITStatus(EXTI_Line12))
-    {
+    EXTI_ClearITPendingBit(EXTI_Line13);
+  }
+  else if (SET == EXTI_GetITStatus(EXTI_Line12))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line12);
-    }
-    else if(SET == EXTI_GetITStatus(EXTI_Line11))
-    {
+    EXTI_ClearITPendingBit(EXTI_Line12);
+  }
+  else if (SET == EXTI_GetITStatus(EXTI_Line11))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line11);
-    }
-    else if(SET == EXTI_GetITStatus(EXTI_Line10))
-    {
+    EXTI_ClearITPendingBit(EXTI_Line11);
+  }
+  else if (SET == EXTI_GetITStatus(EXTI_Line10))
+  {
 
-        EXTI_ClearITPendingBit(EXTI_Line10);
-    }
+    EXTI_ClearITPendingBit(EXTI_Line10);
+  }
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void ADC1_2_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    //获取中断标志位
-    //清除中断标志位
+  //获取中断标志位
+  //清除中断标志位
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void TIM1_BRK_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(TIM_GetITStatus(TIM1, TIM_IT_Break) != RESET)
-    {
-        TIM_ClearITPendingBit(TIM1, TIM_IT_Break);
+  if (TIM_GetITStatus(TIM1, TIM_IT_Break) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM1, TIM_IT_Break);
+  }
 
-    }
-
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void TIM1_UP_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
+  if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
+  }
 
-    if(TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
-    {
-        TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
-
-    }
-
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void TIM1_TRG_COM_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(TIM_GetITStatus(TIM1, TIM_IT_Trigger) != RESET)
-    {
-        TIM_ClearITPendingBit(TIM1, TIM_IT_Trigger);
+  if (TIM_GetITStatus(TIM1, TIM_IT_Trigger) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM1, TIM_IT_Trigger);
+  }
+  if (TIM_GetITStatus(TIM1, TIM_IT_COM) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM1, TIM_IT_COM);
+  }
 
-    }
-    if(TIM_GetITStatus(TIM1, TIM_IT_COM) != RESET)
-    {
-        TIM_ClearITPendingBit(TIM1, TIM_IT_COM);
-
-    }
-
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void TIM1_CC_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(TIM_GetITStatus(TIM1, TIM_IT_CC1) != RESET)
-    {
-        TIM_ClearITPendingBit(TIM1, TIM_IT_CC1);
+  if (TIM_GetITStatus(TIM1, TIM_IT_CC1) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM1, TIM_IT_CC1);
+  }
+  if (TIM_GetITStatus(TIM1, TIM_IT_CC2) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM1, TIM_IT_CC2);
+  }
+  if (TIM_GetITStatus(TIM1, TIM_IT_CC3) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM1, TIM_IT_CC3);
+  }
+  if (TIM_GetITStatus(TIM1, TIM_IT_CC4) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM1, TIM_IT_CC4);
+  }
 
-    }
-    if(TIM_GetITStatus(TIM1, TIM_IT_CC2) != RESET)
-    {
-        TIM_ClearITPendingBit(TIM1, TIM_IT_CC2);
-
-    }
-    if(TIM_GetITStatus(TIM1, TIM_IT_CC3) != RESET)
-    {
-        TIM_ClearITPendingBit(TIM1, TIM_IT_CC3);
-
-    }
-    if(TIM_GetITStatus(TIM1, TIM_IT_CC4) != RESET)
-    {
-        TIM_ClearITPendingBit(TIM1, TIM_IT_CC4);
-
-    }
-
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void TIM2_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
-    {
-        TIM_ClearITPendingBit(TIM2, TIM_IT_Update );
-        ccd_collect();//CCD数据采集
-    }
+  if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+    ccd_collect(); //CCD数据采集
+  }
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void TIM3_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)
-    {
-        TIM_ClearITPendingBit(TIM3, TIM_IT_Update );
+  if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
+  }
 
-    }
-
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void TIM4_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)
-    {
-        TIM_ClearITPendingBit(TIM4, TIM_IT_Update );
+  if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
+  }
 
-    }
-
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 //串口1 定义在了board.c中，用于接收串口内容并通过邮件发送给finsh线程
@@ -333,174 +318,190 @@ void TIM4_IRQHandler(void)
 //    rt_interrupt_leave();       //退出中断
 //}
 
+void USART1_IRQHandler(void)
+{
+  printf("enter irq");
+  if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) // 判断接收中断使能状态
+  {
+    USART_ClearITPendingBit(USART1, USART_IT_RXNE); // 清除中断标志位
+//    ips114_showchar(2, 0, "receive usart1 irq.");
+    uint16 temp = USART_ReceiveData(USART1);
+    printf("%d", temp);
+
+    // USART_ITConfig(DEBUG_UART,USART_IT_RXNE,ENABLE); // 打开下一次中断
+  }
+}
+
 void USART2_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
-    {
-        //USART_ClearITPendingBit(USART2, USART_IT_RXNE);
-        if(camera_type == CAMERA_BIN_UART)
-            ov7725_cof_uart_interrupt();
-        else if(camera_type == CAMERA_GRAYSCALE)
-            mt9v03x_uart_callback();
-    }
+  if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
+  {
+    //USART_ClearITPendingBit(USART2, USART_IT_RXNE);
+    if (camera_type == CAMERA_BIN_UART)
+      ov7725_cof_uart_interrupt();
+    else if (camera_type == CAMERA_GRAYSCALE)
+      mt9v03x_uart_callback();
+  }
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void USART3_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    //获取中断标志位
-    //清除中断标志位
+  //获取中断标志位
+  //清除中断标志位
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void DMA1_Channel4_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    if(SET == DMA_GetFlagStatus(DMA1_FLAG_TC4))
-    {
-        DMA_ClearFlag(DMA1_FLAG_TC4);
-        if(camera_type == CAMERA_BIN_UART)
-            ov7725_uart_dma();
-        else if(camera_type == CAMERA_GRAYSCALE)
-            mt9v03x_dma();
-    }
+  if (SET == DMA_GetFlagStatus(DMA1_FLAG_TC4))
+  {
+    DMA_ClearFlag(DMA1_FLAG_TC4);
+    if (camera_type == CAMERA_BIN_UART)
+      ov7725_uart_dma();
+    else if (camera_type == CAMERA_GRAYSCALE)
+      mt9v03x_dma();
+  }
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
+}
+
+void DMA1_Channel5_IRQHandler(void)
+{
 }
 
 /*******************************************************************************
-* Function Name  : NMI_Handler
-* Description    : This function handles NMI exception.
-* Input          : None
-* Return         : None
-*******************************************************************************/
+ * Function Name  : NMI_Handler
+ * Description    : This function handles NMI exception.
+ * Input          : None
+ * Return         : None
+ *******************************************************************************/
 void NMI_Handler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    //获取中断标志位
-    //清除中断标志位
+  //获取中断标志位
+  //清除中断标志位
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void HardFault_Handler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    while(1);
+  while (1)
+    ;
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
-
-
 
 void WWDG_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    //获取中断标志位
-    //清除中断标志位
+  //获取中断标志位
+  //清除中断标志位
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 
 void TAMPER_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    //获取中断标志位
-    //清除中断标志位
+  //获取中断标志位
+  //清除中断标志位
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 void RTC_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    //获取中断标志位
-    //清除中断标志位
+  //获取中断标志位
+  //清除中断标志位
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 void FLASH_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    //获取中断标志位
-    //清除中断标志位
+  //获取中断标志位
+  //清除中断标志位
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 void RCC_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    //获取中断标志位
-    //清除中断标志位
+  //获取中断标志位
+  //清除中断标志位
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 void DMA1_Channel1_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    //获取中断标志位
-    //清除中断标志位
+  //获取中断标志位
+  //清除中断标志位
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 void DMA1_Channel2_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    //获取中断标志位
-    //清除中断标志位
+  //获取中断标志位
+  //清除中断标志位
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 void DMA1_Channel3_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    //获取中断标志位
-    //清除中断标志位
+  //获取中断标志位
+  //清除中断标志位
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
-void DMA1_Channel5_IRQHandler(void)
-{
-    rt_interrupt_enter();       //进入中断
-
-    //获取中断标志位
-    //清除中断标志位
-
-    rt_interrupt_leave();       //退出中断
-}
+//void
+//DMA1_Channel5_IRQHandler (void)
+//{
+//  rt_interrupt_enter ();       //进入中断
+//
+//  //获取中断标志位
+//  //清除中断标志位
+//
+//  rt_interrupt_leave ();       //退出中断
+//}
 void DMA1_Channel6_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    //获取中断标志位
-    //清除中断标志位
+  //获取中断标志位
+  //清除中断标志位
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
 void DMA1_Channel7_IRQHandler(void)
 {
-    rt_interrupt_enter();       //进入中断
+  rt_interrupt_enter(); //进入中断
 
-    //获取中断标志位
-    //清除中断标志位
+  //获取中断标志位
+  //清除中断标志位
 
-    rt_interrupt_leave();       //退出中断
+  rt_interrupt_leave(); //退出中断
 }
-
-

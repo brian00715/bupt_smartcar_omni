@@ -27,16 +27,20 @@
 #include "button.h"
 #include "motor.h"
 #include "elec.h"
+#include "cmd.h"
 
 rt_sem_t camera_sem;
 
 int
 main (void)
 {
+  DisableGlobalIRQ ();
+
   //  display_init ();
   ips114_init ();
+  cmd_init ();
   //    camera_sem = rt_sem_create("camera", 0, RT_IPC_FLAG_FIFO);
-  //    mt9v03x_init();
+//      mt9v03x_init();
   //    icm20602_init_spi();
   //    encoder_init();
   //    buzzer_init();
@@ -46,17 +50,20 @@ main (void)
   //  timer_pit_init ();
   ips114_clear (WHITE);
   static int16 duty = 0;
+
+  EnableGlobalIRQ (0);
   while (1)
     {
       //等待摄像头采集完毕
       //        rt_sem_take(camera_sem, RT_WAITING_FOREVER);
       //        rt_thread_mdelay(10);
       //开始处理摄像头图像
-      ips114_showstr (0, 0, "duty:");
-      ips114_showint16(0, 1, duty);
+//      duty = (duty + 1000) % 10000;
+//      Motor_SetDuty (duty, duty, duty, duty);
+      systick_delay_ms(1000);
 
-      duty = (duty + 1000) % 10000;
-      Motor_SetDuty (duty, duty, duty, duty);
-      systick_delay_ms(100);
+      ips114_showstr (0, 0, "duty:");
+      ips114_showint16 (0, 1, duty);
+
     }
 }
