@@ -24,8 +24,9 @@
 
 
 //------------------------------------以下宏定义用于SYSTICK延时------------------------------------
-#define systick_delay_ms(time)      systick_delay2(time)                    //设置SYSTICK延时时间  单位ms
-#define systick_delay_us(time)      systick_delay(time)                     //设置SYSTICK延时时间  单位us
+#define systick_delay_ms(time)      systick_delay(time * (sys_clk/8000))    //设置SYSTICK延时时间  单位ms
+#define systick_delay_us(time)      systick_delay(time * (sys_clk/8000000)) //设置SYSTICK延时时间  单位us
+
 
 //------------------------------------以下宏定义用于获取当前时间------------------------------------
 #define systick_getval_ms()         systick_getval()/(sys_clk/8000)         //获取当前计时时间  单位ms
@@ -33,10 +34,11 @@
 #define systick_getval_ns()         systick_getval()/(sys_clk/8000000000)   //获取当前计时时间  单位ns
 
 
-void systick_delay(uint16 time);
-void systick_delay2(uint64 time);
-
+void systick_start(void);
+void systick_delay(uint64 time);
 uint32 systick_getval(void);
 
+
+//void delay_ms(uint32 count);
 
 #endif

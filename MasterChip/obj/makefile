@@ -14,9 +14,6 @@ RM := rm -rf
 -include Libraries/wch_libraries/Core/subdir.mk
 -include Libraries/seekfree_peripheral/subdir.mk
 -include Libraries/seekfree_libraries/subdir.mk
--include Libraries/rtthread_libraries/src/subdir.mk
--include Libraries/rtthread_libraries/libcpu/subdir.mk
--include Libraries/rtthread_libraries/components/finsh/subdir.mk
 -include Libraries/board/subdir.mk
 -include CODE/subdir.mk
 -include subdir.mk
@@ -58,7 +55,7 @@ all: MasterChip.elf secondary-outputs
 
 # Tool invocations
 MasterChip.elf: $(OBJS) $(USER_OBJS)
-	@	@	riscv-none-embed-gcc -march=rv32imac -mabi=ilp32 -msmall-data-limit=8 -mno-save-restore -O1 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -Wuninitialized  -g -T .ld -nostartfiles -Xlinker --gc-sections -L"../" -Wl,-Map,"MasterChip.map" --specs=nano.specs --specs=nosys.specs -o "MasterChip.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	@	@	riscv-none-embed-gcc -march=rv32imac -mabi=ilp32 -msmall-data-limit=8 -mno-save-restore -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -Wuninitialized  -g -T .ld -nostartfiles -Xlinker --gc-sections -L"../" -Wl,-Map,"MasterChip.map" --specs=nano.specs --specs=nosys.specs -o "MasterChip.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@	@
 MasterChip.hex: MasterChip.elf
 	@	riscv-none-embed-objcopy -O ihex "MasterChip.elf"  "MasterChip.hex"

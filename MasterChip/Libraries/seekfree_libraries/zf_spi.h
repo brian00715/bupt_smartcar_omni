@@ -56,6 +56,7 @@ typedef enum //Ã¶¾Ù´®¿ÚºÅ
 {
     FPCLK_DIV_2 = 0x00,
     FPCLK_DIV_4,
+    FPCLK_DIV_8,
     FPCLK_DIV_16,
     FPCLK_DIV_32,
     FPCLK_DIV_64,

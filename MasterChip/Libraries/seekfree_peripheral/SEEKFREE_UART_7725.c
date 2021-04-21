@@ -38,7 +38,7 @@
 
 #include "SEEKFREE_UART_7725.h"
 
-uint8 ov7725_uart_image_bin[OV7725_UART_W/8][OV7725_UART_H];
+uint8 ov7725_uart_image_bin[OV7725_UART_H][OV7725_UART_W/8];
 //uint8 ov7725_uart_image_dec[OV7725_UART_H][OV7725_UART_W];
 
 
@@ -79,7 +79,8 @@ uint8   ov7725_uart_receive_flag = 0;
 
 void ov7725_cof_uart_interrupt(void)
 {
-    uart_query(OV7725_UART_COF_UART, &ov7725_uart_receive[ov7725_uart_receive_num]);
+
+    ov7725_uart_receive[ov7725_uart_receive_num] = ((USART_TypeDef*)UARTN[OV7725_UART_COF_UART])->DATAR & 0x01FF;
     ov7725_uart_receive_num++;
 
     if(1==ov7725_uart_receive_num && 0XA5!=ov7725_uart_receive[0])  ov7725_uart_receive_num = 0;
@@ -104,7 +105,7 @@ void ov7725_uart_vsync(void)
     OV7725_UART_DMA_CH->CFGR |= DMA_CFGR1_EN;                //开启DMA1
 }
 
-uint8 ov7725_uart_finish_flag = 0;
+vuint8 ov7725_uart_finish_flag = 0;
 //-------------------------------------------------------------------------------------------------------------------
 //  @brief      小钻风摄像头DMA完成中断
 //  @param      NULL
@@ -303,7 +304,7 @@ uint8 ov7725_uart_init(void)
     uart_init(OV7725_UART_COF_UART, 9600, OV7725_UART_COF_UART_TX, OV7725_UART_COF_UART_RX);
     uart_rx_irq(OV7725_UART_COF_UART, ENABLE);
 
-    //EnableGlobalIRQ(0);
+    EnableGlobalIRQ(0);
 
     //设置所有参数
     ov7725_uart_receive_flag = 0;
@@ -312,7 +313,7 @@ uint8 ov7725_uart_init(void)
     ov7725_uart_receive_flag = 0;
     ov7725_get_all_config(OV7725_UART_COF_UART, OV7725_GET_CFG);
 
-    //DisableGlobalIRQ();
+    DisableGlobalIRQ();
 
     //DMA初始化
     ov7725_uart_dma_init();

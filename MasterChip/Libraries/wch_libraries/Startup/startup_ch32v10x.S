@@ -171,19 +171,14 @@ handle_reset:
 	bltu a0, a1, 1b
 2:
 	/* enable all interrupt */
-  	li t0, 0x88
-  	csrs mstatus, t0
+  li t0, 0x88
+  csrs mstatus, t0
 	la t0, _vector_base
- 	ori t0, t0, 1
+  ori t0, t0, 1
 	csrw mtvec, t0
 
-
-
-  	jal  SystemInit
-  	li a0, 0
-    li a1, 0
-    call entry
-	la t0, entry //main
+  jal  SystemInit
+	la t0, main
 	csrw mepc, t0
 	mret
 

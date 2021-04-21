@@ -89,5 +89,4 @@ void SystemInit (void)
     RCC->CFGR0 &= (uint32_t)0xFF80FFFF;
     RCC->INTR = 0x009F0000;
     SetSysClock();
-    PFIC->CFGR = 0xfa050001;
 }

@@ -28,42 +28,51 @@
 #include "motor.h"
 #include "elec.h"
 #include "cmd.h"
+#include "isr.h"
 
-rt_sem_t camera_sem;
-
-int
-main (void)
+extern uint8_t UART1_RxBuffer[RX_BUFFER_SIZE];
+extern uint8_t UART1_RxComplete;
+extern uint8_t UART1_RxIDLEFlag;
+int main(void)
 {
-  DisableGlobalIRQ ();
+	DisableGlobalIRQ();
+	board_init();
+	CMD_Init();
+	//	ips114_init();
+	//      mt9v03x_init();
+	//    encoder_init();
+	//    buzzer_init();
+	//    elec_init();
+	//  button_init ();
+	Motor_Init();
+	//  timer_pit_init ();
+	//	ips114_clear(WHITE);
+	static int16 duty = 0;
+	EnableGlobalIRQ(0);
 
-  //  display_init ();
-  ips114_init ();
-  cmd_init ();
-  //    camera_sem = rt_sem_create("camera", 0, RT_IPC_FLAG_FIFO);
-//      mt9v03x_init();
-  //    icm20602_init_spi();
-  //    encoder_init();
-  //    buzzer_init();
-  //    elec_init();
-  button_init ();
-  Motor_Init ();
-  //  timer_pit_init ();
-  ips114_clear (WHITE);
-  static int16 duty = 0;
+	printf("==Init Done==\r\n");
+	while (1)
+	{
+		duty = (duty + 1000) % 10000;
+		Motor_SetDuty(duty, duty, duty, duty);
+		//        systick_delay_ms(1000);
+		//		ips114_showstr(0, 0, "running");
+		//		ips114_showstr(20, 20, UART_RxBuffer);
 
-  EnableGlobalIRQ (0);
-  while (1)
-    {
-      //等待摄像头采集完毕
-      //        rt_sem_take(camera_sem, RT_WAITING_FOREVER);
-      //        rt_thread_mdelay(10);
-      //开始处理摄像头图像
-//      duty = (duty + 1000) % 10000;
-//      Motor_SetDuty (duty, duty, duty, duty);
-      systick_delay_ms(1000);
+		//		if (UART1_RxComplete)
+		//		{
+		//			printf("%s\r\n", UART1_RxBuffer);
+		//			UART1_RxComplete = 0;
+		//		}
 
-      ips114_showstr (0, 0, "duty:");
-      ips114_showint16 (0, 1, duty);
-
-    }
+		if (UART1_RxIDLEFlag)
+		{
+			//			printf("%s\r\n", UART1_RxBuffer);
+			UART1_RxIDLEFlag = 0;
+			for (int i = 0; i < CMD_BufferCnt - 1; i++)
+			{
+				//				printf("%s\r\n",CMD_Buffer);
+			}
+		}
+	}
 }

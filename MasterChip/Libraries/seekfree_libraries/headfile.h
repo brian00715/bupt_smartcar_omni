@@ -61,9 +61,6 @@
 #include "zf_uart.h"
 #include "zf_pit.h"
 
-//------RTT头文件
-#include "rtthread.h"
-
 //------逐飞科技产品驱动头文件
 #include "SEEKFREE_18TFT.h"
 #include "SEEKFREE_ICM20602.h"

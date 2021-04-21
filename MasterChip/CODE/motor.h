@@ -29,7 +29,7 @@ typedef struct Motor_t
 //=================================º¯ÊýÉùÃ÷=================================
 
 void DriveMotors_SetRpm(float speed[4]);
-float SW_Speed2PWM(float speed);
+int SW_Speed2PWM(float speed);
 void DriveMotors_LimitSpeed(float speed[4]);
 void Motor_Init(void);
 void Motor_DutyCtrl(int16 target_duty);

@@ -1,7 +1,7 @@
 Mcu Type=CH32V103
 Address=0x08000000
 Target Path=obj\MasterChip.hex
-Erase All=true
+Erase All=false
 Program=true
 Verify=true
 Reset=true

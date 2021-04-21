@@ -87,9 +87,9 @@ typedef enum
 
 
 
-extern uint8 ov7725_uart_image_bin[OV7725_UART_W/8][OV7725_UART_H];
+extern uint8 ov7725_uart_image_bin[OV7725_UART_H][OV7725_UART_W/8];
 extern uint8 ov7725_uart_image_dec[OV7725_UART_H][OV7725_UART_W];
-extern uint8 ov7725_uart_finish_flag;
+extern vuint8 ov7725_uart_finish_flag;
 
 
 uint8_t ov7725_uart_init(void);

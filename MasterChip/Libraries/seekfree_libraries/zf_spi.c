@@ -149,10 +149,11 @@ void spi_init(
 //-------------------------------------------------------------------------------------------------------------------
 void spi_mosi(SPIN_enum spi_n, uint8 *modata, uint8 *midata, uint32 len)
 {
+   // while((((SPI_TypeDef *)(SPIN[spi_n]))->STATR & SPI_I2S_FLAG_TXE) == RESET);
     while(len--)
     {
-        while((((SPI_TypeDef *)(SPIN[spi_n]))->STATR & SPI_I2S_FLAG_TXE) == RESET);
         ((SPI_TypeDef *)(SPIN[spi_n]))->DATAR = *(modata++);
+        while((((SPI_TypeDef *)(SPIN[spi_n]))->STATR & SPI_I2S_FLAG_TXE) == RESET);
         if(NULL != midata)
         {
             while((((SPI_TypeDef *)(SPIN[spi_n]))->STATR & SPI_I2S_FLAG_RXNE) == RESET);

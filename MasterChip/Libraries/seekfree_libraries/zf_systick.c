@@ -18,31 +18,44 @@
  ********************************************************************************************************************/
 #include "zf_systick.h"
 #include "core_riscv.h"
-#include "rtthread.h"
+
 //-------------------------------------------------------------------------------------------------------------------
 //  @brief      嘀嗒定时器延时
 //  @param      time                us
 //  @return     void
 //  Sample usage:                   内部使用，用户无需关心
 //-------------------------------------------------------------------------------------------------------------------
-void systick_delay(uint16 time)
+void systick_delay(uint64 time)
 {
-    uint8 i;
-    do{
-        i = 5;
-        while(--i);
-    }while(--time);
+    SysTick->CTLR = 0;
+    SysTick->CNTL0 = 0;
+    SysTick->CNTL1 = 0;
+    SysTick->CNTL2 = 0;
+    SysTick->CNTL3 = 0;
+    SysTick->CNTH0 = 0;
+    SysTick->CNTH1 = 0;
+    SysTick->CNTH2 = 0;
+    SysTick->CNTH3 = 0;
+    SysTick->CTLR = 1;          //启动系统计数器 systick（HCLK/8 时基） us
+
+    while((*(volatile uint32*)0xE000F004) <= time);
 }
 
+
 //-------------------------------------------------------------------------------------------------------------------
-//  @brief      嘀嗒定时器延时
-//  @param      time                ms
+//  @brief      systick定时器启动
+//  @param      void
 //  @return     void
-//  Sample usage:                   内部使用，用户无需关心
+//  Sample usage:
 //-------------------------------------------------------------------------------------------------------------------
-void systick_delay2(uint64 time)
+void systick_start(void)
 {
-    rt_thread_mdelay(time);
+    SysTick->CTLR = 0;
+    SysTick->CNTL0 = 0;
+    SysTick->CNTL1 = 0;
+    SysTick->CNTL2 = 0;
+    SysTick->CNTL3 = 0;
+    SysTick->CTLR = 1;          //启动系统计数器 systick（HCLK/8 时基） us
 }
 
 
@@ -57,3 +70,18 @@ uint32 systick_getval(void)
 }
 
 
+
+//vuint16 zf_delay_ms = sys_clk / 8000;
+////----------------------------------------------
+////软件延时
+////-------------------------------------------
+//void delay_ms(uint32 count)
+//{
+//    uint16 i;
+//    do {
+//            i = zf_delay_ms;
+//            //i = sys_clk/6000;//参数: ms,要延时的ms数, 这里只支持1~255ms. 自动适应主时钟.
+//            while(--i);
+//       }while(--count);
+//
+//}

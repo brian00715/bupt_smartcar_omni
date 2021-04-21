@@ -159,7 +159,7 @@ void pwm_gpio_init(PWMCH_enum pwmch)
 //  @param      duty            PWM占空比
 //  @return     void
 //  Sample usage:               pwm_init(PWM1_CH1_A8, 50, 5000);   //初始化PWM1 通道1 使用引脚A8  输出PWM频率50HZ   占空比为百分之 5000/PWM_DUTY_MAX*100
-//                              PWM_DUTY_MAX在zf_pwm.h文件中 默认为50000
+//                              PWM_DUTY_MAX在zf_pwm.h文件中 默认为10000
 //-------------------------------------------------------------------------------------------------------------------
 void pwm_init(PWMCH_enum pwmch, uint32 freq, uint32 duty)
 {
@@ -257,7 +257,7 @@ void pwm_init(PWMCH_enum pwmch, uint32 freq, uint32 duty)
 //  @param      duty            PWM占空比
 //  @return     void
 //  Sample usage:               pwm_duty(PWM1_CH1_A8, 5000);   //PWM1 通道1 使用引脚A8 占空比为百分之 5000/PWM_DUTY_MAX*100
-//                              PWM_DUTY_MAX在zf_pwm.h文件中 默认为50000
+//                              PWM_DUTY_MAX在zf_pwm.h文件中 默认为10000
 //-------------------------------------------------------------------------------------------------------------------
 void pwm_duty(PWMCH_enum pwmch, uint32 duty)
 {
@@ -311,7 +311,7 @@ void pwm_duty(PWMCH_enum pwmch, uint32 duty)
 //  @param      duty            PWM占空比
 //  @return     void
 //  Sample usage:               pwm_freq(PWM1_CH1_A8, 60, 5000);   //使用引脚A8  输出PWM频率60HZ   占空比为百分之 5000/PWM_DUTY_MAX*100
-//                              PWM_DUTY_MAX在zf_pwm.h文件中 默认为50000
+//                              PWM_DUTY_MAX在zf_pwm.h文件中 默认为10000
 //-------------------------------------------------------------------------------------------------------------------
 void pwm_freq(PWMCH_enum pwmch, uint32 freq, uint32 duty)
 {
@@ -349,7 +349,7 @@ void pwm_freq(PWMCH_enum pwmch, uint32 freq, uint32 duty)
 //  @param      pwmch           PWM通道号及引脚
 //  @return     void
 //  Sample usage:               pwm_freq(PWM1_CH1_A8, 60, 5000);   //使用引脚A8  输出PWM频率60HZ   占空比为百分之 5000/PWM_DUTY_MAX*100
-//                              PWM_DUTY_MAX在zf_pwm.h文件中 默认为50000
+//                              PWM_DUTY_MAX在zf_pwm.h文件中 默认为10000
 //-------------------------------------------------------------------------------------------------------------------
 void pwm_stop(PWMCH_enum pwmch)
 {

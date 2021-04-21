@@ -37,13 +37,6 @@ USER/main.o: ../USER/main.c ../Libraries/seekfree_libraries/headfile.h \
  ../Libraries/seekfree_libraries/zf_systick.h \
  ../Libraries/seekfree_libraries/zf_uart.h \
  ../Libraries/seekfree_libraries/zf_pit.h \
- D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\include/rtthread.h \
- D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\bsp/rtconfig.h \
- D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\include/rtdebug.h \
- D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\include/rtdef.h \
- D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\include/rtservice.h \
- D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\include/rtm.h \
- D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\components\finsh/finsh_api.h \
  ../Libraries/seekfree_peripheral/SEEKFREE_18TFT.h \
  ../Libraries/seekfree_peripheral/SEEKFREE_FONT.h \
  ../Libraries/seekfree_peripheral/SEEKFREE_ICM20602.h \
@@ -60,7 +53,8 @@ USER/main.o: ../USER/main.c ../Libraries/seekfree_libraries/headfile.h \
  ../Libraries/seekfree_libraries/zf_gpio.h \
  ../Libraries/seekfree_peripheral/SEEKFREE_ABSOLUTE_ENCODER.h \
  ../CODE/display.h ../CODE/timer_pit.h ../CODE/encoder.h ../CODE/buzzer.h \
- ../CODE/button.h ../CODE/motor.h ../CODE/elec.h ../CODE/cmd.h
+ ../CODE/button.h ../CODE/motor.h ../CODE/elec.h ../CODE/cmd.h \
+ ../USER/isr.h
 
 ../Libraries/seekfree_libraries/headfile.h:
 
@@ -142,20 +136,6 @@ USER/main.o: ../USER/main.c ../Libraries/seekfree_libraries/headfile.h \
 
 ../Libraries/seekfree_libraries/zf_pit.h:
 
-D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\include/rtthread.h:
-
-D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\bsp/rtconfig.h:
-
-D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\include/rtdebug.h:
-
-D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\include/rtdef.h:
-
-D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\include/rtservice.h:
-
-D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\include/rtm.h:
-
-D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_libraries\components\finsh/finsh_api.h:
-
 ../Libraries/seekfree_peripheral/SEEKFREE_18TFT.h:
 
 ../Libraries/seekfree_peripheral/SEEKFREE_FONT.h:
@@ -201,3 +181,5 @@ D:\ProgramDev\SmartcarPrograms\bupt_smartcar_omni\MasterChip\Libraries\rtthread_
 ../CODE/elec.h:
 
 ../CODE/cmd.h:
+
+../USER/isr.h:

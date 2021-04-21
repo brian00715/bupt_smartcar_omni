@@ -20,7 +20,8 @@ static const int prvOmegaRatio[4][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
 // =============================================END================================================
 
 // ===========================================Public==============================================
-Chassis_t MecanumChassis;
+Chassis_t MecanumChassis; // 底盘控制全局结构体
+
 
 /**
  * @brief 底盘初始化
@@ -83,7 +84,7 @@ int MecanumChassisMove(float speed, float dir, float omega)
             float vel_sum_y = vy + prvOmegaRatio[i][1] * self_turn_vel_y;
             float real_vel = sqrt(pow(vel_sum_x, 2) + pow(vel_sum_y, 2));
             float real_dir = atan2f(vel_sum_y, vel_sum_x); // 附加角速度后的真实速度方向
-            target_speed[i] = real_vel;
+            target_speed[i] = real_vel*cos(real_dir);
         }
     }
     else // 速度和角速度都为0时要保证舵向有效

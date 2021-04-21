@@ -24,9 +24,6 @@ C_DEPS :=
 SUBDIRS := \
 CODE \
 Libraries/board \
-Libraries/rtthread_libraries/components/finsh \
-Libraries/rtthread_libraries/libcpu \
-Libraries/rtthread_libraries/src \
 Libraries/seekfree_libraries \
 Libraries/seekfree_peripheral \
 Libraries/wch_libraries/Core \

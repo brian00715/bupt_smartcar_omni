@@ -283,6 +283,7 @@ void encoder_self5_check(PIN_enum cs_pin)
     do
     {
         encoder_spi_r_reg_byte(6, &val, cs_pin);
+        systick_delay_ms(10);
         //卡在这里原因有以下几点
         //1 编码器坏了，如果是新的这样的概率极低
         //2 接线错误或者没有接好
@@ -299,9 +300,18 @@ void encoder_self5_check(PIN_enum cs_pin)
 void encoder_init_spi(PIN_enum cs_pin)
 {
     //初始化SPI，使用软件控制CS引脚
-    spi_init(ABS_ENCODER_SPI_NUM, ABS_ENCODER_SPI_SCK_PIN, ABS_ENCODER_SPI_MOSI_PIN, ABS_ENCODER_SPI_MISO_PIN, cs_pin, 0, FPCLK_DIV_16);
+    spi_init(ABS_ENCODER_SPI_NUM, ABS_ENCODER_SPI_SCK_PIN, ABS_ENCODER_SPI_MOSI_PIN, ABS_ENCODER_SPI_MISO_PIN, cs_pin, 0, FPCLK_DIV_8);
+
+    encoder_spi_w_reg_byte(1, 0, cs_pin);
+    encoder_spi_w_reg_byte(2, 0, cs_pin);
+    encoder_spi_w_reg_byte(3, 0, cs_pin);
+    encoder_spi_w_reg_byte(4, 0xC0, cs_pin);
+    encoder_spi_w_reg_byte(5, 0xFF, cs_pin);
+    encoder_spi_w_reg_byte(6, 0x1C, cs_pin);
+
     encoder_self5_check(cs_pin);
+
     encoder_spi_w_reg_byte(DIR_REG, 0x00, cs_pin);       //设置旋转方向 正转数值变小：0x00   反转数值变大：0x80
-    set_zero_position_spi(0, cs_pin);                   //设置零偏
+    set_zero_position_spi(0, cs_pin);                    //设置零偏
 }
 

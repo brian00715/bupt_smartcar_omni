@@ -3,7 +3,6 @@
 
 #include "headfile.h"
 
-extern rt_mailbox_t buzzer_mailbox;
 
 void buzzer_init(void);
 

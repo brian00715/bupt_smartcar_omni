@@ -12,7 +12,7 @@
 /******************************************************************************************
 * Function Name  : NVIC_PriorityGroupConfig
 * Description    : Configures the priority grouping: pre-emption priority and subpriority. 
-* Input          : 0为关闭中断嵌套，1为开启中断嵌套
+* Input          : 0为关闭中断嵌套，1为关闭中断嵌套
 * Return         : None
 *******************************************************************************************/
 void NVIC_PriorityGroupConfig(uint32_t NVIC_PriorityGroup)

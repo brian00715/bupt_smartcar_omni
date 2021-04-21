@@ -9,7 +9,7 @@ void timer1_pit_entry(void *parameter)
     time++;
 
     //采集编码器数据
-    encoder_get();
+    Encoder_GetSpeed();
     
     //电机控制速度环
     
@@ -37,16 +37,16 @@ void timer1_pit_entry(void *parameter)
 
 void timer_pit_init(void)
 {
-    rt_timer_t timer;
-    
-    //创建一个定时器 周期运行
-    timer = rt_timer_create("timer1", timer1_pit_entry, RT_NULL, 2, RT_TIMER_FLAG_PERIODIC);
-    
-    //启动定时器
-    if(RT_NULL != timer)
-    {
-        rt_timer_start(timer);
-    }
+//    rt_timer_t timer;
+//
+//    //创建一个定时器 周期运行
+//    timer = rt_timer_create("timer1", timer1_pit_entry, RT_NULL, 2, RT_TIMER_FLAG_PERIODIC);
+//
+//    //启动定时器
+//    if(RT_NULL != timer)
+//    {
+//        rt_timer_start(timer);
+//    }
 
     
 }

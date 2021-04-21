@@ -80,7 +80,7 @@ void flash_page_read (FLASH_SECTION_enum sector_num, FLASH_PAGE_enum page_num, u
     uint16 temp_loop = 0;
     uint32 flash_addr = 0;
     flash_addr = ((FLASH_BASE_ADDR+FLASH_SECTION_SIZE*sector_num+FLASH_PAGE_SIZE*page_num));            // 提取当前 Flash 地址
-    flash_addr = ((uint32_t)0x0800F000);
+    //flash_addr = ((uint32_t)0x0800F000);
 
     for(temp_loop = 0; temp_loop < len; temp_loop++)                                                    // 根据指定长度读取
     {
