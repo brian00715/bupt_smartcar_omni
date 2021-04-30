@@ -29,10 +29,9 @@
 #include "elec.h"
 #include "cmd.h"
 #include "isr.h"
+#include "mecanum_chassis.h"
 
-extern uint8_t UART1_RxBuffer[RX_BUFFER_SIZE];
-extern uint8_t UART1_RxComplete;
-extern uint8_t UART1_RxIDLEFlag;
+
 int main(void)
 {
 	DisableGlobalIRQ();
@@ -47,32 +46,21 @@ int main(void)
 	Motor_Init();
 	//  timer_pit_init ();
 	//	ips114_clear(WHITE);
-	static int16 duty = 0;
 	EnableGlobalIRQ(0);
 
-	printf("==Init Done==\r\n");
+	uprintf("==Init Done==\r\n");
 	while (1)
 	{
-		duty = (duty + 1000) % 10000;
-		Motor_SetDuty(duty, duty, duty, duty);
+//		duty = (duty + 1000) % 10000;
+//		Motor_SetDuty(duty, duty, duty, duty);
 		//        systick_delay_ms(1000);
-		//		ips114_showstr(0, 0, "running");
-		//		ips114_showstr(20, 20, UART_RxBuffer);
 
-		//		if (UART1_RxComplete)
-		//		{
-		//			printf("%s\r\n", UART1_RxBuffer);
-		//			UART1_RxComplete = 0;
-		//		}
 
-		if (UART1_RxIDLEFlag)
-		{
-			//			printf("%s\r\n", UART1_RxBuffer);
-			UART1_RxIDLEFlag = 0;
-			for (int i = 0; i < CMD_BufferCnt - 1; i++)
-			{
-				//				printf("%s\r\n",CMD_Buffer);
-			}
-		}
+//		Motor_SetDuty(MecanumChassis.motor[0].target_duty,
+//				MecanumChassis.motor[1].target_duty,
+//				MecanumChassis.motor[2].target_duty,
+//				MecanumChassis.motor[3].target_duty);
+//		systick_delay_ms(1000);
+
 	}
 }

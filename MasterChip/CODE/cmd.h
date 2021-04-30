@@ -1,6 +1,8 @@
 #ifndef CMD_H_
 #define CMD_H_
 
+#include "isr.h"
+
 #define USART1_RX_DMA_CH DMA1_Channel5
 #define USART1_RX_DMA_CH_IRQN DMA1_Channel5_IRQn
 #define USART1_DR_ADDR (0x40013804) // USART1数据寄存器
@@ -10,6 +12,9 @@
 
 extern uint8_t *CMD_Buffer[CMD_SIZE_X]; // 指针数组，每个元素都指向分割后的元字符串
 extern uint8_t CMD_BufferCnt;
+extern uint8_t UART1_RxBuffer[RX_BUFFER_SIZE];
+extern uint8_t UART1_RxComplete;
+extern uint8_t UART1_RxIDLEFlag;
 
 void CMD_Init(void);
 void UART_DMA_Init(DMA_Channel_TypeDef *dma_ch, uint32 src_addr,

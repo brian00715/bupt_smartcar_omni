@@ -12,8 +12,8 @@ typedef enum CONTROL_MODE
 
 typedef enum POS_MODE
 {
-	SW_RELATIVE = 0, // 车模坐标系下的相对位姿
-	SW_ABSOLUTE      // 世界坐标系下的绝对位姿
+	POS_MODE_RELATIVE = 0, // 车模坐标系下的相对位姿
+	POS_MODE_ABSOLUTE      // 世界坐标系下的绝对位姿
 } POS_MODE;
 
 //=================================结构体=================================

@@ -68,9 +68,9 @@ void EXTI1_IRQHandler(void)
 {
 	if (SET == EXTI_GetITStatus(EXTI_Line1))
 	{
-		if (camera_type == CAMERA_BIN_UART)
-			ov7725_uart_vsync();
-		else if (camera_type == CAMERA_GRAYSCALE)
+//		if (camera_type == CAMERA_BIN_UART)
+//			ov7725_uart_vsync();
+//		else if (camera_type == CAMERA_GRAYSCALE)
 			mt9v03x_vsync();
 		EXTI_ClearITPendingBit(EXTI_Line1);
 	}
@@ -234,9 +234,9 @@ void USART2_IRQHandler(void)
 	if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
 	{
 		USART_ClearITPendingBit(USART2, USART_IT_RXNE);
-		if (camera_type == CAMERA_BIN_UART)
-			ov7725_cof_uart_interrupt();
-		else if (camera_type == CAMERA_GRAYSCALE)
+//		if (camera_type == CAMERA_BIN_UART)
+//			ov7725_cof_uart_interrupt();
+//		else if (camera_type == CAMERA_GRAYSCALE)
 			mt9v03x_uart_callback();
 	}
 }
@@ -250,9 +250,9 @@ void DMA1_Channel4_IRQHandler(void)
 	if (SET == DMA_GetFlagStatus(DMA1_FLAG_TC4))
 	{
 		DMA_ClearFlag(DMA1_FLAG_TC4);
-		if (camera_type == CAMERA_BIN_UART)
-			ov7725_uart_dma();
-		else if (camera_type == CAMERA_GRAYSCALE)
+//		if (camera_type == CAMERA_BIN_UART)
+//			ov7725_uart_dma();
+//		else if (camera_type == CAMERA_GRAYSCALE)
 			mt9v03x_dma();
 	}
 }

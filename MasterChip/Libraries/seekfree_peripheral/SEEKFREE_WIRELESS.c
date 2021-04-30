@@ -1,3 +1,4 @@
+#ifdef USE_SEEKFREE_WIRELESS
 /*********************************************************************************************************************
  * COPYRIGHT NOTICE
  * Copyright (c) 2018,Öð·É¿Æ¼¼
@@ -106,3 +107,5 @@ uint32 seekfree_wireless_send_buff(uint8 *buff, uint32 len)
     
     return 0;
 }
+
+#endif

@@ -52,7 +52,7 @@ USER/isr.o: ../USER/isr.c ../Libraries/seekfree_libraries/headfile.h \
  ../Libraries/seekfree_peripheral/SEEKFREE_TSL1401.h \
  ../Libraries/seekfree_libraries/zf_gpio.h \
  ../Libraries/seekfree_peripheral/SEEKFREE_ABSOLUTE_ENCODER.h \
- ../USER/isr.h ../CODE/config.h ../CODE/cmd.h
+ ../USER/isr.h ../CODE/config.h ../CODE/cmd.h ../USER/isr.h
 
 ../Libraries/seekfree_libraries/headfile.h:
 
@@ -169,3 +169,5 @@ USER/isr.o: ../USER/isr.c ../Libraries/seekfree_libraries/headfile.h \
 ../CODE/config.h:
 
 ../CODE/cmd.h:
+
+../USER/isr.h:

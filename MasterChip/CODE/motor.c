@@ -13,6 +13,7 @@
 #include "config.h"
 #include "sci_compute.h"
 #include "pid.h"
+#include "mecanum_chassis.h"
 
 void Motor_Init(void)
 {
@@ -31,8 +32,8 @@ void Motor_Init(void)
 	pwm_init(MOTOR4_B, 17000, 0);
 }
 // kp ki kd int_duty int_max int_sum last_err last_delta_err
-PID_t MotorPID =
-{ 0.1, 0.01, 0.0, 10, 10, 0, 0, 0 };
+PID_t MotorPID = {0.1, 0.01, 0.0, 10, 10, 0, 0, 0};
+extern Chassis_t MecanumChassis;
 /**
  * @brief 电机占空比环
  * 
@@ -40,11 +41,14 @@ PID_t MotorPID =
  * @param now_rpm 
  * @param expect_speed 
  */
-void Motor_DutyCtrl(int16 target_duty)
+void Motor_DutyCtrl(int16 target_duty[4])
 {
-//    int16 pwm_out = PID_GetOutput(&MotorPID,target_duty);
-//    return pwm_out;
-//  Motor_SetDuty(duty_1, duty_2, duty_3, duty_4);
+	int duty_ctrl[4] = {0};
+	for (int i = 0; i < 4; i++)
+	{
+		duty_ctrl[i] = (int32_t)PID_GetOutput(&MotorPID, target_duty[i], MecanumChassis.motor[i].now_duty);
+	}
+//	Motor_SetDuty(duty_ctrl);
 }
 
 /**
@@ -53,16 +57,16 @@ void Motor_DutyCtrl(int16 target_duty)
  * @param
  * @note
  */
-void Motor_SetDuty(int32 duty_1, int32 duty_2, int32 duty_3, int32 duty_4)
+void Motor_SetDuty(int32_t duty1,int32_t duty2,int32_t duty3,int32_t duty4)
 {
 	//对占空比限幅
-	LIMIT(duty_1, PWM_DUTY_MAX);
-	LIMIT(duty_2, PWM_DUTY_MAX);
-	LIMIT(duty_3, PWM_DUTY_MAX);
-	LIMIT(duty_4, PWM_DUTY_MAX);
+	LIMIT(duty1, PWM_DUTY_MAX);
+	LIMIT(duty2, PWM_DUTY_MAX);
+	LIMIT(duty3, PWM_DUTY_MAX);
+	LIMIT(duty4, PWM_DUTY_MAX);
 
 	// 设置占空比为 百分之 (1000/TIMER1_PWM_DUTY_MAX*100)
-	if (0 <= duty_1) //电机1   正转
+	if (0 <= duty1) //电机1   正转
 	{
 		gpio_set(MOTOR1_A, FORWARD_ROTATE);
 	}
@@ -70,9 +74,9 @@ void Motor_SetDuty(int32 duty_1, int32 duty_2, int32 duty_3, int32 duty_4)
 	{
 		gpio_set(MOTOR1_A, REVERSE_ROTATE);
 	}
-	pwm_duty(MOTOR1_B, duty_1);
+	pwm_duty(MOTOR1_B, duty1);
 
-	if (0 <= duty_2) //电机2   正转
+	if (0 <= duty2) //电机2   正转
 	{
 		gpio_set(MOTOR2_A, FORWARD_ROTATE);
 	}
@@ -80,9 +84,9 @@ void Motor_SetDuty(int32 duty_1, int32 duty_2, int32 duty_3, int32 duty_4)
 	{
 		gpio_set(MOTOR2_A, REVERSE_ROTATE);
 	}
-	pwm_duty(MOTOR2_B, duty_2);
+	pwm_duty(MOTOR2_B, duty2);
 
-	if (0 <= duty_3) //电机3   正转
+	if (0 <= duty3) //电机3   正转
 	{
 		gpio_set(MOTOR3_A, FORWARD_ROTATE);
 	}
@@ -90,17 +94,17 @@ void Motor_SetDuty(int32 duty_1, int32 duty_2, int32 duty_3, int32 duty_4)
 	{
 		gpio_set(MOTOR3_A, REVERSE_ROTATE);
 	}
-	pwm_duty(MOTOR3_B, duty_3);
+	pwm_duty(MOTOR3_B, duty3);
 
-	if (0 <= duty_4) //电机3   正转
+	if (0 <= duty4) //电机4   正转
 	{
 		gpio_set(MOTOR4_A, FORWARD_ROTATE);
 	}
-	else //电机3   反转
+	else //电机4   反转
 	{
 		gpio_set(MOTOR4_A, REVERSE_ROTATE);
 	}
-	pwm_duty(MOTOR4_B, duty_4);
+	pwm_duty(MOTOR4_B,duty4);
 }
 
 /**
@@ -111,7 +115,6 @@ void Motor_SetDuty(int32 duty_1, int32 duty_2, int32 duty_3, int32 duty_4)
  */
 int SW_Speed2PWM(float speed)
 {
-
 }
 
 void DriveMotors_LimitSpeed(float speed[4])

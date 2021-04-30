@@ -53,7 +53,8 @@ CODE/motor.o: ../CODE/motor.c ../CODE/motor.h \
  ../Libraries/seekfree_peripheral/SEEKFREE_TSL1401.h \
  ../Libraries/seekfree_libraries/zf_gpio.h \
  ../Libraries/seekfree_peripheral/SEEKFREE_ABSOLUTE_ENCODER.h \
- ../CODE/config.h ../CODE/sci_compute.h ../CODE/pid.h
+ ../CODE/config.h ../CODE/sci_compute.h ../CODE/pid.h \
+ ../CODE/mecanum_chassis.h
 
 ../CODE/motor.h:
 
@@ -172,3 +173,5 @@ CODE/motor.o: ../CODE/motor.c ../CODE/motor.h \
 ../CODE/sci_compute.h:
 
 ../CODE/pid.h:
+
+../CODE/mecanum_chassis.h:

@@ -54,7 +54,7 @@ USER/main.o: ../USER/main.c ../Libraries/seekfree_libraries/headfile.h \
  ../Libraries/seekfree_peripheral/SEEKFREE_ABSOLUTE_ENCODER.h \
  ../CODE/display.h ../CODE/timer_pit.h ../CODE/encoder.h ../CODE/buzzer.h \
  ../CODE/button.h ../CODE/motor.h ../CODE/elec.h ../CODE/cmd.h \
- ../USER/isr.h
+ ../USER/isr.h ../USER/isr.h ../CODE/mecanum_chassis.h ../CODE/motor.h
 
 ../Libraries/seekfree_libraries/headfile.h:
 
@@ -183,3 +183,9 @@ USER/main.o: ../USER/main.c ../Libraries/seekfree_libraries/headfile.h \
 ../CODE/cmd.h:
 
 ../USER/isr.h:
+
+../USER/isr.h:
+
+../CODE/mecanum_chassis.h:
+
+../CODE/motor.h:
