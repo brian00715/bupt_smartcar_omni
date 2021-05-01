@@ -53,6 +53,7 @@ extern const uint32 UARTN[];
 
 void uart_init(UARTN_enum uartn, uint32 baud, UARTPIN_enum tx_pin, UARTPIN_enum rx_pin);
 void uart_putchar(UARTN_enum uartn, uint8 dat);
+void uart_putdoublechar(UARTN_enum uartn, int16 dat);
 void uart_putbuff(UARTN_enum uartn, uint8 *buff, uint32 len);
 void uart_putstr(UARTN_enum uartn, const uint8 *str);
 void uart_getchar(UARTN_enum uartn, uint8 *dat);

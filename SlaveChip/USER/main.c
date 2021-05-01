@@ -21,7 +21,6 @@
 //打开新的工程或者工程移动了位置务必执行以下操作
 //右键单击工程，选择刷新
 
-
 #include "headfile.h"
 
 //#if -#elif -#endif
@@ -30,74 +29,76 @@
 //摄像头调试
 void Init_Fun(void)
 {
-    uart_init(UART_3, 115200, UART3_TX_B10, UART3_RX_B11);    //uart3初始化传输摄像头数据
-    gpio_init(B4, GPI, 1,SPEED_50MHZ|IN_PULLUP);                       //初始化B4按钮，用作将InudcerMax_Get_Start_Flag置1
-    gpio_init(B5, GPI, 1,SPEED_50MHZ|IN_PULLUP);                       //初始化B5按钮，用作降低二值化阈值
-    gpio_init(B2, GPI, 1,SPEED_50MHZ|IN_PULLUP);                       //初始化B2按钮，用作增加二值化阈值
-    mt9v03x_init();  //摄像头初始化
+    uart_init(UART_3, 460800, UART3_TX_B10, UART3_RX_B11); //uart3初始化传输摄像头数据
+    gpio_init(C8, GPI, 1, SPEED_50MHZ | IN_PULLUP);        //初始化C8按钮，用作增加二值化阈值
+    gpio_init(C9, GPI, 1, SPEED_50MHZ | IN_PULLUP);        //初始化C9按钮，用作降低二值化阈值
+    gpio_init(B2, GPI, 1, SPEED_50MHZ | IN_PULLUP);        //初始化B2按钮，用作控制屏幕显示图像或从机数据发送，两者不同时进行
+    mt9v03x_init();                                        //摄像头初始化
     //oled_init();     //oled初始化
-    ips114_init();     //初始化ips屏幕
+    ips114_init(); //初始化ips屏幕
     /**************初始化ADC*************/
     //adc_init(ADC_IN0_A0);
-    adc_init(ADC_IN4_A4);adc_init(ADC_IN6_A6);adc_init(ADC_IN8_B0);adc_init(ADC_IN9_B1);//adc_init(ADC_IN5_A5);adc_init(ADC_IN6_A6);
-    pwm_init(PWM2_CH1_A15, 50, 5000);
-    timer_pit_interrupt_ms(TIMER_2, 5);                    //初始化TIME2定时中断
+    adc_init(ADC_IN4_A4);
+    adc_init(ADC_IN6_A6);
+    adc_init(ADC_IN8_B0);
+    adc_init(ADC_IN9_B1); //adc_init(ADC_IN5_A5);adc_init(ADC_IN6_A6);
+    Encoder_Init();    //编码器初始化
+//    pwm_init(PWM2_CH1_A15, 50, 5000);
+    timer_pit_interrupt_ms(TIMER_4, 5); //初始化TIME4定时中断
 }
 
 int main(void)
 {
     DisableGlobalIRQ();
-    systick_delay_ms(300);         //延时300ms，等待设备上电
-    board_init();           //务必保留，本函数用于初始化MPU 时钟 调试串口
+    systick_delay_ms(300); //延时300ms，等待设备上电
+    board_init();          //务必保留，本函数用于初始化MPU 时钟 调试串口
     Init_Fun();
     EnableGlobalIRQ(0);
-    int32 count=0;
-    while(1)
+    while (1)
     {
         //Image_Binary(123);                       //二值化
-        if(mt9v03x_finish_flag==1)               //摄像头采集完成标志位
+        ips114_showint32(180, 0, count, 10);
+        if (mt9v03x_finish_flag == 1) //摄像头采集完成标志位
         {
-            //Image_Binary(Threshold);                       //二值化
-            ips114_showint32(180,0,count++,10);
-            ips114_showuint16(180,1,Threshold_ChaHe);
-            //Uart_Sendimg(UART_1,camera_buffer_addr,MT9V03X_W, MT9V03X_H);    //图像分辨率在SEEKFREE_MT9V03X.h中查看
-            //oled_dis_bmp(MT9V03X_H, MT9V03X_W, camera_buffer_addr,123);      //oled显示摄像头图像，最后个数据为二值化的阈值
-            Image_Processing();
-            ips114_displayimage032_zoom1(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, 0, 0, MT9V03X_W*2, MT9V03X_H*2);
-            for(int i=59;i>=5;i--)
+            if (Image_Show_Flag == 1)
             {
-//                ips114_drawpoint(Image_Lline[i],i,RED);
-//                ips114_drawpoint(Image_Rline[i],i,PINK);
-//                ips114_drawpoint(Image_Mline[i],i,GREEN);
+                //Image_Binary(Threshold);                       //二值化
+                Image_Processing();
+                ips114_showuint16(180, 1, Threshold_ChaHe);
+                ips114_showuint8(180, 2, Image_TuBian_Sum);
+                ips114_showuint8(180, 3, Image_LBig_Curve_Flag);
+                ips114_showuint8(180, 4, Image_RBig_Curve_Flag);
+                ips114_showfloat(180, 5, Image_XieLv_float[0], 2, 3);
+                ips114_showfloat(180, 6, Image_XieLv_float[1], 2, 3);
+                //Uart_Sendimg(UART_1,camera_buffer_addr,MT9V03X_W, MT9V03X_H);    //图像分辨率在SEEKFREE_MT9V03X.h中查看
+                //oled_dis_bmp(MT9V03X_H, MT9V03X_W, camera_buffer_addr,123);      //oled显示摄像头图像，最后个数据为二值化的阈值
+                ips114_displayimage032_zoom1(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, 0, 0, MT9V03X_W * 2, MT9V03X_H * 2);
+                for (int i = 59; i >= 5; i--)
+                {
+                    //                ips114_drawpoint(Image_Lline[i],i,RED);
+                    //                ips114_drawpoint(Image_Rline[i],i,PINK);
+                    //                ips114_drawpoint(Image_Mline[i],i,GREEN);
+                    ips114_drawpoint(Image_Lline[i] * 2, 2 * i, RED);
+                    ips114_drawpoint(Image_Lline[i] * 2, 2 * i + 1, RED);
+                    ips114_drawpoint(Image_Lline[i] * 2 + 1, 2 * i + 1, RED);
+                    ips114_drawpoint(Image_Lline[i] * 2 + 1, 2 * i, RED);
 
-                ips114_drawpoint(Image_Lline[i]*2,2*i,RED);
-                ips114_drawpoint(Image_Lline[i]*2,2*i+1,RED);
-                ips114_drawpoint(Image_Lline[i]*2+1,2*i+1,RED);
-                ips114_drawpoint(Image_Lline[i]*2+1,2*i,RED);
+                    ips114_drawpoint(Image_Rline[i] * 2, 2 * i, PINK);
+                    ips114_drawpoint(Image_Rline[i] * 2, 2 * i + 1, PINK);
+                    ips114_drawpoint(Image_Rline[i] * 2 + 1, 2 * i + 1, PINK);
+                    ips114_drawpoint(Image_Rline[i] * 2 + 1, 2 * i, PINK);
 
-                ips114_drawpoint(Image_Rline[i]*2,2*i,PINK);
-                ips114_drawpoint(Image_Rline[i]*2,2*i+1,PINK);
-                ips114_drawpoint(Image_Rline[i]*2+1,2*i+1,PINK);
-                ips114_drawpoint(Image_Rline[i]*2+1,2*i,PINK);
-
-                ips114_drawpoint(Image_Mline[i]*2,2*i,GREEN);
-                ips114_drawpoint(Image_Mline[i]*2,2*i+1,GREEN);
-                ips114_drawpoint(Image_Mline[i]*2+1,2*i+1,GREEN);
-                ips114_drawpoint(Image_Mline[i]*2+1,2*i,GREEN);
-
-
+                    ips114_drawpoint(Image_Mline[i] * 2, 2 * i, GREEN);
+                    ips114_drawpoint(Image_Mline[i] * 2, 2 * i + 1, GREEN);
+                    ips114_drawpoint(Image_Mline[i] * 2 + 1, 2 * i + 1, GREEN);
+                    ips114_drawpoint(Image_Mline[i] * 2 + 1, 2 * i, GREEN);
+                }
             }
-            //ips114_displayimage032_zoom1(mt9v03x_image_binary[0], MT9V03X_W, MT9V03X_H, 0, 65, MT9V03X_W, MT9V03X_H);
-//            ips114_displayimage032_zoom(mt9v03x_image_binary[0], MT9V03X_W, MT9V03X_H, MT9V03X_W*2, MT9V03X_H*2);
-//            ips114_displayimage032_zoom(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W*2, MT9V03X_H*2);
-            mt9v03x_finish_flag=0;                 //摄像头采集标志位清零
+            //InducerMax_Get();          //InducerMax_Get_Start==1时获取最大值
+            //Inducer_Processing();      //可放入定时中断中
+            //Inducer_Show_Oled();      //在oled上实时显示电感值
+            //Inducer_Show_Ips();
         }
-        //InducerMax_Get();          //InducerMax_Get_Start==1时获取最大值
-        //Inducer_Processing();      //可放入定时中断中
-        //Inducer_Show_Oled();      //在oled上实时显示电感值
-        //Inducer_Show_Ips();
-        //systick_delay_ms(100);     //延时0.1s
-
     }
 }
 #elif 0
@@ -105,18 +106,14 @@ int main(void)
 int main(void)
 {
     DisableGlobalIRQ();
-    board_init();           //务必保留，本函数用于初始化MPU 时钟 调试串口
+    board_init(); //务必保留，本函数用于初始化MPU 时钟 调试串口
 
     //此处编写用户代码(例如：外设初始化代码等)
     //总中断最后开启
     EnableGlobalIRQ(0);
-    while(1)
+    while (1)
     {
-
     }
 }
 
-
-
 #endif
-

@@ -81,6 +81,7 @@
 //-------自定义头文件
 #include "imageprocessing.h"
 #include "inducercontrol.h"
+#include "encoder.h"
 
 
 #endif
