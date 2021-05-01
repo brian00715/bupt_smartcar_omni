@@ -96,5 +96,6 @@
 
 float AngleLimitPI(float angle);
 float AngleLimitDiff(float a, float b);
+float KalmanFilter(float Accel, float Gyro);
 
 #endif

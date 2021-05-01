@@ -22,6 +22,8 @@
 #include "isr.h"
 #include "config.h"
 #include "cmd.h"
+#include "sci_compute.h"
+#include "mecanum_chassis.h"
 
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -43,6 +45,7 @@ void TIM1_BRK_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM1_UP_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM1_TRG_COM_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM1_CC_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+//void TIM1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -68,10 +71,10 @@ void EXTI1_IRQHandler(void)
 {
 	if (SET == EXTI_GetITStatus(EXTI_Line1))
 	{
-//		if (camera_type == CAMERA_BIN_UART)
-//			ov7725_uart_vsync();
-//		else if (camera_type == CAMERA_GRAYSCALE)
-			mt9v03x_vsync();
+		//		if (camera_type == CAMERA_BIN_UART)
+		//			ov7725_uart_vsync();
+		//		else if (camera_type == CAMERA_GRAYSCALE)
+		mt9v03x_vsync();
 		EXTI_ClearITPendingBit(EXTI_Line1);
 	}
 }
@@ -109,11 +112,54 @@ void TIM1_BRK_IRQHandler(void)
 	}
 }
 
+uint8 tim1_5ms_cnt = 0;
+char TIM1_10ms_Flag = 0;
+char TIM1_20ms_Flag = 0;
+char TIM1_100ms_Flag = 0;
 void TIM1_UP_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
 	{
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
+		tim1_5ms_cnt++;
+		if (tim1_5ms_cnt % 2 == 0)
+		{
+			TIM1_10ms_Flag = 1;
+			MecanumChassis.send_ctrl_msg_flag = 1;
+		}
+		else
+		{
+			TIM1_10ms_Flag = 0;
+		}
+		if (tim1_5ms_cnt % 4 == 0)
+		{
+			TIM1_20ms_Flag = 1;
+		}
+		else
+		{
+			TIM1_20ms_Flag = 0;
+		}
+		if (tim1_5ms_cnt % 20 == 0)
+		{
+			TIM1_100ms_Flag = 1;
+		}
+		else
+		{
+			TIM1_100ms_Flag = 0;
+		}
+		//硬件SPI采集
+		get_icm20602_accdata_spi();
+		get_icm20602_gyro_spi();
+		if (icm_gyro_z > 2000)
+		{
+			icm_gyro_z = 2000;
+		}
+		else if (icm_gyro_z < -2000)
+		{
+			icm_gyro_z = -2000;
+		}
+		MecanumChassis.posture_status.yaw = KalmanFilter(icm_acc_z * 1.0, icm_gyro_z * 1.0);
+		//		MecanumChassis.posture_status.yaw += RAD2ANGLE(icm_gyro_z * 0.005); // 偏航角积分
 	}
 }
 
@@ -155,10 +201,6 @@ void TIM2_IRQHandler(void)
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
 	{
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-		//ccd_collect();//CCD数据采集
-		gpio_toggle(B5);
-		//GPIO_PIN_RESET(B5);
-		//GPIO_PIN_SET(B5);
 	}
 }
 
@@ -178,7 +220,8 @@ void TIM4_IRQHandler(void)
 	}
 }
 
-uint8_t UART1_RxBuffer[RX_BUFFER_SIZE] = {0};
+uint8_t UART1_RxBuffer[RX_BUFFER_SIZE] =
+	{0};
 uint8_t UART1_RxBufferCnt = 0;
 uint8_t UART1_RxComplete = 0;
 uint8_t UART1_RxIDLEFlag = 0;
@@ -234,15 +277,19 @@ void USART2_IRQHandler(void)
 	if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
 	{
 		USART_ClearITPendingBit(USART2, USART_IT_RXNE);
-//		if (camera_type == CAMERA_BIN_UART)
-//			ov7725_cof_uart_interrupt();
-//		else if (camera_type == CAMERA_GRAYSCALE)
-			mt9v03x_uart_callback();
+		//		if (camera_type == CAMERA_BIN_UART)
+		//			ov7725_cof_uart_interrupt();
+		//		else if (camera_type == CAMERA_GRAYSCALE)
+		mt9v03x_uart_callback();
 	}
 }
 
 void USART3_IRQHandler(void)
 {
+	if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+	{
+		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+	}
 }
 
 void DMA1_Channel4_IRQHandler(void)
@@ -250,10 +297,10 @@ void DMA1_Channel4_IRQHandler(void)
 	if (SET == DMA_GetFlagStatus(DMA1_FLAG_TC4))
 	{
 		DMA_ClearFlag(DMA1_FLAG_TC4);
-//		if (camera_type == CAMERA_BIN_UART)
-//			ov7725_uart_dma();
-//		else if (camera_type == CAMERA_GRAYSCALE)
-			mt9v03x_dma();
+		//		if (camera_type == CAMERA_BIN_UART)
+		//			ov7725_uart_dma();
+		//		else if (camera_type == CAMERA_GRAYSCALE)
+		mt9v03x_dma();
 	}
 }
 

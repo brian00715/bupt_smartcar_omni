@@ -30,25 +30,29 @@ void Motor_Init(void)
 	pwm_init(MOTOR3_B, 17000, 0);
 	gpio_init(MOTOR4_A, GPO, 0, GPIO_PIN_CONFIG);
 	pwm_init(MOTOR4_B, 17000, 0);
+	Motor_SetDuty(0, 0, 0, 0);
 }
+
 // kp ki kd int_duty int_max int_sum last_err last_delta_err
 PID_t MotorPID = {0.1, 0.01, 0.0, 10, 10, 0, 0, 0};
-extern Chassis_t MecanumChassis;
+extern BaseChassis_t MecanumChassis;
 /**
  * @brief 电机占空比环
  * 
- * @param pid 
- * @param now_rpm 
- * @param expect_speed 
  */
-void Motor_DutyCtrl(int16 target_duty[4])
+void Motor_DutyCtrl()
 {
 	int duty_ctrl[4] = {0};
 	for (int i = 0; i < 4; i++)
 	{
-		duty_ctrl[i] = (int32_t)PID_GetOutput(&MotorPID, target_duty[i], MecanumChassis.motor[i].now_duty);
+		duty_ctrl[i] = (int32_t)PID_GetOutput(&MotorPID, MecanumChassis.motor[i].target_duty,
+											  MecanumChassis.motor[i].now_duty);
 	}
-//	Motor_SetDuty(duty_ctrl);
+	if (MecanumChassis.send_ctrl_msg_flag)
+	{
+		Motor_SetDuty(duty_ctrl[0], duty_ctrl[1], duty_ctrl[2], duty_ctrl[3]);
+		MecanumChassis.send_ctrl_msg_flag = 0;
+	}
 }
 
 /**
@@ -57,7 +61,7 @@ void Motor_DutyCtrl(int16 target_duty[4])
  * @param
  * @note
  */
-void Motor_SetDuty(int32_t duty1,int32_t duty2,int32_t duty3,int32_t duty4)
+void Motor_SetDuty(int32_t duty1, int32_t duty2, int32_t duty3, int32_t duty4)
 {
 	//对占空比限幅
 	LIMIT(duty1, PWM_DUTY_MAX);
@@ -74,7 +78,7 @@ void Motor_SetDuty(int32_t duty1,int32_t duty2,int32_t duty3,int32_t duty4)
 	{
 		gpio_set(MOTOR1_A, REVERSE_ROTATE);
 	}
-	pwm_duty(MOTOR1_B, duty1);
+	pwm_duty(MOTOR1_B, abs(duty1));
 
 	if (0 <= duty2) //电机2   正转
 	{
@@ -84,7 +88,7 @@ void Motor_SetDuty(int32_t duty1,int32_t duty2,int32_t duty3,int32_t duty4)
 	{
 		gpio_set(MOTOR2_A, REVERSE_ROTATE);
 	}
-	pwm_duty(MOTOR2_B, duty2);
+	pwm_duty(MOTOR2_B, abs(duty2));
 
 	if (0 <= duty3) //电机3   正转
 	{
@@ -94,7 +98,7 @@ void Motor_SetDuty(int32_t duty1,int32_t duty2,int32_t duty3,int32_t duty4)
 	{
 		gpio_set(MOTOR3_A, REVERSE_ROTATE);
 	}
-	pwm_duty(MOTOR3_B, duty3);
+	pwm_duty(MOTOR3_B, abs(duty3));
 
 	if (0 <= duty4) //电机4   正转
 	{
@@ -104,7 +108,7 @@ void Motor_SetDuty(int32_t duty1,int32_t duty2,int32_t duty3,int32_t duty4)
 	{
 		gpio_set(MOTOR4_A, REVERSE_ROTATE);
 	}
-	pwm_duty(MOTOR4_B,duty4);
+	pwm_duty(MOTOR4_B, abs(duty4));
 }
 
 /**
@@ -113,7 +117,7 @@ void Motor_SetDuty(int32_t duty1,int32_t duty2,int32_t duty3,int32_t duty4)
  * @param speed m/s
  * @return
  */
-int SW_Speed2PWM(float speed)
+int SW_Speed2Duty(float speed)
 {
 }
 

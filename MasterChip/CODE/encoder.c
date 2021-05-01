@@ -24,6 +24,7 @@ void Encoder_GetSpeed(void)
 
 void Encoder_Init(void)
 {
-
+	timer_quad_init(TIMER_2, TIMER2_CHA_A15, TIMER2_CHB_B3);
+	timer_quad_init(TIMER_3, TIMER3_CHA_B4, TIMER3_CHB_B5);
 }
 

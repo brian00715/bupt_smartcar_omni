@@ -30,7 +30,7 @@
 #include "SEEKFREE_ICM20602.h"
 
 
-int16 icm_gyro_x,icm_gyro_y,icm_gyro_z;
+int16 icm_gyro_x,icm_gyro_y,icm_gyro_z;// degree/s
 int16 icm_acc_x,icm_acc_y,icm_acc_z;
 
 
@@ -246,7 +246,7 @@ void icm20602_init_spi(void)
     icm_spi_w_reg_byte(ICM20602_PWR_MGMT_2,     0x00);            //开启陀螺仪和加速度计
     icm_spi_w_reg_byte(ICM20602_CONFIG,         0x01);            //176HZ 1KHZ
     icm_spi_w_reg_byte(ICM20602_SMPLRT_DIV,     0x07);            //采样速率 SAMPLE_RATE = INTERNAL_SAMPLE_RATE / (1 + SMPLRT_DIV)
-    icm_spi_w_reg_byte(ICM20602_GYRO_CONFIG,    0x18);            //±2000 dps
+    icm_spi_w_reg_byte(ICM20602_GYRO_CONFIG,    0x18);            //(0x18)±2000 dps
     icm_spi_w_reg_byte(ICM20602_ACCEL_CONFIG,   0x10);            //±8g
     icm_spi_w_reg_byte(ICM20602_ACCEL_CONFIG_2, 0x03);            //Average 4 samples   44.8HZ   //0x23 Average 16 samples
 }

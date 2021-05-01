@@ -22,5 +22,6 @@ void UART_DMA_Init(DMA_Channel_TypeDef *dma_ch, uint32 src_addr,
 void CMD_UARTCallback(void);
 int CMD_Parse(char *cmd_line, uint8_t *argc, char *argv[]);
 int CMD_Exe(int argc, char **argv);
+void ToolBox_Scope(float *dataArray, int dataNum);
 
 #endif

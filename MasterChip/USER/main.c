@@ -31,7 +31,6 @@
 #include "isr.h"
 #include "mecanum_chassis.h"
 
-
 int main(void)
 {
 	DisableGlobalIRQ();
@@ -42,25 +41,46 @@ int main(void)
 	//    encoder_init();
 	//    buzzer_init();
 	//    elec_init();
-	//  button_init ();
-	Motor_Init();
-	//  timer_pit_init ();
-	//	ips114_clear(WHITE);
-	EnableGlobalIRQ(0);
+	button_init();
+	MecanumChassis_Init(); // 底盘初始化
+	icm20602_init_spi(); // ICM20602硬件SPI初始化
 
-	uprintf("==Init Done==\r\n");
+	// 摄像头舵机端口
+	//	pwm_init(PWM1_CH2_A9, 200, 0);
+	timer_pit_interrupt_ms(TIMER_1, 5);							   //200HZ, 与上一行等效
+	TIM_ITConfig((TIM_TypeDef *)TIM1_BASE, TIM_IT_Update, ENABLE); //使能TIM中断,允许更新中断
+	TIM_ClearITPendingBit((TIM_TypeDef *)TIM1_BASE, TIM_IT_Update);
+	nvic_init(TIM1_UP_IRQn, 1, 2, ENABLE);
+
+	EnableGlobalIRQ(0);
+	uprintf("\r\n==Init Done==\r\n");
+
 	while (1)
 	{
-//		duty = (duty + 1000) % 10000;
-//		Motor_SetDuty(duty, duty, duty, duty);
+		//		duty = (duty + 1000) % 10000;
+		//		Motor_SetDuty(MecanumChassis.motor[0].target_duty,
+		//				MecanumChassis.motor[1].target_duty,
+		//				MecanumChassis.motor[2].target_duty,
+		//				MecanumChassis.motor[3].target_duty);
 		//        systick_delay_ms(1000);
 
+		//		Motor_SetDuty(MecanumChassis.motor[0].target_duty,
+		//				MecanumChassis.motor[1].target_duty,
+		//				MecanumChassis.motor[2].target_duty,
+		//				MecanumChassis.motor[3].target_duty);
+		//		systick_delay_ms(1000);
 
-//		Motor_SetDuty(MecanumChassis.motor[0].target_duty,
-//				MecanumChassis.motor[1].target_duty,
-//				MecanumChassis.motor[2].target_duty,
-//				MecanumChassis.motor[3].target_duty);
-//		systick_delay_ms(1000);
+		//		uprintf("icm_gyro|x=%5d ,y=%5d ,z=%5d \r\n",
+		//				(int16) (icm_gyro_x ),
+		//				(int16) (icm_gyro_y ),
+		//				(int16) (icm_gyro_z));
+		//		uprintf("icm_acc_x = %d\r\n", icm_acc_x);
+		//		uprintf("icm_acc_y = %d\r\n", icm_acc_y);
+		//		uprintf("icm_acc_z = %d\r\n", icm_acc_z);
 
+		//		uprintf("yaw:%d\r\n",(int16)MecanumChassis.posture_status.yaw %360);
+
+		systick_delay_ms(50); //延时
+		MecanumChassis_Exe();
 	}
 }

@@ -9,7 +9,7 @@ void timer1_pit_entry(void *parameter)
     time++;
 
     //采集编码器数据
-    Encoder_GetSpeed();
+//    Encoder_GetSpeed();
     
     //电机控制速度环
     
@@ -18,10 +18,10 @@ void timer1_pit_entry(void *parameter)
     get_icm20602_gyro_spi();
     
     //采集电磁信号
-    elec_get();
+//    elec_get();
     
     //根据电磁信号计算车身位置
-    elec_calculate();
+//    elec_calculate();
     
     
     //将图像计算出来的车身位置与电磁信号计算出的车身位置进行融合得到更好数据
@@ -30,7 +30,7 @@ void timer1_pit_entry(void *parameter)
 
     
     //控制电机转动
-    Motor_SetDuty(1000, 1000, 1000, 1000);
+//    Motor_SetDuty(1000, 1000, 1000, 1000);
 
 }
 
