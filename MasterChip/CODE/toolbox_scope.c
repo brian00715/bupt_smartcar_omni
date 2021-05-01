@@ -1,7 +1,7 @@
 /**
  * @file toolbox_scope.c
  * @author simon
- * @brief è™šæ‹Ÿä¸²å£ç¤ºæ³¢å™¨ç›¸å…³
+ * @brief ĞéÄâ´®¿ÚÊ¾²¨Æ÷Ïà¹Ø
  * @version 0.1
  * @date 2021-05-02
  * 
@@ -9,6 +9,9 @@
  * 
  */
 #include "toolbox_scope.h"
+#include "ch32v10x.h"
+#include "ch32v10x_usart.h"
+#include "string.h"
 
 const unsigned short crc16_tab[] = {0x0000, 0x1021, 0x2042, 0x3063, 0x4084,
 									0x50a5, 0x60c6, 0x70e7, 0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad,
@@ -51,23 +54,23 @@ unsigned short crc16(unsigned char *buf, unsigned int len)
 	return cksum;
 }
 /**
-  * @brief ç¤ºæ³¢å™¨æ•°æ®å‘é€å‡½æ•°ï¼Œå‘é€é¢‘ç‡é¡»ä½äº200Hz
-  * @param dataArray å•ç²¾åº¦æµ®ç‚¹å‹æ•°ç»„
-  * @param dataNum æ•°ç»„å¤§å°ï¼Œæœ€å¤šä¸º8
+  * @brief Ê¾²¨Æ÷Êı¾İ·¢ËÍº¯Êı£¬·¢ËÍÆµÂÊĞëµÍÓÚ200Hz
+  * @param dataArray µ¥¾«¶È¸¡µãĞÍÊı×é
+  * @param dataNum Êı×é´óĞ¡£¬×î¶àÎª8
   */
 void ToolBox_Scope(float *dataArray, int dataNum)
 {
-	//æœ€å¤š8é€šé“
+	//×î¶à8Í¨µÀ
 	if (dataNum < 1 || dataNum > 8)
 	{
 		return;
 	}
 	int32_t ind = 0;
 	uint8_t dataBuffer[50];
-	dataBuffer[ind++] = 103; //ç¤ºæ³¢å™¨æŒ‡ä»¤ID
+	dataBuffer[ind++] = 103; //Ê¾²¨Æ÷Ö¸ÁîID
 	for (int i = 0; i < dataNum; i++)
 	{
-		//è£…è½½æ•°æ®
+		//×°ÔØÊı¾İ
 		dataBuffer[ind++] = ((int32_t)(dataArray[i] * 1e2)) >> 24;
 		dataBuffer[ind++] = ((int32_t)(dataArray[i] * 1e2)) >> 16;
 		dataBuffer[ind++] = ((int32_t)(dataArray[i] * 1e2)) >> 8;
@@ -75,16 +78,16 @@ void ToolBox_Scope(float *dataArray, int dataNum)
 	}
 	int b_ind = 0;
 	unsigned char txBuffer[50];
-	txBuffer[b_ind++] = 2;	 //èµ·å§‹ä½
-	txBuffer[b_ind++] = ind; //æ•°æ®é•¿åº¦
+	txBuffer[b_ind++] = 2;	 //ÆğÊ¼Î»
+	txBuffer[b_ind++] = ind; //Êı¾İ³¤¶È
 
-	memcpy(txBuffer + b_ind, dataBuffer, ind); //å†™å…¥æ•°æ®
+	memcpy(txBuffer + b_ind, dataBuffer, ind); //Ğ´ÈëÊı¾İ
 	b_ind += ind;
 
 	unsigned short crc = crc16(dataBuffer, ind);
-	txBuffer[b_ind++] = (uint8_t)(crc >> 8);   //ä½æ ¡éªŒä½
-	txBuffer[b_ind++] = (uint8_t)(crc & 0xFF); //é«˜æ ¡éªŒä½
-	txBuffer[b_ind++] = 3;					   //ç»“æŸä½
+	txBuffer[b_ind++] = (uint8_t)(crc >> 8);   //µÍĞ£ÑéÎ»
+	txBuffer[b_ind++] = (uint8_t)(crc & 0xFF); //¸ßĞ£ÑéÎ»
+	txBuffer[b_ind++] = 3;					   //½áÊøÎ»
 	for (int i = 0; i < b_ind; i++)
 	{
 		USART_SendData(USART3, txBuffer[i]);

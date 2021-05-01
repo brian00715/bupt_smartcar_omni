@@ -12,8 +12,11 @@
 #include "motor.h"
 #include "config.h"
 #include "sci_compute.h"
-#include "pid.h"
 #include "mecanum_chassis.h"
+#include "pid.h"
+#include <math.h>
+
+extern BaseChassis_t MecanumChassis;
 
 void Motor_Init(void)
 {
@@ -34,8 +37,7 @@ void Motor_Init(void)
 }
 
 // kp ki kd int_duty int_max int_sum last_err last_delta_err
-PID_t MotorPID = {0.1, 0.01, 0.0, 10, 10, 0, 0, 0};
-extern BaseChassis_t MecanumChassis;
+PID_t MotorPID = {0.1, 0.01, 0.01, 10, 10, 0, 0, 0};
 /**
  * @brief 电机占空比环
  * 
@@ -111,15 +113,6 @@ void Motor_SetDuty(int32_t duty1, int32_t duty2, int32_t duty3, int32_t duty4)
 	pwm_duty(MOTOR4_B, abs(duty4));
 }
 
-/**
- * @brief 将底盘速度m/s转为发送给驱动板的占空比
- *
- * @param speed m/s
- * @return
- */
-int SW_Speed2Duty(float speed)
-{
-}
 
 void DriveMotors_LimitSpeed(float speed[4])
 {
