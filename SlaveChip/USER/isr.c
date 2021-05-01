@@ -197,7 +197,11 @@ void TIM2_IRQHandler(void)
         if(gpio_get(B5)==1&&Gpio_Sup_Up>20) Gpio_Sup_Down++;
         if(gpio_get(B5)==1&&Gpio_Sup_Up>20&&Gpio_Sup_Down>20)
         {
-            if(Threshold>0) Threshold--;
+            if(Threshold>0)
+            {
+                Threshold--;
+                Threshold_ChaHe--;
+            }
             Gpio_Sup_Up=0;Gpio_Sup_Down=0;
         }
         /************************按下B2增加二值化阈值*********************************/
@@ -205,7 +209,11 @@ void TIM2_IRQHandler(void)
         if(gpio_get(B2)==1&&Gpio_Sup_Up>20) Gpio_Sup_Down++;
         if(gpio_get(B2)==1&&Gpio_Sup_Up>20&&Gpio_Sup_Down>20)
         {
-            if(Threshold<255) Threshold++;
+            if(Threshold<255)
+            {
+                Threshold++;
+                Threshold_ChaHe++;
+            }
             Gpio_Sup_Up=0;Gpio_Sup_Down=0;
         }
 

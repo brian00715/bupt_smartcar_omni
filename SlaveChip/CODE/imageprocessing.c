@@ -8,9 +8,10 @@
 
 #include "headfile.h"
 
-uint8 Threshold=123;
-uint8 mt9v03x_image_binary[MT9V03X_H][MT9V03X_W];
+uint8 Threshold = 123;
+uint8 Threshold_ChaHe=20;
 
+uint8 mt9v03x_image_binary[MT9V03X_H][MT9V03X_W];
 
 uint8 Image_Process_Flag = 0;    //是否进行了图像处理的标志位，发送时用于告知主片是否进行了图像处理
 uint8 Image_Lline[60] = {0};     //存储左边界的数组
@@ -28,9 +29,9 @@ uint8 Image_RRing_Out_Flag = 0;  //出右环岛标志
 uint8 Image_LBig_Curve_Flag = 0; //左大弯标志
 uint8 Image_RBig_Curve_Flag = 0; //右大弯标志
 uint8 Image_SanCha_Flag = 0;     //三岔路口标志
-uint8 Image_TuBian=-1;            //记录中线发生突变时的高度
-int Image_XieLv=0;                //根据中线计算出的斜率,放大1000倍，相当于小数点后三位精度
-static int i = 0, j = 0; //辅助循环变量
+uint8 Image_TuBian = -1;         //记录中线发生突变时的高度
+int Image_XieLv = 0;             //根据中线计算出的斜率,放大1000倍，相当于小数点后三位精度
+static int i = 0, j = 0;         //辅助循环变量
 
 /*****************************************************************************
   * @brief       摄像头数据二值化,用于图像处理
@@ -46,12 +47,12 @@ void Image_Binary(uint8 Threshold)
         {
             if (mt9v03x_image[i][j] <= Threshold)
             {
-                mt9v03x_image_binary[i][j]=0;
+                mt9v03x_image_binary[i][j] = 0;
                 //mt9v03x_image[i][j] = 0;
             }
             else if (mt9v03x_image[i][j] > Threshold)
             {
-                mt9v03x_image_binary[i][j]=255;
+                mt9v03x_image_binary[i][j] = 255;
                 //mt9v03x_image[i][j] = 255; //用于二值化后通过串口显示
                 //mt9v03x_image[i][j]=1;                  //用于二值化后进行图像处理
             }
@@ -68,9 +69,9 @@ void Image_Binary(uint8 Threshold)
   ***************************************************************************/
 uint8 Image_Border_Judge(uint8 Image_1, uint8 Image_2)
 {
-    if ((100 * (Image_1 - Image_2)) / (Image_1 + Image_2) >= 30)
+    if ((100 * (Image_1 - Image_2)) / (Image_1 + Image_2) >= Threshold_ChaHe)
         return 1;
-    else if ((100 * (Image_1 - Image_2)) / (Image_1 + Image_2) <= -30)
+    else if ((100 * (Image_1 - Image_2)) / (Image_1 + Image_2) <= -Threshold_ChaHe)
         return -1;
     else
         return 0;
@@ -90,12 +91,12 @@ void Image_Processing(void)
     else if (mt9v03x_finish_flag == 1) //若图像采集完成，则进行图像处理
     {
         //mt9v03x_finish_flag = 0; //图像采集完成标志清零，以便下次判断是否采集完成
-        Image_Process_Flag = 1;  //若图像采集完成，则图像处理标志置1
+        Image_Process_Flag = 1; //若图像采集完成，则图像处理标志置1
         /************************变量清零*********************************/
         memset(Image_Lline, 0, sizeof(Image_Lline));
         memset(Image_Rline, 79, sizeof(Image_Rline));
         memset(Image_Mline, 0, sizeof(Image_Mline));
-        memset(Image_Mline2,0,sizeof(Image_Mline2));
+        memset(Image_Mline2, 0, sizeof(Image_Mline2));
         Image_SpecialLine_Sum = 0;
         Image_Llost_Sum = 0;
         Image_RLost_Sum = 0;
@@ -107,8 +108,8 @@ void Image_Processing(void)
         Image_LBig_Curve_Flag = 0;
         Image_RBig_Curve_Flag = 0;
         Image_SanCha_Flag = 0;
-        Image_TuBian=-1;
-        Image_XieLv=0;
+        Image_TuBian = -1;
+        Image_XieLv = 0;
 
         /************************开始图像处理****************************/
         for (i = 59; i >= 55; i--) //前五行
@@ -124,7 +125,7 @@ void Image_Processing(void)
                 else if (Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j + 3]) == -1)
                 {
                     Image_Lline[i] = j;
-                    Image_SpecialLine_Sum++;           //如果是黑变白的边界,即对应三叉路口的情况
+                    Image_SpecialLine_Sum++; //如果是黑变白的边界,即对应三叉路口的情况
                     break;
                 }
             }
@@ -135,7 +136,7 @@ void Image_Processing(void)
             /**********************找右边线******************************/
             for (j = 40; j <= 79; j++)
             {
-                if (Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j -3]) == 1)
+                if (Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j - 3]) == 1)
                 {
                     Image_Rline[i] = j;
                     break;
@@ -152,108 +153,75 @@ void Image_Processing(void)
                 Image_RLost_Sum++;
             }
             /*********************中线计算*************************/
-            Image_Mline[i]=(Image_Lline[i]+Image_Rline[i])/2;
+            Image_Mline[i] = (Image_Lline[i] + Image_Rline[i]) / 2;
         }
 
         /********************后55行处理***********************/
         for (i = 54; i >= 0; i--) //后55行
+        {
+            /**********************找左边线******************************/
+            for (j = Image_Mline[i+1]; j >= 0; j--)
+            {
+                if (Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j + 3]) == 1)
                 {
-                    /**********************找左边线******************************/
-                    for (j = 40; j >= 0; j--)
-                    {
-                        if (Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j + 3]) == 1)
-                        {
-                            Image_Lline[i] = j;
-                            break;
-                        }
-                        else if (Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j + 3]) == -1)
-                        {
-                            Image_Lline[i] = j;
-                            Image_SpecialLine_Sum++;           //如果是黑变白的边界,即对应三叉路口的情况
-                            break;
-                        }
-                    }
-                    if (j < 0) //如果左边没检测到边线
-                    {
-                        Image_Llost_Sum++;
-                    }
-                    /**********************找右边线******************************/
-                    for (j = 40; j <= 79; j++)
-                    {
-                        if (Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j -3]) == 1)
-                        {
-                            Image_Rline[i] = j;
-                            break;
-                        }
-                        else if (Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j - 3]) == -1)
-                        {
-                            Image_Rline[i] = j;
-                            Image_SpecialLine_Sum++;
-                            break;
-                        }
-                    }
-                    if (j > 79) //如果右边没检测到边线
-                    {
-                        Image_RLost_Sum++;
-                    }
-                    /*********************中线计算*************************/
-                    Image_Mline[i]=(Image_Lline[i]+Image_Rline[i])/2;
+                    Image_Lline[i] = j;
+                    break;
                 }
-//        for(i=54;i>=0;i++)
-//        {
-//            for(j=Image_Mline[i+1];j>=0;j--)          //从上一行的中线开始左右寻线
-//            {
-//                if(Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j+3])==1)
-//                {
-//                    Image_Lline[i]=j;
-//                    break;
-//                }
-//                else if(Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j+3])==-1)
-//                {
-//                    Image_Lline[i]=j;
-//                    Image_SpecialLine_Sum++;
-//                    break;
-//                }
-//            }
-//            if(j<0) Image_Llost_Sum++;               //到最左侧也未发现边界
-//
-//            for(j=Image_Mline[i+1];j<=79;j++)
-//            {
-//                if(Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j-3])==1)
-//                {
-//                    Image_Rline[i]=j;
-//                    break;
-//                }
-//                else if(Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j-3])==-1)
-//                {
-//                    Image_Rline[i]=j;
-//                    Image_SpecialLine_Sum++;
-//                    break;
-//                }
-//            }
-//            if(j>79) Image_RLost_Sum++;                //到最右侧也没发现边界
-//
-//            Image_Mline[i]=(Image_Lline[i]+Image_Rline[i])/2;
-////            if(Image_Mline[i]-Image_Mline[i+1]>=5||Image_Mline[i]-Image_Mline[i+1]<=-5) Image_TuBian=i;    //记录中线突变的地点
-////            if(Image_Mline[i]>=77&&Image_TuBian==-1) //若中线到达右边界，且在此之前未发生中线突变，则为大右弯
-////            {
-////                Image_RBig_Curve_Flag=1;
-////                break;
-////            }
-////            if(Image_Mline[i]<=2&&Image_TuBian==-1)  //若中线到达左边界，且在此之前未发生中线突变，则为大左弯
-////            {
-////                Image_LBig_Curve_Flag=1;
-////                break;
-////            }
-//        }
-//        if(Image_RBig_Curve_Flag==1||Image_LBig_Curve_Flag==1)          //如果为大弯时计算斜率
-//        {
-//            Image_XieLv=1000*(Image_Mline[i]-Image_Mline[59])/(59-i);
-//        }
-//        else
-//        {
-//
-//        }
+                else if (Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j + 3]) == -1)
+                {
+                    Image_Lline[i] = j;
+                    Image_SpecialLine_Sum++; //如果是黑变白的边界,即对应三叉路口的情况
+                    break;
+                }
+            }
+            if (j < 0) //如果左边没检测到边线
+            {
+                Image_Llost_Sum++;
+            }
+            /**********************找右边线******************************/
+            for (j = Image_Mline[i+1]; j <= 79; j++)
+            {
+                if (Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j - 3]) == 1)
+                {
+                    Image_Rline[i] = j;
+                    break;
+                }
+                else if (Image_Border_Judge(mt9v03x_image[i][j], mt9v03x_image[i][j - 3]) == -1)
+                {
+                    Image_Rline[i] = j;
+                    Image_SpecialLine_Sum++;
+                    break;
+                }
+            }
+            if (j > 79) //如果右边没检测到边线
+            {
+                Image_RLost_Sum++;
+            }
+            /*********************中线计算*************************/
+            Image_Mline[i] = (Image_Lline[i] + Image_Rline[i]) / 2;
+
+            // if (Image_Mline[i] - Image_Mline[i + 1] >= 5 || Image_Mline[i] - Image_Mline[i + 1] <= -5)
+            //     Image_TuBian = i;                           //记录中线突变的地点
+            // if (Image_Mline[i] >= 77 && Image_TuBian == -1) //若中线到达右边界，且在此之前未发生中线突变，则为大右弯
+            // {
+            //     Image_RBig_Curve_Flag = 1;
+            //     break;
+            // }
+            // if (Image_Mline[i] <= 2 && Image_TuBian == -1) //若中线到达左边界，且在此之前未发生中线突变，则为大左弯
+            // {
+            //     Image_LBig_Curve_Flag = 1;
+            //     break;
+            // }
+        }
+        
+        //        if(Image_RBig_Curve_Flag==1||Image_LBig_Curve_Flag==1)          //如果为大弯时计算斜率
+        //        {
+        //            Image_XieLv=1000*(Image_Mline[i]-Image_Mline[59])/(59-i);
+        //        }
+        //        else
+        //        {
+        //
+        //        }
         //mt9v03x_finish_flag = 0;
     }
 }

@@ -59,15 +59,15 @@ int main(void)
         {
             //Image_Binary(Threshold);                       //二值化
             ips114_showint32(100,0,count++,10);
-            //ips114_showuint16(100,1,Threshold);
+            ips114_showuint16(100,1,Threshold_ChaHe);
             //Uart_Sendimg(UART_1,camera_buffer_addr,MT9V03X_W, MT9V03X_H);    //图像分辨率在SEEKFREE_MT9V03X.h中查看
             //oled_dis_bmp(MT9V03X_H, MT9V03X_W, camera_buffer_addr,123);      //oled显示摄像头图像，最后个数据为二值化的阈值
             Image_Processing();
             ips114_displayimage032_zoom1(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, 0, 0, MT9V03X_W, MT9V03X_H);
-            for(int i=0;i<60;i++)
+            for(int i=59;i>=20;i--)
             {
                 ips114_drawpoint(Image_Lline[i],i,RED);
-                ips114_drawpoint(Image_Rline[i],i,BLUE);
+                ips114_drawpoint(Image_Rline[i],i,PINK);
                 ips114_drawpoint(Image_Mline[i],i,GREEN);
             }
             //ips114_displayimage032_zoom1(mt9v03x_image_binary[0], MT9V03X_W, MT9V03X_H, 0, 65, MT9V03X_W, MT9V03X_H);
