@@ -8,9 +8,6 @@ void board_init(void)
 {
 	//获取系统主频
 	sys_clk = 8000000 * (((RCC->CFGR0 >> 18) & 0x0F) + 2);
-	//初始化DEBUG串口
-	uart_init(DEBUG_UART, DEBUG_UART_BAUD, DEBUG_UART_TX_PIN,
-			DEBUG_UART_RX_PIN);
 }
 
 //-------------------------------------------------------------------------------------------------------------------

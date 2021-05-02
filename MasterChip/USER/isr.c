@@ -224,7 +224,7 @@ uint8_t UART1_RxBuffer[RX_BUFFER_SIZE] =
 	{0};
 uint8_t UART1_RxBufferCnt = 0;
 uint8_t UART1_RxComplete = 0;
-uint8_t UART1_RxIDLEFlag = 0;
+uint8_t UART1_RxIDLEFlag = 0; // 闲时中断标志位
 uint8_t UART1_RxBufferOverflow = 0; // 缓冲数组溢出标志
 void USART1_IRQHandler(void)
 {
@@ -266,8 +266,7 @@ void USART1_IRQHandler(void)
 		UART1_RxBuffer[num] = ' '; // 末尾加空格，否则无法正常解析最后一个参数
 		UART1_RxBuffer[num + 1] = '\0';
 		CMD_UARTCallback();
-
-		memset(UART1_RxBuffer, 0, sizeof(uint8_t) * RX_BUFFER_SIZE);
+		
 		DMA_Cmd(DMA1_Channel5, ENABLE); //开启下一次DMA
 	}
 }

@@ -35,15 +35,13 @@ int main(void)
 {
 	DisableGlobalIRQ();
 	board_init();
-	CMD_Init();
-	//	ips114_init();
-	//      mt9v03x_init();
-	//    encoder_init();
-	//    buzzer_init();
-	//    elec_init();
 	button_init();
-	MecanumChassis_Init(); // 底盘初始化
+	CMD_Init();
 	icm20602_init_spi(); // ICM20602硬件SPI初始化
+	MecanumChassis_Init(); // 底盘初始化
+	//	ips114_init();
+	//    encoder_init();
+	//    elec_init();
 
 	// 摄像头舵机端口
 	//	pwm_init(PWM1_CH2_A9, 200, 0);
@@ -57,13 +55,7 @@ int main(void)
 
 	while (1)
 	{
-		//		duty = (duty + 1000) % 10000;
-		//		Motor_SetDuty(MecanumChassis.motor[0].target_duty,
-		//				MecanumChassis.motor[1].target_duty,
-		//				MecanumChassis.motor[2].target_duty,
-		//				MecanumChassis.motor[3].target_duty);
-		//        systick_delay_ms(1000);
-
+		CMD_Exe();
 		//		Motor_SetDuty(MecanumChassis.motor[0].target_duty,
 		//				MecanumChassis.motor[1].target_duty,
 		//				MecanumChassis.motor[2].target_duty,
@@ -80,7 +72,6 @@ int main(void)
 
 		//		uprintf("yaw:%d\r\n",(int16)MecanumChassis.posture_status.yaw %360);
 
-		systick_delay_ms(50); //延时
 		MecanumChassis_Exe();
 	}
 }

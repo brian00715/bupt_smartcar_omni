@@ -29,9 +29,10 @@
 //  @return     void
 //  Sample usage:
 //-------------------------------------------------------------------------------------------------------------------
-void CMD_Init(void)
+void CMD_Init()
 {
-	//    uart_init(DEBUG_UART, DEBUG_UART_BAUD, DEBUG_UART_TX_PIN, DEBUG_UART_RX_PIN); // 已经在board_init中初始化了
+	uart_init(DEBUG_UART, DEBUG_UART_BAUD, DEBUG_UART_TX_PIN,
+			  DEBUG_UART_RX_PIN);
 	nvic_init(USART1_IRQn, 0, 0, ENABLE); // 配置UART NVIC
 
 	// >>>DMA方式接收数据<<<
@@ -90,6 +91,7 @@ void UART_DMA_Init(DMA_Channel_TypeDef *dma_ch, uint32 src_addr,
 	DMA_Cmd(dma_ch, ENABLE);				 //开启DMA1
 }
 
+char CMD_RxOK = 0; // 串口接收完成标志，给CMD_Exe用
 uint8_t *CMD_Buffer[CMD_SIZE_X] =
 	{0}; // 指针数组，每个元素都指向分割后的元字符串
 uint8_t CMD_BufferCnt = 0;
@@ -97,7 +99,7 @@ uint8_t CMD_Argc = 0; // 指令参数数量
 char *CMD_Argv[CMD_SIZE_X] =
 	{0}; // 指向指令参数的指针数据
 /**
- * @brief UART1中断回调函数
+ * @brief CMD的抽象UART中断回调函数
  * 
  */
 void CMD_UARTCallback(void)
@@ -112,12 +114,29 @@ void CMD_UARTCallback(void)
 	// 	DMA_RxOK_Flag = 1;
 	// }
 	// memset(DMAaRxBuffer, 0, 98);
-	CMD_Parse((char *)UART1_RxBuffer, &CMD_Argc, CMD_Argv); // 解析指令
-															//	for (int i = 0; i < CMD_Argc; i++)
-															//	{
-															//		uprintf("%s ", CMD_Argv[i]);
-															//	}
-	CMD_Exe(CMD_Argc, CMD_Argv);							// 执行指令
+
+	CMD_RxOK = 1;
+}
+
+/**
+ * @brief CMD总执行函数，在while（1）中运行
+ * @note 不在中断函数中执行，避免超时
+ * 
+ */
+void CMD_Exe(void)
+{
+	if (CMD_RxOK)
+	{
+		CMD_CommandParse((char *)UART1_RxBuffer, &CMD_Argc, CMD_Argv); // 解析指令
+																	   //	for (int i = 0; i < CMD_Argc; i++)
+																	   //	{
+																	   //		uprintf("%s ", CMD_Argv[i]);
+																	   //	}
+		CMD_CommandExe(CMD_Argc, CMD_Argv);							   // 执行指令
+		memset(UART1_RxBuffer, 0, sizeof(uint8_t) * RX_BUFFER_SIZE);
+
+		CMD_RxOK = 0;
+	}
 }
 
 /**
@@ -127,7 +146,7 @@ void CMD_UARTCallback(void)
  * @param   argv        分割后参数列表
  * @return	None
  */
-int CMD_Parse(char *cmd_line, uint8_t *argc, char *argv[])
+int CMD_CommandParse(char *cmd_line, uint8_t *argc, char *argv[])
 {
 	char *token = strtok(cmd_line, " ");
 	int arg_index = 0;
@@ -150,9 +169,9 @@ int CMD_Parse(char *cmd_line, uint8_t *argc, char *argv[])
  * @param argc 指令个数
  * @param argv 指令参数，第一个为指令名称
  */
-int CMD_Exe(int argc, char **argv)
+int CMD_CommandExe(int argc, char **argv)
 {
-	if (strcmp(argv[0], "SetDuty") == 0)
+	if (strcmp(argv[0], "SD") == 0) //SetDuty
 	{
 		for (int i = 0; i < 4; i++)
 		{
@@ -161,55 +180,60 @@ int CMD_Exe(int argc, char **argv)
 		}
 		uprintf("\r\n");
 	}
-	else if (strcmp(argv[0], "Teleop_GoAhead") == 0)
+	else if (strcmp(argv[0], "SCM") == 0) // SetCtrlMode
 	{
-		MecanumChassis.target_speed = 0.2;
+		MecanumChassis.ctrl_mode = (MecanumChassis.ctrl_mode + 1) % 3;
+		uprintf("CMD|Ctrl mode change to %d\r\n",MecanumChassis.ctrl_mode);
+	}
+	else if (strcmp(argv[0], "GA") == 0) // Teleop_GoAhead
+	{
+		MecanumChassis.target_speed = 0.15;
 		MecanumChassis.target_dir = 1.57;
 		MecanumChassis.target_omega = 0;
 		uprintf("Chassis|target_speed:%3d target_dir:%3d target_omega:%3d\r\n",
 				(int16)MecanumChassis.target_speed, (int16)MecanumChassis.target_dir,
 				(int16)MecanumChassis.target_omega);
 	}
-	else if (strcmp(argv[0], "Teleop_GoBack") == 0)
+	else if (strcmp(argv[0], "GB") == 0)  //Teleop_GoBack
 	{
-		MecanumChassis.target_speed = 0.2;
+		MecanumChassis.target_speed = 0.15;
 		MecanumChassis.target_dir = -1.57;
 		MecanumChassis.target_omega = 0;
 		uprintf("Chassis|target_speed:%3d target_dir:%3d target_omega:%3d\r\n",
 				(int16)MecanumChassis.target_speed, (int16)MecanumChassis.target_dir,
 				(int16)MecanumChassis.target_omega);
 	}
-	else if (strcmp(argv[0], "Teleop_TurnLeft") == 0)
+	else if (strcmp(argv[0], "TL") == 0)//Teleop_TurnLeft
 	{
 		MecanumChassis.target_omega += 0.2;
 		uprintf("Chassis|target_speed:%3d target_dir:%3d target_omega:%3d\r\n",
 				(int16)MecanumChassis.target_speed, (int16)MecanumChassis.target_dir,
 				(int16)MecanumChassis.target_omega);
 	}
-	else if (strcmp(argv[0], "Teleop_TurnRight") == 0)
+	else if (strcmp(argv[0], "TR") == 0) //Teleop_TurnRight
 	{
 		MecanumChassis.target_omega -= 0.2;
 		uprintf("Chassis|target_speed:%3d target_dir:%3d target_omega:%3d\r\n",
 				(int16)MecanumChassis.target_speed, (int16)MecanumChassis.target_dir,
 				(int16)MecanumChassis.target_omega);
 	}
-	else if (strcmp(argv[0], "Teleop_ShiftLeft") == 0)
+	else if (strcmp(argv[0], "SL") == 0)//Teleop_ShiftLeft
 	{
 		MecanumChassis.target_dir = 3.14;
-		MecanumChassis.target_speed = 0.2;
+		MecanumChassis.target_speed = 0.15;
 		uprintf("Chassis|target_speed:%3d target_dir:%3d target_omega:%3d\r\n",
 				(int16)MecanumChassis.target_speed, (int16)MecanumChassis.target_dir,
 				(int16)MecanumChassis.target_omega);
 	}
-	else if (strcmp(argv[0], "Teleop_ShiftRight") == 0)
+	else if (strcmp(argv[0], "SR") == 0)//Teleop_ShiftRight
 	{
 		MecanumChassis.target_dir = 0;
-		MecanumChassis.target_speed = 0.2;
+		MecanumChassis.target_speed = 0.15;
 		uprintf("Chassis|target_speed:%3d target_dir:%3d target_omega:%3d\r\n",
 				(int16)MecanumChassis.target_speed, (int16)MecanumChassis.target_dir,
 				(int16)MecanumChassis.target_omega);
 	}
-	else if (strcmp(argv[0], "Teleop_Stop") == 0)
+	else if (strcmp(argv[0], "ST") == 0)//Teleop_Stop
 	{
 		MecanumChassis.target_speed = 0;
 		MecanumChassis.target_omega = 0;
@@ -219,5 +243,3 @@ int CMD_Exe(int argc, char **argv)
 	}
 	return 1;
 }
-
-

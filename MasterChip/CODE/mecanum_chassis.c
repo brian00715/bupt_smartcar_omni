@@ -20,23 +20,23 @@ static const int prvOmegaRatio[4][2] =
 	{
 		{-1, -1},
 		{-1, 1},
-		{1, -1},
-		{1, 1}}; // 计算角速度与线速度的换算时所需系数
+		{1, 1},
+		{1, -1}}; // 计算角速度与线速度的换算时所需系数
 #ifdef MECANUM_X_ASSM
-// 麦克纳姆轮辊子方向(X型布置)，顺序顺时针0123
+// 麦克纳姆轮辊子轴向方向(X型布置)，顺序顺时针0123
 static const float prvAssembleDir[4][2] =
 	{
-		{-0.707, 0.707},
 		{0.707, 0.707},
 		{-0.707, 0.707},
-		{0.707, 0.707}};
+		{0.707, 0.707},
+		{-0.707, 0.707}};
 #endif
 #ifdef MECANUM_O_ASSM
 // 麦克纳姆轮辊子方向(O型布置)
 static const float prvAssembleDir[4][2] =
 	{
-		{0.707, 0.707},
-		{-0.707, 0.707},
+		{0.707, -0.707},
+		{-0.707, -0.707},
 		{-0.707, 0.707},
 		{0.707, 0.707}};
 #endif
@@ -63,6 +63,7 @@ void MecanumChassis_Init(void)
 	MecanumChassis.target_speed = 0;
 	MecanumChassis.target_omega = 0;
 	MecanumChassis.pos_mode = POS_MODE_RELATIVE;
+	MecanumChassis.ctrl_mode = CTRL_MODE_NONE;
 	PostureStatusInit();
 }
 
@@ -103,30 +104,38 @@ int MecanumChassis_Move(float speed, float dir, float omega)
 	float vy = speed * sin(dir);
 	LIMIT(omega, MAX_ROTATE_VEL); // omega需要参与运算，故提前限制大小
 	float target_speed[4];
+	float a = WHEEL_LEFT2RIGHT / 2, b = WHEEL_FRONT2BACK / 2;
 
-	for (int i = 0; i < 4; i++)
-	{
-		float self_turn_vel_x = omega * WHEEL_FRONT2BACK / 2; // 自转切向速度的分量
-		float self_turn_vel_y = omega * WHEEL_LEFT2RIGHT / 2;
-		float vel_sum_x = vx + prvOmegaRatio[i][0] * self_turn_vel_x; // 速度合成
-		float vel_sum_y = vy + prvOmegaRatio[i][1] * self_turn_vel_y;
-		float v_roller = vel_sum_x * prvAssembleDir[i][0] + vel_sum_y * prvAssembleDir[i][1]; // 辊子的切向速度
-		float v_wheel = v_roller / cos(ANGLE2RAD(45));										  // 转为轮子的速度
-		target_speed[i] = v_wheel;
-	}
+	//>>>直接计算法<<<
+	target_speed[0] = vx + vy - omega * (a + b);
+	target_speed[1] = -vx + vy + omega * (a + b);
+	target_speed[2] = vx + vy + omega * (a + b);
+	target_speed[3] = -vx + vy - omega * (a + b);
+
+	// >>>公式计算法<<<
+	// for (int i = 0; i < 4; i++)
+	// {
+	// 	float self_turn_vel_x = omega * WHEEL_FRONT2BACK / 2; // 自转切向速度的分量
+	// 	float self_turn_vel_y = omega * WHEEL_LEFT2RIGHT / 2;
+	// 	float vel_sum_x = vx + prvOmegaRatio[i][0] * self_turn_vel_x; // 速度合成
+	// 	float vel_sum_y = vy + prvOmegaRatio[i][1] * self_turn_vel_y;
+	// 	float v_roller = vel_sum_x * prvAssembleDir[i][0] + vel_sum_y * prvAssembleDir[i][1]; // 辊子的切向速度
+	// 	float v_wheel = v_roller / cos(ANGLE2RAD(45));										  // 转为轮子的速度
+	// 	target_speed[i] = v_wheel;
+	// }
 
 	// 数值限制
 	DriveMotors_LimitSpeed(target_speed);
 	for (int i = 0; i < 4; i++)
 	{
-		uprintf("[%d]:%d", i, (int)(target_speed[i] * 100));
+		uprintf("[%d]:%.2f", i, (target_speed[i]));
 	}
 	uprintf("\r\n");
 
 	//m/s转为占空比
-	for(int i=0;i<4;i++)
+	for (int i = 0; i < 4; i++)
 	{
-		MecanumChassis.motor[i].target_duty = target_speed[i]*10000;
+		MecanumChassis.motor[i].target_duty = target_speed[i] * 10000;
 	}
 }
 
@@ -136,9 +145,28 @@ int MecanumChassis_Move(float speed, float dir, float omega)
  */
 void MecanumChassis_Exe()
 {
-	MecanumChassis_Move(MecanumChassis.target_speed, MecanumChassis.target_dir,
-						MecanumChassis.target_omega);
-	Motor_DutyCtrl();
+	switch (MecanumChassis.ctrl_mode)
+	{
+	case CTRL_MODE_NONE:
+		break;
+	case CTRL_MODE_CMD:
+		Motor_SetDuty(MecanumChassis.motor[0].target_duty,
+					  MecanumChassis.motor[1].target_duty,
+					  MecanumChassis.motor[2].target_duty,
+					  MecanumChassis.motor[3].target_duty);
+		break;
+	case CTRL_MODE_AUTO:
+		MecanumChassis_Move(MecanumChassis.target_speed,
+							MecanumChassis.target_dir, MecanumChassis.target_omega);
+		//		Motor_DutyCtrl();
+		Motor_SetDuty(MecanumChassis.motor[0].target_duty,
+					  MecanumChassis.motor[1].target_duty,
+					  MecanumChassis.motor[2].target_duty,
+					  MecanumChassis.motor[3].target_duty);
+		break;
+	default:
+		break;
+	}
 }
 
 // =============================================END================================================

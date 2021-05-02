@@ -15,13 +15,15 @@ extern uint8_t CMD_BufferCnt;
 extern uint8_t UART1_RxBuffer[RX_BUFFER_SIZE];
 extern uint8_t UART1_RxComplete;
 extern uint8_t UART1_RxIDLEFlag;
+extern char CMD_RxOK;
 
 void CMD_Init(void);
+void CMD_Exe(void);
 void UART_DMA_Init(DMA_Channel_TypeDef *dma_ch, uint32 src_addr,
 				   uint32 des_addr, uint32 size);
 void CMD_UARTCallback(void);
-int CMD_Parse(char *cmd_line, uint8_t *argc, char *argv[]);
-int CMD_Exe(int argc, char **argv);
+int CMD_CommandParse(char *cmd_line, uint8_t *argc, char *argv[]);
+int CMD_CommandExe(int argc, char **argv);
 void ToolBox_Scope(float *dataArray, int dataNum);
 
 #endif

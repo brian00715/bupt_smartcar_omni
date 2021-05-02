@@ -1,7 +1,5 @@
 #include "encoder.h"
 
-
-
 uint16 encoder_data[4];
 
 // >>>绝对式编码器速度获取<<<
