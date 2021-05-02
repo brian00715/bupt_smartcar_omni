@@ -9,8 +9,7 @@
 #include "headfile.h"
 
 uint8 Threshold = 123;
-uint8 Threshold_ChaHe=20;
-
+uint16 Threshold_ChaHe=200;
 uint8 mt9v03x_image_binary[MT9V03X_H][MT9V03X_W];
 
 uint8 Image_Process_Flag = 0;    //是否进行了图像处理的标志位，发送时用于告知主片是否进行了图像处理
@@ -69,12 +68,19 @@ void Image_Binary(uint8 Threshold)
   ***************************************************************************/
 uint8 Image_Border_Judge(uint8 Image_1, uint8 Image_2)
 {
-    if ((100 * (Image_1 - Image_2)) / (Image_1 + Image_2) >= Threshold_ChaHe)
+    if(Image_1<Image_2)
+    {
+        if ((1000 * (Image_2 - Image_1)) / (Image_1 + Image_2) >= Threshold_ChaHe)
         return 1;
-    else if ((100 * (Image_1 - Image_2)) / (Image_1 + Image_2) <= -Threshold_ChaHe)
+        else return 0;
+    }
+    else if(Image_1>Image_2)
+    {
+        if ((1000 * (Image_1 - Image_2)) / (Image_1 + Image_2) >= Threshold_ChaHe)
         return -1;
-    else
-        return 0;
+        else return 0;
+    }
+    else return 0;
 }
 
 /*****************************************************************************
