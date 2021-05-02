@@ -30,7 +30,7 @@
 //摄像头调试
 void Init_Fun(void)
 {
-    uart_init(UART_1, 115200, UART1_TX_A9, UART1_RX_A10);    //uart1初始化传输摄像头数据
+    uart_init(UART_3, 115200, UART3_TX_B10, UART3_RX_B11);    //uart3初始化传输摄像头数据
     gpio_init(B4, GPI, 1,SPEED_50MHZ|IN_PULLUP);                       //初始化B4按钮，用作将InudcerMax_Get_Start_Flag置1
     gpio_init(B5, GPI, 1,SPEED_50MHZ|IN_PULLUP);                       //初始化B5按钮，用作降低二值化阈值
     gpio_init(B2, GPI, 1,SPEED_50MHZ|IN_PULLUP);                       //初始化B2按钮，用作增加二值化阈值
@@ -58,17 +58,34 @@ int main(void)
         if(mt9v03x_finish_flag==1)               //摄像头采集完成标志位
         {
             //Image_Binary(Threshold);                       //二值化
-            ips114_showint32(100,0,count++,10);
-            ips114_showuint16(100,1,Threshold_ChaHe);
+            ips114_showint32(180,0,count++,10);
+            ips114_showuint16(180,1,Threshold_ChaHe);
             //Uart_Sendimg(UART_1,camera_buffer_addr,MT9V03X_W, MT9V03X_H);    //图像分辨率在SEEKFREE_MT9V03X.h中查看
             //oled_dis_bmp(MT9V03X_H, MT9V03X_W, camera_buffer_addr,123);      //oled显示摄像头图像，最后个数据为二值化的阈值
             Image_Processing();
-            ips114_displayimage032_zoom1(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, 0, 0, MT9V03X_W, MT9V03X_H);
-            for(int i=59;i>=20;i--)
+            ips114_displayimage032_zoom1(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, 0, 0, MT9V03X_W*2, MT9V03X_H*2);
+            for(int i=59;i>=5;i--)
             {
-                ips114_drawpoint(Image_Lline[i],i,RED);
-                ips114_drawpoint(Image_Rline[i],i,PINK);
-                ips114_drawpoint(Image_Mline[i],i,GREEN);
+//                ips114_drawpoint(Image_Lline[i],i,RED);
+//                ips114_drawpoint(Image_Rline[i],i,PINK);
+//                ips114_drawpoint(Image_Mline[i],i,GREEN);
+
+                ips114_drawpoint(Image_Lline[i]*2,2*i,RED);
+                ips114_drawpoint(Image_Lline[i]*2,2*i+1,RED);
+                ips114_drawpoint(Image_Lline[i]*2+1,2*i+1,RED);
+                ips114_drawpoint(Image_Lline[i]*2+1,2*i,RED);
+
+                ips114_drawpoint(Image_Rline[i]*2,2*i,PINK);
+                ips114_drawpoint(Image_Rline[i]*2,2*i+1,PINK);
+                ips114_drawpoint(Image_Rline[i]*2+1,2*i+1,PINK);
+                ips114_drawpoint(Image_Rline[i]*2+1,2*i,PINK);
+
+                ips114_drawpoint(Image_Mline[i]*2,2*i,GREEN);
+                ips114_drawpoint(Image_Mline[i]*2,2*i+1,GREEN);
+                ips114_drawpoint(Image_Mline[i]*2+1,2*i+1,GREEN);
+                ips114_drawpoint(Image_Mline[i]*2+1,2*i,GREEN);
+
+
             }
             //ips114_displayimage032_zoom1(mt9v03x_image_binary[0], MT9V03X_W, MT9V03X_H, 0, 65, MT9V03X_W, MT9V03X_H);
 //            ips114_displayimage032_zoom(mt9v03x_image_binary[0], MT9V03X_W, MT9V03X_H, MT9V03X_W*2, MT9V03X_H*2);

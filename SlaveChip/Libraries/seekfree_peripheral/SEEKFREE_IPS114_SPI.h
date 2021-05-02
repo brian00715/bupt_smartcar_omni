@@ -74,7 +74,7 @@
 #define IPS114_PENCOLOR    GREEN
 
 //¶¨Òå±³¾°ÑÕÉ«
-#define IPS114_BGCOLOR     WHITE
+#define IPS114_BGCOLOR     BLACK
 
 
 

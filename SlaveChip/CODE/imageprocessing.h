@@ -29,7 +29,7 @@ typedef struct
 } Size_t;
 
 extern uint8 Threshold;
-extern uint8 Threshold_ChaHe;
+extern uint16 Threshold_ChaHe;
 extern uint8 mt9v03x_image_binary[MT9V03X_H][MT9V03X_W];
 extern uint8 Image_Lline[60];     //存储左边界的数组
 extern uint8 Image_Rline[60];     //存储右边界的数组

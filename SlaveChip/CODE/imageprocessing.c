@@ -9,7 +9,7 @@
 #include "headfile.h"
 
 uint8 Threshold = 123;
-uint16 Threshold_ChaHe=200;
+uint16 Threshold_ChaHe=270;
 uint8 mt9v03x_image_binary[MT9V03X_H][MT9V03X_W];
 
 uint8 Image_Process_Flag = 0;    //是否进行了图像处理的标志位，发送时用于告知主片是否进行了图像处理

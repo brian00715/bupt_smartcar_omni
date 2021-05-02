@@ -212,8 +212,8 @@ void TIM2_IRQHandler(void)
             if(Threshold<255)
             {
                 Threshold++;
-                Threshold_ChaHe++;
             }
+            Threshold_ChaHe++;
             Gpio_Sup_Up=0;Gpio_Sup_Down=0;
         }
 
