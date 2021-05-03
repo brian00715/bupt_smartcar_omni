@@ -95,7 +95,7 @@ typedef enum
 }CMD;
      
      
-     
+#ifdef USE_CAMERA
 extern uint8    receive[3];         //仅用于接收配置信息时所用  禁止用户使用该变量
 extern uint8    receive_num;        //仅用于接收配置信息时所用  禁止用户使用该变量
 extern vuint8   uart_receive_flag;  //仅用于接收配置信息时所用  禁止用户使用该变量
@@ -104,6 +104,7 @@ extern vuint8   uart_receive_flag;  //仅用于接收配置信息时所用  禁止用户使用该变
 extern vuint8   mt9v03x_finish_flag;//一场图像采集完成标志位
 extern uint8    mt9v03x_image[MT9V03X_H][MT9V03X_W];
 
+#endif // USE_CAMERA
 
 void set_config(UARTN_enum uartn, int16 buff[CONFIG_FINISH-1][2]);
 void get_config(UARTN_enum uartn, int16 buff[CONFIG_FINISH-1][2]);
@@ -120,4 +121,6 @@ void seekfree_sendimg_03x(UARTN_enum uartn, uint8 *image, uint16 width, uint16 h
 
 
 #endif
+
+
 

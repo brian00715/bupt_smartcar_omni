@@ -16,7 +16,7 @@
  * @date       		2019-04-30
  * @note		    示波器下载地址：https://pan.baidu.com/s/198CMXTZsbI3HAEqNXDngBw（包含清华直立方案资料）	
  ********************************************************************************************************************/
-
+#ifdef USE_VIRSCO
 #ifndef _SEEKFREE_VIRSCO_H
 #define _SEEKFREE_VIRSCO_H
 
@@ -29,3 +29,4 @@ void data_conversion(int16 data1, int16 data2, int16 data3, int16 data4, uint8 *
 
 
 #endif 
+#endif

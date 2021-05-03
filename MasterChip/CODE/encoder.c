@@ -1,17 +1,10 @@
 #include "encoder.h"
 
-uint16 encoder_data[4];
+int16 encoder_data[4]={0};
+int16 encoder_max=0;
+int16 encoder_min=0;
+int16 encoder_coff[4]={0}; // 上电后的方向系数
 
-// >>>绝对式编码器速度获取<<<
-//void Encoder_Init(void)
-//{
-//    encoder_init_spi(ABS_ENCODER_SPI_PC1_PIN);      //编码器1初始化。
-//    //encoder_init_spi(ABS_ENCODER_SPI_PC2_PIN);      //编码器2初始化。
-//    //encoder_init_spi(ABS_ENCODER_SPI_PC3_PIN);      //编码器3初始化。
-//    //encoder_init_spi(ABS_ENCODER_SPI_PC4_PIN);      //编码器4初始化。
-//}
-//
-//
 void Encoder_GetSpeed(void)
 {
 //    encoder_data[0] = encoder1_speed_spi(ABS_ENCODER_SPI_PC1_PIN);          //获取编码器1的数据

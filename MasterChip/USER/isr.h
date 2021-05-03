@@ -27,6 +27,10 @@ extern uint8_t UART1_RxComplete ;
 extern uint8_t UART1_RxIDLEFlag ;
 extern uint8_t UART1_RxBufferOverflow ; // 缓冲数组溢出标志
 
+extern char TIM1_10ms_Flag;
+extern char TIM1_20ms_Flag;
+extern char TIM1_100ms_Flag;
+
 #endif
 
 

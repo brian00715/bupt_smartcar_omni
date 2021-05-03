@@ -5,18 +5,20 @@
 
 //=================================宏和ENUM=================================
 
+#define abs(x) ((x)>0?(x):(-x))
+
 #define PI 3.14159265358979323846
 /**
  * @brief	宏数据处理函数
  * @note	切勿在传入带有副作用的参数.e.g. *p++
  */
-#define LIMIT(value, max)  \
+#define __LIMIT(value, max)  \
     if (value > max)       \
         value = max;       \
     else if (value < -max) \
     value = -max
 
-#define LIMIT_FROM_TO(value, min, max) \
+#define __LIMIT_FROM_TO(value, min, max) \
     {                                  \
         if ((value) > (max))           \
             value = max;               \
@@ -26,38 +28,39 @@
 
 /**
  * @brief 计算数组和，无需指定数组类型
- * @param result 需要填入double类型，然后在宏外部使用强制类型转换
+ * @param result 需要填入float类型指针，然后在宏外部使用强制类型转换
  */
-#define SUM_OF_AR(AR, N, RESULT)     \
-    {                                \
-        double MACRO_SUM_TEMP = 0;   \
+#define __SUM_OF_AR(AR, N, RESULT)     \
+		{\
+        float MACRO_SUM_TEMP = 0;   \
         for (int i = 0; i < N; i++)  \
         {                            \
             MACRO_SUM_TEMP += AR[i]; \
         }                            \
         *RESULT = MACRO_SUM_TEMP;    \
-    }
+		}
+
 
 /**
  * @brief 计算数组平均数，无需指定数组类型
- * @param result 需要填入double类型
+ * @param result 需要填入float类型指针
  */
-#define AVE_OF_AR(AR, N, RESULT)      \
-    {                                 \
-        int MACRO_SUM_TEMP = 0;       \
+#define __AVE_OF_AR(AR, N, RESULT)      \
+{\
+        float MACRO_SUM_TEMP = 0;       \
         for (int i = 0; i < N; i++)   \
         {                             \
             MACRO_SUM_TEMP += AR[i];  \
         }                             \
         *RESULT = MACRO_SUM_TEMP / N; \
-    }
+}
+
 
 /**
  * @brief 获取数组中最大的元素
  * @param MAX 结果
  */
-#define MAX_OF_AR(AR, N, MAX)       \
-    {                               \
+#define __MAX_OF_AR(AR, N, MAX)       \
         MAX = AR[0];                \
         for (int i = 0; i < N; i++) \
         {                           \
@@ -66,10 +69,9 @@
                 MAX = AR[i];        \
             }                       \
         }                           \
-    }
 
-#define MIN_OF_AR(AR, N, MIN)       \
-    {                               \
+
+#define __MIN_OF_AR(AR, N, MIN)       \
         MIN = AR[0];                \
         for (int i = 0; i < N; i++) \
         {                           \
@@ -78,7 +80,7 @@
                 MIN = AR[i];        \
             }                       \
         }                           \
-    }
+
 
 #define Min(A, B) ((A) <= (B) ? (A) : (B))
 #define Max(A, B) ((A) >= (B) ? (A) : (B))
@@ -90,7 +92,6 @@
 #define RAD2ANGLE(x) (((x)*1.0) / PI * 180.0f)
 
 //=================================结构体=================================
-
 
 //=================================函数声明=================================
 

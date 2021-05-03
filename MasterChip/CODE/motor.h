@@ -2,6 +2,7 @@
 #define _motor_h
 
 #include "headfile.h"
+#include "pid.h"
 
 // ======================宏定义=========================
 #define MOTOR1_A C10         //定义1电机正反转引脚
@@ -24,7 +25,11 @@ typedef struct Motor_t
     int16 now_duty;
     int16 last_duty;
     int16 target_duty;
+    int16 now_rpm;
+    int16 target_rpm;
 } Motor_t;
+
+extern PID_t MotorPID[4];
 
 //=================================函数声明=================================
 
@@ -32,5 +37,8 @@ void DriveMotors_LimitSpeed(float speed[4]);
 void Motor_Init(void);
 void Motor_DutyCtrl();
 void Motor_SetDuty(int32_t duty1,int32_t duty2,int32_t duty3,int32_t duty4);
+void Motor_SelfCheck(void);
+void Motor_RpmCtrl(void);
+int16 Motor_TargetDuty2TargetRpm(int16 duty);
 
 #endif

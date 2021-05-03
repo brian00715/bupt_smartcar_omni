@@ -24,6 +24,7 @@
 #include "cmd.h"
 #include "sci_compute.h"
 #include "mecanum_chassis.h"
+#include "encoder.h"
 
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -74,7 +75,7 @@ void EXTI1_IRQHandler(void)
 		//		if (camera_type == CAMERA_BIN_UART)
 		//			ov7725_uart_vsync();
 		//		else if (camera_type == CAMERA_GRAYSCALE)
-		mt9v03x_vsync();
+		//		mt9v03x_vsync();
 		EXTI_ClearITPendingBit(EXTI_Line1);
 	}
 }
@@ -148,18 +149,48 @@ void TIM1_UP_IRQHandler(void)
 			TIM1_100ms_Flag = 0;
 		}
 		//硬件SPI采集
-		get_icm20602_accdata_spi();
-		get_icm20602_gyro_spi();
-		if (icm_gyro_z > 2000)
-		{
-			icm_gyro_z = 2000;
-		}
-		else if (icm_gyro_z < -2000)
-		{
-			icm_gyro_z = -2000;
-		}
-		MecanumChassis.posture_status.yaw = KalmanFilter(icm_acc_z * 1.0, icm_gyro_z * 1.0);
+		//		get_icm20602_accdata_spi();
+		//		get_icm20602_gyro_spi();
+		//		if (icm_gyro_z > 2000)
+		//		{
+		//			icm_gyro_z = 2000;
+		//		}
+		//		else if (icm_gyro_z < -2000)
+		//		{
+		//			icm_gyro_z = -2000;
+		//		}
+		//		MecanumChassis.posture_status.yaw = KalmanFilter(icm_acc_z * 1.0, icm_gyro_z * 1.0);
 		//		MecanumChassis.posture_status.yaw += RAD2ANGLE(icm_gyro_z * 0.005); // 偏航角积分
+
+		if (MecanumChassis.motor_self_check_ok)
+		{
+			encoder_data[0] = encoder_coff[0] * timer_quad_get(TIMER_2); //编码器取值
+			encoder_data[1] = encoder_coff[1] * timer_quad_get(TIMER_3); //编码器取值
+																		 //			for (int i = 0; i < 4; i++)
+																		 //			{
+																		 //				if (encoder_data[i] > 0)
+																		 //				{
+																		 //					MecanumChassis.motor[i].now_duty = 10000 * encoder_data[i]
+																		 //							/ encoder_max;
+																		 //				}
+																		 //				else
+																		 //				{
+																		 //					MecanumChassis.motor[i].now_duty = 10000 * encoder_data[i]
+																		 //							/ -encoder_min;
+																		 //				}
+																		 //			}
+			MecanumChassis.motor[0].now_rpm = encoder_data[0];
+			MecanumChassis.motor[1].now_rpm = encoder_data[1];
+			timer_quad_clear(TIMER_2); //清空计数器
+			timer_quad_clear(TIMER_3); //清空计数器
+		}
+		else
+		{
+			encoder_data[0] = timer_quad_get(TIMER_2); //编码器取值
+			encoder_data[1] = timer_quad_get(TIMER_3); //编码器取值
+			timer_quad_clear(TIMER_2);				   //清空计数器
+			timer_quad_clear(TIMER_3);				   //清空计数器
+		}
 	}
 }
 
@@ -224,7 +255,7 @@ uint8_t UART1_RxBuffer[RX_BUFFER_SIZE] =
 	{0};
 uint8_t UART1_RxBufferCnt = 0;
 uint8_t UART1_RxComplete = 0;
-uint8_t UART1_RxIDLEFlag = 0; // 闲时中断标志位
+uint8_t UART1_RxIDLEFlag = 0;		// 闲时中断标志位
 uint8_t UART1_RxBufferOverflow = 0; // 缓冲数组溢出标志
 void USART1_IRQHandler(void)
 {
@@ -266,7 +297,7 @@ void USART1_IRQHandler(void)
 		UART1_RxBuffer[num] = ' '; // 末尾加空格，否则无法正常解析最后一个参数
 		UART1_RxBuffer[num + 1] = '\0';
 		CMD_UARTCallback();
-		
+
 		DMA_Cmd(DMA1_Channel5, ENABLE); //开启下一次DMA
 	}
 }
@@ -276,10 +307,6 @@ void USART2_IRQHandler(void)
 	if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
 	{
 		USART_ClearITPendingBit(USART2, USART_IT_RXNE);
-		//		if (camera_type == CAMERA_BIN_UART)
-		//			ov7725_cof_uart_interrupt();
-		//		else if (camera_type == CAMERA_GRAYSCALE)
-		mt9v03x_uart_callback();
 	}
 }
 
@@ -299,7 +326,7 @@ void DMA1_Channel4_IRQHandler(void)
 		//		if (camera_type == CAMERA_BIN_UART)
 		//			ov7725_uart_dma();
 		//		else if (camera_type == CAMERA_GRAYSCALE)
-		mt9v03x_dma();
+		//		mt9v03x_dma();
 	}
 }
 

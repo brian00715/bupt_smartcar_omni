@@ -164,6 +164,7 @@ int CMD_CommandParse(char *cmd_line, uint8_t *argc, char *argv[])
 	return 1;
 }
 
+int wave_index = -1;
 /**
  * @brief 指令执行函数
  * @param argc 指令个数
@@ -180,10 +181,19 @@ int CMD_CommandExe(int argc, char **argv)
 		}
 		uprintf("\r\n");
 	}
+	else if (strcmp(argv[0], "SR") == 0) //SetRPM
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			MecanumChassis.motor[i].target_rpm = atoi(argv[i + 1]);
+			uprintf("[%d]:%d", i, MecanumChassis.motor[i].target_rpm);
+		}
+		uprintf("\r\n");
+	}
 	else if (strcmp(argv[0], "SCM") == 0) // SetCtrlMode
 	{
-		MecanumChassis.ctrl_mode = (MecanumChassis.ctrl_mode + 1) % 3;
-		uprintf("CMD|Ctrl mode change to %d\r\n",MecanumChassis.ctrl_mode);
+		MecanumChassis.ctrl_mode = (MecanumChassis.ctrl_mode + 1) % 4;
+		uprintf("CMD|Ctrl mode change to %d\r\n", MecanumChassis.ctrl_mode);
 	}
 	else if (strcmp(argv[0], "GA") == 0) // Teleop_GoAhead
 	{
@@ -191,55 +201,86 @@ int CMD_CommandExe(int argc, char **argv)
 		MecanumChassis.target_dir = 1.57;
 		MecanumChassis.target_omega = 0;
 		uprintf("Chassis|target_speed:%3d target_dir:%3d target_omega:%3d\r\n",
-				(int16)MecanumChassis.target_speed, (int16)MecanumChassis.target_dir,
+				(int16)MecanumChassis.target_speed,
+				(int16)MecanumChassis.target_dir,
 				(int16)MecanumChassis.target_omega);
 	}
-	else if (strcmp(argv[0], "GB") == 0)  //Teleop_GoBack
+	else if (strcmp(argv[0], "GB") == 0) //Teleop_GoBack
 	{
 		MecanumChassis.target_speed = 0.15;
 		MecanumChassis.target_dir = -1.57;
 		MecanumChassis.target_omega = 0;
 		uprintf("Chassis|target_speed:%3d target_dir:%3d target_omega:%3d\r\n",
-				(int16)MecanumChassis.target_speed, (int16)MecanumChassis.target_dir,
+				(int16)MecanumChassis.target_speed,
+				(int16)MecanumChassis.target_dir,
 				(int16)MecanumChassis.target_omega);
 	}
-	else if (strcmp(argv[0], "TL") == 0)//Teleop_TurnLeft
+	else if (strcmp(argv[0], "TL") == 0) //Teleop_TurnLeft
 	{
 		MecanumChassis.target_omega += 0.2;
 		uprintf("Chassis|target_speed:%3d target_dir:%3d target_omega:%3d\r\n",
-				(int16)MecanumChassis.target_speed, (int16)MecanumChassis.target_dir,
+				(int16)MecanumChassis.target_speed,
+				(int16)MecanumChassis.target_dir,
 				(int16)MecanumChassis.target_omega);
 	}
 	else if (strcmp(argv[0], "TR") == 0) //Teleop_TurnRight
 	{
 		MecanumChassis.target_omega -= 0.2;
 		uprintf("Chassis|target_speed:%3d target_dir:%3d target_omega:%3d\r\n",
-				(int16)MecanumChassis.target_speed, (int16)MecanumChassis.target_dir,
+				(int16)MecanumChassis.target_speed,
+				(int16)MecanumChassis.target_dir,
 				(int16)MecanumChassis.target_omega);
 	}
-	else if (strcmp(argv[0], "SL") == 0)//Teleop_ShiftLeft
+	else if (strcmp(argv[0], "SL") == 0) //Teleop_ShiftLeft
 	{
 		MecanumChassis.target_dir = 3.14;
 		MecanumChassis.target_speed = 0.15;
 		uprintf("Chassis|target_speed:%3d target_dir:%3d target_omega:%3d\r\n",
-				(int16)MecanumChassis.target_speed, (int16)MecanumChassis.target_dir,
+				(int16)MecanumChassis.target_speed,
+				(int16)MecanumChassis.target_dir,
 				(int16)MecanumChassis.target_omega);
 	}
-	else if (strcmp(argv[0], "SR") == 0)//Teleop_ShiftRight
+	else if (strcmp(argv[0], "SR") == 0) //Teleop_ShiftRight
 	{
 		MecanumChassis.target_dir = 0;
 		MecanumChassis.target_speed = 0.15;
 		uprintf("Chassis|target_speed:%3d target_dir:%3d target_omega:%3d\r\n",
-				(int16)MecanumChassis.target_speed, (int16)MecanumChassis.target_dir,
+				(int16)MecanumChassis.target_speed,
+				(int16)MecanumChassis.target_dir,
 				(int16)MecanumChassis.target_omega);
 	}
-	else if (strcmp(argv[0], "ST") == 0)//Teleop_Stop
+	else if (strcmp(argv[0], "ST") == 0) //Teleop_Stop
 	{
 		MecanumChassis.target_speed = 0;
 		MecanumChassis.target_omega = 0;
 		uprintf("Chassis|target_speed:%3d target_dir:%3d target_omega:%3d\r\n",
-				(int16)MecanumChassis.target_speed, (int16)MecanumChassis.target_dir,
+				(int16)MecanumChassis.target_speed,
+				(int16)MecanumChassis.target_dir,
 				(int16)MecanumChassis.target_omega);
+	}
+	else if (strcmp(argv[0], "PID") == 0) // PID Tuning
+	{
+		int i = atoi(argv[1]);
+		float kp = atof(argv[2]);
+		float ki = atof(argv[3]);
+		float kd = atof(argv[4]);
+		float int_duty = atof(argv[5]);
+		float sub_pid_thres = atof(argv[6]);
+		float sub_pid_kp = atof(argv[7]);
+		MotorPID[i].kp = kp;
+		MotorPID[i].ki = ki;
+		MotorPID[i].kd = kd;
+		MotorPID[i].int_duty = int_duty;
+		MotorPID[i].sub_pid_thres = sub_pid_thres;
+		MotorPID[i].sub_pid_kp = sub_pid_kp;
+		uprintf(
+			"PID|[%d] kp:%.3f ki:%.3f kd:%.3f intduty:%.2f thres:%.2f sub_kp:%.2f\r\n",
+			i, kp, ki, kd, int_duty, sub_pid_thres, sub_pid_kp);
+	}
+	else if (strcmp(argv[0], "WV") == 0) // 虚拟示波器
+	{
+		wave_index = atoi(argv[1]);
+		uprintf("Opened motor[%d] wave!\r\n", wave_index);
 	}
 	return 1;
 }

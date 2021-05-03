@@ -7,11 +7,7 @@
 
 typedef enum CONTROL_MODE
 {
-	CTRL_MODE_NONE = 0,
-	CTRL_MODE_CMD,
-	CTRL_MODE_AUTO,
-	CTRL_MODE_HANDLE,
-	CTRL_MODE_TUNING
+	CTRL_MODE_NONE = 0, CTRL_MODE_CMD, CTRL_MODE_AUTO, CTRL_MODE_TUNING,
 } CONTROL_MODE;
 
 typedef enum POS_MODE
@@ -23,19 +19,9 @@ typedef enum POS_MODE
 //=================================结构体=================================
 typedef struct PostureStatus_t // 底盘位姿状态结构体，由全场定位模块更新
 {
-	float x; // 单位m
-	float y; // 单位m
-	float last_x;
-	float last_y;
 	float yaw; // 偏航角/rad
-	float last_yaw;
 	float speed;	  // 线速度m/s
-	float speed_x;	  // x方向分速度
-	float speed_y;	  // y方向分速度
 	float omega;	  // 角速度rad/s
-	float acc;		  // 加速度 = Δv2-Δv1 = v2-2v1+v0
-	float speed_err2; // Δv2
-	float speed_err1; // Δv1
 } PostureStatus_t;
 
 typedef struct BaseChassis_t // 底盘抽象结构体
@@ -48,8 +34,9 @@ typedef struct BaseChassis_t // 底盘抽象结构体
 	CONTROL_MODE ctrl_mode; // 控制模式：无/手柄/CMD/自动
 	POS_MODE pos_mode;		// 坐标模式：相对/绝对
 	PostureStatus_t posture_status;
-	Motor_t motor[4];										 // 驱动电机，编号为左上角开始顺时针0123
+	Motor_t motor[4];									// 驱动电机，编号为左上角开始顺时针0123
 	char send_ctrl_msg_flag;								 // 控制发送频率
+	char motor_self_check_ok; // 电机自检完成
 	void (*fChassisMove)(float vel, float dir, float omega); // 底盘控制函数的函数指针
 } BaseChassis_t;
 

@@ -16,30 +16,30 @@
 #define MECANUM_X_ASSM
 // ===========================================Private==============================================
 
-static const int prvOmegaRatio[4][2] =
-	{
-		{-1, -1},
-		{-1, 1},
-		{1, 1},
-		{1, -1}}; // 计算角速度与线速度的换算时所需系数
-#ifdef MECANUM_X_ASSM
-// 麦克纳姆轮辊子轴向方向(X型布置)，顺序顺时针0123
-static const float prvAssembleDir[4][2] =
-	{
-		{0.707, 0.707},
-		{-0.707, 0.707},
-		{0.707, 0.707},
-		{-0.707, 0.707}};
-#endif
-#ifdef MECANUM_O_ASSM
-// 麦克纳姆轮辊子方向(O型布置)
-static const float prvAssembleDir[4][2] =
-	{
-		{0.707, -0.707},
-		{-0.707, -0.707},
-		{-0.707, 0.707},
-		{0.707, 0.707}};
-#endif
+//static const int prvOmegaRatio[4][2] =
+//	{
+//		{-1, -1},
+//		{-1, 1},
+//		{1, 1},
+//		{1, -1}}; // 计算角速度与线速度的换算时所需系数
+//#ifdef MECANUM_X_ASSM
+//// 麦克纳姆轮辊子轴向方向(X型布置)，顺序顺时针0123
+//static const float prvAssembleDir[4][2] =
+//	{
+//		{0.707, 0.707},
+//		{-0.707, 0.707},
+//		{0.707, 0.707},
+//		{-0.707, 0.707}};
+//#endif
+//#ifdef MECANUM_O_ASSM
+//// 麦克纳姆轮辊子方向(O型布置)
+//static const float prvAssembleDir[4][2] =
+//	{
+//		{0.707, -0.707},
+//		{-0.707, -0.707},
+//		{-0.707, 0.707},
+//		{0.707, 0.707}};
+//#endif
 // =============================================END================================================
 
 // ===========================================Public==============================================
@@ -59,6 +59,7 @@ void MecanumChassis_Init(void)
 		MecanumChassis.motor[i].target_duty = 0;
 	}
 	MecanumChassis.send_ctrl_msg_flag = 0;
+	MecanumChassis.motor_self_check_ok = 0;
 	MecanumChassis.target_dir = 0;
 	MecanumChassis.target_speed = 0;
 	MecanumChassis.target_omega = 0;
@@ -72,14 +73,7 @@ void PostureStatusInit(void)
 {
 	MecanumChassis.posture_status.omega = 0;
 	MecanumChassis.posture_status.speed = 0;
-	MecanumChassis.posture_status.x = 0;
-	MecanumChassis.posture_status.y = 0;
 	MecanumChassis.posture_status.yaw = 0;
-	MecanumChassis.posture_status.speed_x = 0;
-	MecanumChassis.posture_status.speed_y = 0;
-	MecanumChassis.posture_status.last_x = 0;
-	MecanumChassis.posture_status.last_y = 0;
-	MecanumChassis.posture_status.last_yaw = 0;
 }
 
 /**
@@ -102,7 +96,7 @@ int MecanumChassis_Move(float speed, float dir, float omega)
 	dir -= absolute_angle_offset;
 	float vx = speed * cos(dir); // 速度分量
 	float vy = speed * sin(dir);
-	LIMIT(omega, MAX_ROTATE_VEL); // omega需要参与运算，故提前限制大小
+	__LIMIT(omega, MAX_ROTATE_VEL); // omega需要参与运算，故提前限制大小
 	float target_speed[4];
 	float a = WHEEL_LEFT2RIGHT / 2, b = WHEEL_FRONT2BACK / 2;
 
@@ -126,16 +120,11 @@ int MecanumChassis_Move(float speed, float dir, float omega)
 
 	// 数值限制
 	DriveMotors_LimitSpeed(target_speed);
-	for (int i = 0; i < 4; i++)
-	{
-		uprintf("[%d]:%.2f", i, (target_speed[i]));
-	}
-	uprintf("\r\n");
 
 	//m/s转为占空比
 	for (int i = 0; i < 4; i++)
 	{
-		MecanumChassis.motor[i].target_duty = target_speed[i] * 10000;
+		MecanumChassis.motor[i].target_rpm = target_speed[i] * 100;
 	}
 }
 
@@ -151,18 +140,17 @@ void MecanumChassis_Exe()
 		break;
 	case CTRL_MODE_CMD:
 		Motor_SetDuty(MecanumChassis.motor[0].target_duty,
-					  MecanumChassis.motor[1].target_duty,
-					  MecanumChassis.motor[2].target_duty,
-					  MecanumChassis.motor[3].target_duty);
+				MecanumChassis.motor[1].target_duty,
+				MecanumChassis.motor[2].target_duty,
+				MecanumChassis.motor[3].target_duty);
 		break;
 	case CTRL_MODE_AUTO:
 		MecanumChassis_Move(MecanumChassis.target_speed,
-							MecanumChassis.target_dir, MecanumChassis.target_omega);
-		//		Motor_DutyCtrl();
-		Motor_SetDuty(MecanumChassis.motor[0].target_duty,
-					  MecanumChassis.motor[1].target_duty,
-					  MecanumChassis.motor[2].target_duty,
-					  MecanumChassis.motor[3].target_duty);
+				MecanumChassis.target_dir, MecanumChassis.target_omega);
+		Motor_RpmCtrl();
+		break;
+	case CTRL_MODE_TUNING:
+		Motor_RpmCtrl();
 		break;
 	default:
 		break;
