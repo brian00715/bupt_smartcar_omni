@@ -45,6 +45,7 @@ int main(void)
     DisableGlobalIRQ();
     systick_delay_ms(300);         //延时300ms，等待设备上电
     board_init();           //务必保留，本函数用于初始化MPU 时钟 调试串口
+    uart_init(UART_3,115200,UART3_TX_B10,UART3_RX_B11);
     Init_Fun();
     EnableGlobalIRQ(0);
     while(1)

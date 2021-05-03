@@ -5,7 +5,6 @@
 
 #define USART1_RX_DMA_CH DMA1_Channel5
 #define USART1_RX_DMA_CH_IRQN DMA1_Channel5_IRQn
-#define USART1_DR_ADDR (0x40013804) // USART1数据寄存器
 
 #define CMD_SIZE_X 10  // 一条指令最多10个参数
 #define CMD_SIZE_Y 100 // 每个参数最多100个字符

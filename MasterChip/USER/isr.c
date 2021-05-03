@@ -25,6 +25,7 @@
 #include "sci_compute.h"
 #include "mecanum_chassis.h"
 #include "encoder.h"
+#include "slave_comm.h"
 
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -35,7 +36,7 @@ void EXTI3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 //void DMA1_Channel1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 //void DMA1_Channel2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-//void DMA1_Channel3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+void DMA1_Channel3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void DMA1_Channel4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 //void DMA1_Channel5_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 //void DMA1_Channel6_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -166,19 +167,6 @@ void TIM1_UP_IRQHandler(void)
 		{
 			encoder_data[0] = encoder_coff[0] * timer_quad_get(TIMER_2); //编码器取值
 			encoder_data[1] = encoder_coff[1] * timer_quad_get(TIMER_3); //编码器取值
-																		 //			for (int i = 0; i < 4; i++)
-																		 //			{
-																		 //				if (encoder_data[i] > 0)
-																		 //				{
-																		 //					MecanumChassis.motor[i].now_duty = 10000 * encoder_data[i]
-																		 //							/ encoder_max;
-																		 //				}
-																		 //				else
-																		 //				{
-																		 //					MecanumChassis.motor[i].now_duty = 10000 * encoder_data[i]
-																		 //							/ -encoder_min;
-																		 //				}
-																		 //			}
 			MecanumChassis.motor[0].now_rpm = encoder_data[0];
 			MecanumChassis.motor[1].now_rpm = encoder_data[1];
 			timer_quad_clear(TIMER_2); //清空计数器
@@ -310,11 +298,35 @@ void USART2_IRQHandler(void)
 	}
 }
 
+uint8_t UART3_RxBuffer[20] =
+	{0};
+uint8_t UART3_RxBufferCnt = 0;
+uint8_t UART3_RxOK = 0;
 void USART3_IRQHandler(void)
 {
-	if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+	// >>>DMA方式接收数据<<<
+	if (USART_GetFlagStatus(USART3, USART_FLAG_IDLE) != RESET)
 	{
-		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+		uint16_t tmp;
+		UNUSED(tmp); // 避免GCC编译器警告
+		tmp = USART3->STATR;
+		tmp = USART3->DATAR;			 // 根据应用手册，必须要有这两步，否则清标志位的操作其实并不生效
+		DMA_Cmd(DMA1_Channel3, DISABLE); //关闭本次DMA
+
+//		uint8_t num = 20 - DMA_GetCurrDataCounter(DMA1_Channel3); //得到真正接收数据个数
+		DMA1_Channel3->CNTR = 20;
+		SlaveComm_UARTCallback();
+
+		DMA_Cmd(DMA1_Channel3, ENABLE); //开启下一次DMA
+		USART_ClearFlag(USART3, USART_FLAG_IDLE);
+	}
+}
+
+void DMA1_Channel3_IRQHandler(void)
+{
+	if (SET == DMA_GetFlagStatus(DMA1_FLAG_TC3))
+	{
+		DMA_ClearFlag(DMA1_FLAG_TC3);
 	}
 }
 

@@ -31,6 +31,7 @@
 #include "isr.h"
 #include "mecanum_chassis.h"
 #include "valuepack.h"
+#include "slave_comm.h"
 
 int main(void)
 {
@@ -40,6 +41,7 @@ int main(void)
 	systick_delay_ms(300); //延时300ms，等待主板其他外设上电成功
 	button_init();
 	CMD_Init();											 // 串口CMD初始化
+	SlaveComm_Init();									 // 从机串口初始化
 	uart_init(UART_2, 115200, UART2_TX_A2, UART2_RX_A3); // 虚拟示波器串口
 	Encoder_Init();										 // 编码器初始化
 														 //	icm20602_init_spi();   // ICM20602硬件SPI初始化
@@ -52,7 +54,7 @@ int main(void)
 	timer_pit_interrupt_ms(TIMER_1, 5);							   //200HZ, 与上一行等效
 	TIM_ITConfig((TIM_TypeDef *)TIM1_BASE, TIM_IT_Update, ENABLE); //使能TIM中断,允许更新中断
 	TIM_ClearITPendingBit((TIM_TypeDef *)TIM1_BASE, TIM_IT_Update);
-	nvic_init(TIM1_UP_IRQn, 1, 2, ENABLE);
+	nvic_init(TIM1_UP_IRQn, 0, 1, ENABLE);
 	// ------------------------------------------------------------------------------------
 
 	EnableGlobalIRQ(0);

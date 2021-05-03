@@ -33,7 +33,7 @@ void CMD_Init()
 {
 	uart_init(DEBUG_UART, DEBUG_UART_BAUD, DEBUG_UART_TX_PIN,
 			  DEBUG_UART_RX_PIN);
-	nvic_init(USART1_IRQn, 0, 0, ENABLE); // 配置UART NVIC
+	nvic_init(USART1_IRQn, 0, 1, ENABLE); // 配置UART NVIC
 
 	// >>>DMA方式接收数据<<<
 	USART_ITConfig(USART1, USART_IT_IDLE, ENABLE); // 开启闲时中断
@@ -41,7 +41,7 @@ void CMD_Init()
 	UART_DMA_Init(DMA1_Channel5, (u32)(&USART1->DATAR),
 				  (uint32)UART1_RxBuffer,
 				  RX_BUFFER_SIZE);					// USART1 DMA初始化
-	nvic_init(USART1_RX_DMA_CH_IRQN, 0, 0, ENABLE); // 配置DMA NVIC
+	nvic_init(USART1_RX_DMA_CH_IRQN, 0, 1, ENABLE); // 配置DMA NVIC
 
 	// >>>中断方式接收数据<<<
 	//	uart_rx_irq(UART_1, ENABLE); // 使能串口接收中断
@@ -88,7 +88,7 @@ void UART_DMA_Init(DMA_Channel_TypeDef *dma_ch, uint32 src_addr,
 	DMA_Init(dma_ch, &DMA_InitStructure);
 
 	DMA_ITConfig(dma_ch, DMA_IT_TC, ENABLE); //配置DMA传输完成中断
-	DMA_Cmd(dma_ch, ENABLE);				 //开启DMA1
+	DMA_Cmd(dma_ch, ENABLE);				 //开启DMA
 }
 
 char CMD_RxOK = 0; // 串口接收完成标志，给CMD_Exe用

@@ -21,16 +21,18 @@
 
 #define RX_BUFFER_SIZE 100
 
-extern uint8_t UART1_RxBuffer[RX_BUFFER_SIZE] ;
-extern uint8_t UART1_RxBufferCnt ;
-extern uint8_t UART1_RxComplete ;
-extern uint8_t UART1_RxIDLEFlag ;
-extern uint8_t UART1_RxBufferOverflow ; // 缓冲数组溢出标志
+extern uint8_t UART1_RxBuffer[RX_BUFFER_SIZE];
+extern uint8_t UART1_RxBufferCnt;
+extern uint8_t UART1_RxComplete;
+extern uint8_t UART1_RxIDLEFlag;
+extern uint8_t UART1_RxBufferOverflow; // 缓冲数组溢出标志
+
+extern uint8_t UART3_RxBuffer[20];
+extern uint8_t UART3_RxBufferCnt;
+extern uint8_t UART3_RxOK;
 
 extern char TIM1_10ms_Flag;
 extern char TIM1_20ms_Flag;
 extern char TIM1_100ms_Flag;
 
 #endif
-
-
