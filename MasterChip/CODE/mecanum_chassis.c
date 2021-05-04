@@ -13,6 +13,7 @@
 #include "config.h"
 #include "sci_compute.h"
 #include "motor.h"
+#include "path_following.h"
 #define MECANUM_X_ASSM
 // ===========================================Private==============================================
 
@@ -78,11 +79,11 @@ void PostureStatusInit(void)
 
 /**
  * @brief 底盘速度向量控制,计算出期望速度向量
- * @param speed 速度大小/rpm
+ * @param speed 速度大小(m/s)
  * @param dir 速度方向/rad
  * @param omega 自转角速度(rad/s)，逆时针为正方向
  **/
-int MecanumChassis_Move(float speed, float dir, float omega)
+int MecanumChassis_OmniDrive(float speed, float dir, float omega)
 {
 	float absolute_angle_offset = 0; //使用绝对坐标时，根据全场定位测得的偏航角进行补偿
 	if (MecanumChassis.pos_mode == POS_MODE_ABSOLUTE)
@@ -128,27 +129,56 @@ int MecanumChassis_Move(float speed, float dir, float omega)
 	}
 }
 
+float drift_damp_coff = 0.85; // 遏止转向漂移的阻尼系数
+/**
+ * @brief 差分转向模式
+ * @param speed 速度大小
+ * @param omega 角速度(rad/s)
+ */
+void MecanumChassis_DiffDrive(float speed, float omega)
+{
+	float left_wheel_speed, right_wheel_speed;
+	left_wheel_speed = speed - omega * WHEEL_LEFT2RIGHT / 2;
+	right_wheel_speed = speed + omega * WHEEL_LEFT2RIGHT / 2;
+	float target_speed[4];
+	target_speed[0] = left_wheel_speed;
+	target_speed[1] = right_wheel_speed;
+	target_speed[2] = right_wheel_speed * drift_damp_coff;
+	target_speed[3] = left_wheel_speed * drift_damp_coff;
+
+	for (int i = 0; i < 4; i++)
+	{
+		MecanumChassis.motor[i].target_rpm = target_speed[i] * 100;
+	}
+}
+
 /**
  * @brief 底盘控制状态机
  * 
  */
 void MecanumChassis_Exe()
 {
+	if (!MecanumChassis.motor_self_check_ok)
+		return;
 	switch (MecanumChassis.ctrl_mode)
 	{
 	case CTRL_MODE_NONE:
 		break;
 	case CTRL_MODE_CMD:
 		Motor_SetDuty(MecanumChassis.motor[0].target_duty,
-				MecanumChassis.motor[1].target_duty,
-				MecanumChassis.motor[2].target_duty,
-				MecanumChassis.motor[3].target_duty);
+					  MecanumChassis.motor[1].target_duty,
+					  MecanumChassis.motor[2].target_duty,
+					  MecanumChassis.motor[3].target_duty);
 		break;
-	case CTRL_MODE_AUTO:
-		MecanumChassis_Move(MecanumChassis.target_speed,
-				MecanumChassis.target_dir, MecanumChassis.target_omega);
+	case CTRL_MODE_OMNI:
+		MecanumChassis_OmniDrive(MecanumChassis.target_speed,
+								 MecanumChassis.target_dir, MecanumChassis.target_omega);
+
 		Motor_RpmCtrl();
 		break;
+	case CTRL_MODE_DIFF:
+		MecanumChassis_DiffDrive(MecanumChassis.target_speed, MecanumChassis.target_omega);
+		Motor_RpmCtrl();
 	case CTRL_MODE_TUNING:
 		Motor_RpmCtrl();
 		break;

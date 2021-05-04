@@ -192,7 +192,7 @@ int CMD_CommandExe(int argc, char **argv)
 	}
 	else if (strcmp(argv[0], "SCM") == 0) // SetCtrlMode
 	{
-		MecanumChassis.ctrl_mode = (MecanumChassis.ctrl_mode + 1) % 4;
+		MecanumChassis.ctrl_mode = (MecanumChassis.ctrl_mode + 1) % 5;
 		uprintf("CMD|Ctrl mode change to %d\r\n", MecanumChassis.ctrl_mode);
 	}
 	else if (strcmp(argv[0], "GA") == 0) // Teleop_GoAhead

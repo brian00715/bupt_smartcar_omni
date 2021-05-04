@@ -152,7 +152,6 @@ void Motor_SelfCheck(void)
 	uprintf("---------------------------------------------\r\n");
 }
 
-#define DEBUG
 extern int wave_index;
 extern char TIM1_100ms_Flag;
 /**
@@ -189,6 +188,7 @@ void Motor_DutyCtrl()
 	}
 }
 
+// #define DEBUG
 /**
  * @brief ×ªËÙ»·
  */
