@@ -9,7 +9,7 @@
 #include "headfile.h"
 
 uint8 Threshold = 123;
-uint16 Threshold_ChaHe = 270;
+uint16 Threshold_ChaHe = 280;
 uint8 mt9v03x_image_binary[MT9V03X_H][MT9V03X_W];
 
 uint8 Image_Process_Flag = 0;    //是否进行了图像处理的标志位，发送时用于告知主片是否进行了图像处理
@@ -139,7 +139,7 @@ void Image_Processing(void)
 {
     if (mt9v03x_finish_flag == 0) //若图像未采集完成，则不进行图像处理，且令是否进行图像处理标志为0
     {
-        Image_Process_Flag = 0;
+//        Image_Process_Flag = 0;
     }
     else if (mt9v03x_finish_flag == 1) //若图像采集完成，则进行图像处理
     {
@@ -292,7 +292,7 @@ void Image_Processing(void)
         if (Image_RBig_Curve_Flag == 1 || Image_LBig_Curve_Flag == 1) //如果为大弯时计算斜率
         {
             //                Image_XieLv=1000*(Image_Mline[i]-Image_Mline[59])/(59-i);
-            Image_XieLv_float[0] = 2.0 * (Image_Mline[i] - Image_Mline[59]) / (59 - i);
+            Image_XieLv_float[0] = 2.0 * (Image_Mline[i] - 40) / (59 - i);
             Image_XieLv_int = (int16)(1000 * Image_XieLv_float[0]);
             //            Image_XieLv_float[1]=Image_Regression(59, i);
         }
@@ -336,14 +336,14 @@ void Image_Processing(void)
             {
                 if (Image_TuBian[0] <= Image_GuaiDian[0])
                 {
-                    if (Image_GuaiDian_Sum <= 1)
+                    if (Image_GuaiDian_Sum <= 5)
                     {
                         for (i = 58; i < Image_GuaiDian[0]; i--)
                         {
-                            if (Image_Regression(59, i) >= 0.001 || Image_Regression(59, i) <= -0.001)
+                            if (Image_Regression(59, i) >= 0.0001 || Image_Regression(59, i) <= -0.0001)
                                 break;
                         }
-                        Image_XieLv_float[1] = Image_Regression(i, Image_GuaiDian[0]);
+                        Image_XieLv_float[1] = 5.0*Image_Regression(i, Image_GuaiDian[0]);
                     }
                     else
                     {
@@ -376,14 +376,14 @@ void Image_Processing(void)
             }
             else if (Image_TuBian_Sum == 0 && Image_GuaiDian_Sum != 0)
             {
-                if (Image_GuaiDian_Sum <= 1)
+                if (Image_GuaiDian_Sum <= 5)
                 {
                     for (i = 58; i < Image_GuaiDian[0]; i--)
                     {
                         if (Image_Regression(59, i) >= 0.0001 || Image_Regression(59, i) <= -0.0001)
                             break;
                     }
-                    Image_XieLv_float[1] = Image_Regression(i, Image_GuaiDian[0]);
+                    Image_XieLv_float[1] = 5.0*Image_Regression(i, Image_GuaiDian[0]);
                 }
                 else
                 {
@@ -407,7 +407,7 @@ void Image_Processing(void)
             Image_XieLv_int = (int16)(1000 * Image_XieLv_float[1]);
         }
     }
-    count++;
     mt9v03x_finish_flag = 0;
     Image_Process_Flag = 1; //若图像处理完成，则图像处理标志置1
+    count++;
 }

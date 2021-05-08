@@ -41,7 +41,8 @@ extern uint8 Image_RBig_Curve_Flag; //”“¥ÛÕ‰±Í÷æ
 extern float Image_XieLv_float[2];
 extern int16 Image_XieLv_int;
 extern uint8 Image_Show_Flag;
-
+extern uint8 Image_GuaiDian_Sum;
+extern uint8 Image_GuaiDian[10];
 extern int32 count;
 void Image_Binary(uint8 Threshold);
 void Image_Processing(void);

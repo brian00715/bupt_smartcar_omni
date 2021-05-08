@@ -23,6 +23,7 @@ uint8 Gpio_Sup_Up[3] = { 0 };
 uint8 Gpio_Sup_Down[3] = { 0 };
 uint16 Pwm_Count = 0;
 uint8 Pwm_Up_Down = 0;
+
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -159,6 +160,7 @@ void TIM3_IRQHandler(void) {
     }
 }
 
+//uint8 Uart_SendData[20]={0};
 void TIM4_IRQHandler(void) {
     if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET) {
         TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
@@ -207,17 +209,38 @@ void TIM4_IRQHandler(void) {
         /******************屏幕显示图像与从机发送数据不同时进行********************/
         if(Image_Show_Flag==0)
         {
-            Image_Processing();
+//            Image_Processing();
             encoder_data[0] = timer_quad_get(TIMER_2); //编码器取值
             encoder_data[1] = timer_quad_get(TIMER_3); //编码器取值
             timer_quad_clear(TIMER_2);                 //清空计数器
             timer_quad_clear(TIMER_3);                 //清空计数器
+
+
+//            Uart_SendData[0]=0x00;Uart_SendData[1]=0xff;
+//            Uart_SendData[2]=(encoder_data[0]>>8)&0xff;Uart_SendData[3]=encoder_data[0]&0xff;
+//            Uart_SendData[4]=(encoder_data[1]>>8)&0xff;Uart_SendData[5]=encoder_data[1]&0xff;
+//            Uart_SendData[6]=Image_Process_Flag;
+//            Uart_SendData[7]=(Image_XieLv_int>>8)&0xff;Uart_SendData[8]=Image_XieLv_int&0xff;
+//            Uart_SendData[9]=Image_LBig_Curve_Flag;Uart_SendData[10]=Image_RBig_Curve_Flag;
+//            Uart_SendData[11]=0xee;Uart_SendData[12]=0x11;
+//            uart_putbuff(UART_3, Uart_SendData, 13);
+
             /*************************给主片定时发送数据*****************************/
             uart_putchar(UART_3, 0x00);uart_putchar(UART_3, 0xff);      //帧头
-            uart_putchar(UART_3,0x20);uart_putdoublechar(UART_3,encoder_data[0]);uart_putdoublechar(UART_3,encoder_data[1]); //发送编码器数据
-            uart_putchar(UART_3,0x21);uart_putchar(UART_3,Image_Process_Flag);   //发送是否进行图像处理标志，1为已进行图像处理，0为未进行图像处理
-            uart_putchar(UART_3,0x22);uart_putdoublechar(UART_3,Image_XieLv_int);   //发送整形斜率（原斜率*1000）
-            uart_putchar(UART_3,0x23);uart_putchar(UART_3,Image_LBig_Curve_Flag);uart_putchar(UART_3,Image_RBig_Curve_Flag); //发送左大弯和右大弯标志位
+//            uart_putchar(UART_3,0x20);
+            uart_putdoublechar(UART_3,encoder_data[0]);uart_putdoublechar(UART_3,encoder_data[1]); //发送编码器数据
+//            uart_putchar(UART_3,0x21);
+//            uart_putchar(UART_3,Image_Process_Flag);   //发送是否进行图像处理标志，1为已进行图像处理，0为未进行图像处理
+            if(Image_Process_Flag ==1)
+            {
+                uart_putchar(UART_3,Image_Process_Flag);   //发送是否进行图像处理标志，1为已进行图像处理，0为未进行图像处理
+                Image_Process_Flag = 0;
+            }
+            else uart_putchar(UART_3,0);
+//            uart_putchar(UART_3,0x22);
+            uart_putdoublechar(UART_3,Image_XieLv_int);   //发送整形斜率（原斜率*1000）
+//            uart_putchar(UART_3,0x23);
+            uart_putchar(UART_3,Image_LBig_Curve_Flag);uart_putchar(UART_3,Image_RBig_Curve_Flag); //发送左大弯和右大弯标志位
             uart_putchar(UART_3, 0xee);uart_putchar(UART_3, 0x11);      //帧尾
         }
     }

@@ -29,7 +29,7 @@
 //摄像头调试
 void Init_Fun(void)
 {
-    uart_init(UART_3, 460800, UART3_TX_B10, UART3_RX_B11); //uart3初始化传输摄像头数据
+    uart_init(UART_3, 256000, UART3_TX_B10, UART3_RX_B11); //uart3初始化传输摄像头数据
     gpio_init(C8, GPI, 1, SPEED_50MHZ | IN_PULLUP);        //初始化C8按钮，用作增加二值化阈值
     gpio_init(C9, GPI, 1, SPEED_50MHZ | IN_PULLUP);        //初始化C9按钮，用作降低二值化阈值
     gpio_init(B2, GPI, 1, SPEED_50MHZ | IN_PULLUP);        //初始化B2按钮，用作控制屏幕显示图像或从机数据发送，两者不同时进行
@@ -57,19 +57,24 @@ int main(void)
     while (1)
     {
         //Image_Binary(123);                       //二值化
+        Image_Processing();
         ips114_showint32(180, 0, count, 10);
-        if (mt9v03x_finish_flag == 1) //摄像头采集完成标志位
+        if (Image_Process_Flag == 1) //摄像头处理完成标志位
         {
             if (Image_Show_Flag == 1)
             {
                 //Image_Binary(Threshold);                       //二值化
-                Image_Processing();
+//                Image_Processing();
+//                ips114_showint32(180, 0, count, 10);
                 ips114_showuint16(180, 1, Threshold_ChaHe);
                 ips114_showuint8(180, 2, Image_TuBian_Sum);
-                ips114_showuint8(180, 3, Image_LBig_Curve_Flag);
-                ips114_showuint8(180, 4, Image_RBig_Curve_Flag);
-                ips114_showfloat(180, 5, Image_XieLv_float[0], 2, 3);
-                ips114_showfloat(180, 6, Image_XieLv_float[1], 2, 3);
+                ips114_showuint8(180, 3, Image_TuBian[0]);
+                ips114_showuint8(180, 4, Image_GuaiDian_Sum);
+                ips114_showuint8(180, 5, Image_GuaiDian[0]);
+//                ips114_showuint8(180, 3, Image_LBig_Curve_Flag);
+//                ips114_showuint8(180, 4, Image_RBig_Curve_Flag);
+                ips114_showfloat(180, 6, Image_XieLv_float[0], 2, 3);
+                ips114_showfloat(180, 7, Image_XieLv_float[1], 2, 3);
                 //Uart_Sendimg(UART_1,camera_buffer_addr,MT9V03X_W, MT9V03X_H);    //图像分辨率在SEEKFREE_MT9V03X.h中查看
                 //oled_dis_bmp(MT9V03X_H, MT9V03X_W, camera_buffer_addr,123);      //oled显示摄像头图像，最后个数据为二值化的阈值
                 ips114_displayimage032_zoom1(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, 0, 0, MT9V03X_W * 2, MT9V03X_H * 2);
@@ -93,6 +98,20 @@ int main(void)
                     ips114_drawpoint(Image_Mline[i] * 2 + 1, 2 * i + 1, GREEN);
                     ips114_drawpoint(Image_Mline[i] * 2 + 1, 2 * i, GREEN);
                 }
+//                for(int i=0;i>Image_GuaiDian_Sum;i++)
+//                {
+//                    ips114_drawpoint(Image_Mline[Image_GuaiDian[i]] * 2, 2 * Image_GuaiDian[i], YELLOW);
+//                    ips114_drawpoint(Image_Mline[Image_GuaiDian[i]] * 2, 2 * Image_GuaiDian[i] + 1, YELLOW);
+//                    ips114_drawpoint(Image_Mline[Image_GuaiDian[i]] * 2 + 1, 2 * Image_GuaiDian[i] + 1, YELLOW);
+//                    ips114_drawpoint(Image_Mline[Image_GuaiDian[i]] * 2 + 1, 2 * Image_GuaiDian[i], YELLOW);
+//                }
+//                for(int i=0;i>Image_TuBian_Sum;i++)
+//                {
+//                    ips114_drawpoint(Image_Mline[Image_TuBian[i]] * 2, 2 * Image_TuBian[i], BLUE);
+//                    ips114_drawpoint(Image_Mline[Image_TuBian[i]] * 2, 2 * Image_TuBian[i] + 1, BLUE);
+//                    ips114_drawpoint(Image_Mline[Image_TuBian[i]] * 2 + 1, 2 * Image_TuBian[i] + 1, BLUE);
+//                    ips114_drawpoint(Image_Mline[Image_TuBian[i]] * 2 + 1, 2 * Image_TuBian[i], BLUE);
+//                }
             }
             //InducerMax_Get();          //InducerMax_Get_Start==1时获取最大值
             //Inducer_Processing();      //可放入定时中断中
