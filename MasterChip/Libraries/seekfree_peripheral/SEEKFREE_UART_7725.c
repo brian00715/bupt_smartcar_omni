@@ -1,3 +1,4 @@
+#ifdef USE_SEEKFREE_UART_7725
 /*********************************************************************************************************************
  * COPYRIGHT NOTICE
  * Copyright (c) 2019,Öð·É¿Æ¼¼
@@ -374,7 +375,7 @@ void Image_Decompression(uint8 *data1,uint8 *data2)
     }
 }
 
-
+#endif
 
 
 

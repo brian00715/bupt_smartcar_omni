@@ -28,7 +28,7 @@
                                                 默认分辨率是                     188*50
                                                 默认FPS             50帧
  ********************************************************************************************************************/
-
+#ifdef USE_CAMERA
 
 #include "zf_systick.h"
 #include "zf_uart.h"
@@ -408,5 +408,5 @@ void seekfree_sendimg_03x(UARTN_enum uartn, uint8 *image, uint16 width, uint16 h
     uart_putbuff(uartn, image, width*height);  //发送图像
 }
 
-
+#endif
 

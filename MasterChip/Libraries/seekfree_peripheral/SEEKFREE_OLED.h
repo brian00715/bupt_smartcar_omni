@@ -26,7 +26,7 @@
 					------------------------------------ 
  ********************************************************************************************************************/
 
-
+#ifdef USE_OLED
 
 #ifndef _SEEKFREE_OLED_h
 #define _SEEKFREE_OLED_h
@@ -37,7 +37,7 @@
 
 
 
-//----宏定义OLED引脚----	 
+//----宏定义OLED引脚----	 6
 #define  OLED_SCL_PIN	A5
 #define  OLED_SDA_PIN	A7
 #define  OLED_RST_PIN	C13
@@ -86,5 +86,7 @@ void oled_print_chinese(uint8 x, uint8 y, uint8 size, const uint8 *p, uint8 len)
 
 
 /********************************************************************/
+
+#endif
 
 #endif

@@ -1,41 +1,49 @@
 #include "ch32v10x_usart.h"
 #include "ch32v10x_rcc.h"
 #include "board.h"
-
-
-
+#include "isr.h"
+#include "cmd.h"
+#include "stdarg.h"
 
 void board_init(void)
 {
-    //»ñÈ¡ÏµÍ³Ö÷Æµ
-    sys_clk = 8000000 * (((RCC->CFGR0 >> 18)&0x0F) + 2);
-    //³õÊ¼»¯DEBUG´®¿Ú
-    uart_init(DEBUG_UART, DEBUG_UART_BAUD, DEBUG_UART_TX_PIN, DEBUG_UART_RX_PIN);
+	//è·å–ç³»ç»Ÿä¸»é¢‘
+	sys_clk = 8000000 * (((RCC->CFGR0 >> 18) & 0x0F) + 2);
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-//  @brief      printfÖØ¶¨Ïò
+//  @brief      printfé‡å®šå‘
 //  @param      void
 //  @return     void
 //  @since      v1.0
-//  Sample usage:              ÖØ¶¨Ïòprintfµ½DEBUG´®¿ÚÉÏ
+//  Sample usage:              é‡å®šå‘printfåˆ°DEBUGä¸²å£ä¸Š
 //-------------------------------------------------------------------------------------------------------------------
-#if (1 == PRINTF_ENABLE)
-int _write(int fd, char *buf, int size)
-{
-    int i;
-    for(i=0; i<size; i++)
-    {
-        while (USART_GetFlagStatus((USART_TypeDef*)UARTN[DEBUG_UART], USART_FLAG_TC) == RESET);
-        USART_SendData((USART_TypeDef*)UARTN[DEBUG_UART], *buf++);
-    }
-    return size;
-}
-
-//int fputc(int ch, FILE *f)
+//#if (1 == PRINTF_ENABLE)
+//int _write(int fd, char *buf, int size)
 //{
-//  USART_SendData(USART1,ch);
-//  return ch;
+//    int i;
+//    for(i=0; i<size; i++)
+//    {
+//        while (USART_GetFlagStatus((USART_TypeDef*)UARTN[DEBUG_UART], USART_FLAG_TC) == RESET);
+//        USART_SendData((USART_TypeDef*)UARTN[DEBUG_UART], *buf++);
+//    }
+//    return size;
 //}
-#endif
+//#endif
 
+void uprintf(char *fmt, ...)
+{
+	int size;
+	va_list arg_ptr;
+	va_start(arg_ptr, fmt);
+	size = vsnprintf(UART1_TxBuffer, UART1_TX_BUFFER_SIZE, fmt, arg_ptr);
+	va_end(arg_ptr);
+	 for (int i = 0; i < size; i++)
+	 {
+	 	while (USART_GetFlagStatus((USART_TypeDef *)UARTN[DEBUG_UART],
+	 							   USART_FLAG_TC) == RESET)
+	 		;
+	 	USART_SendData((USART_TypeDef *)UARTN[DEBUG_UART], UART1_TxBuffer[i]);
+	 }
+//	UART_DMA_SendData(DMA1_Channel4, UART1_TxBuffer, size);
+}

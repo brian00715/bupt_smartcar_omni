@@ -50,7 +50,7 @@ uint8 number_conversion_ascii(uint32 dat, int8 *p, uint8 neg_type, uint8 radix)
 void printf_reverse_order(int8 *d_buff, uint32 len)
 {
     uint32 i;
-    int8  temp_data;
+    int8  temp_data = 0;;
     for(i=0;i<len/2;i++)
     {
         temp_data = d_buff[len-1-i];
@@ -373,3 +373,5 @@ uint32 zf_sprintf(int8 *buff, const int8 *format, ...)
 
     return buff_len;
 }
+
+

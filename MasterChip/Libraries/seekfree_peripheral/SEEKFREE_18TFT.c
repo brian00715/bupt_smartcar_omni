@@ -1,3 +1,4 @@
+#ifdef USE_SEEKFREE_18TFT
 /*********************************************************************************************************************
  * COPYRIGHT NOTICE
  * Copyright (c) 2018,Öð·É¿Æ¼¼
@@ -768,4 +769,4 @@ void lcd_display_chinese(uint16 x, uint16 y, uint8 size, const uint8 *p, uint8 n
         }   
     }
 }
-
+#endif

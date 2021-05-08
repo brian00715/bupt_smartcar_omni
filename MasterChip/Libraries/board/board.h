@@ -15,7 +15,7 @@
 #define DEBUG_UART_RX_PIN       UART1_RX_A10        //DEBUG´®¿ÚRXÒý½Å
 
 void board_init(void);
-
+void uprintf(char *fmt, ...);
 
 
 

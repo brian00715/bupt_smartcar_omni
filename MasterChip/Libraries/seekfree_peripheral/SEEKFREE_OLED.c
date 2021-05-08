@@ -25,7 +25,7 @@
 						CS           查看SEEKFREE_OLED文件内的OLED_CS_PIN    宏定义
 					------------------------------------ 
  ********************************************************************************************************************/
-
+#ifdef USE_OLED
 
 
 
@@ -530,3 +530,4 @@ void oled_print_chinese(uint8 x, uint8 y, uint8 size, const uint8 *p, uint8 len)
     }
 }
 
+#endif

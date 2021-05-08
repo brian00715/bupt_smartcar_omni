@@ -16,7 +16,7 @@
  * @date       		2019-04-30
  * @note		    示波器下载地址：https://pan.baidu.com/s/198CMXTZsbI3HAEqNXDngBw（包含清华直立方案资料）
  ********************************************************************************************************************/
-
+#ifdef USE_VIRSCO
 
 #include "SEEKFREE_WIRELESS.h"
 #include "SEEKFREE_VIRSCO.h"
@@ -86,4 +86,4 @@ void data_conversion(int16 data1, int16 data2, int16 data3, int16 data4, uint8 *
 	
 //	uart_putbuff(UART_4,dat,10);  //数据转换完成后，使用串口发送将数组的内容发送出去
 }
-
+#endif
