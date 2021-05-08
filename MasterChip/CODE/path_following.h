@@ -17,6 +17,9 @@ typedef struct PathFollowStatus_t
     uint8 image_process_done;
     uint8 begin;
     float path_diff_angle; //  赛道方向与车头方向(90°)的夹角(rad)
+    float forthright_speed;
+    float curve_speed;
+    float angle_thres;
 
 } PathFollowStatus_t;
 

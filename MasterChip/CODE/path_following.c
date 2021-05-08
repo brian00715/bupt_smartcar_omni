@@ -26,8 +26,8 @@
 PathFollowStatus_t PathFollowStatus;
 
 PID_t HeadingAnglePID; // 差分驱动时航向角PID
-PID_t YawPID;          // 偏航角驱动时的PID
-PID_t NormalPID;       // 法向修正PID
+PID_t YawPID;		   // 偏航角驱动时的PID
+PID_t NormalPID;	   // 法向修正PID
 
 void PathFollowing_Init()
 {
@@ -73,19 +73,19 @@ void PathFollowing_Exe()
 	if (!PathFollowStatus.begin)
 		return;
 	float omega_ctrl = PID_GetOutput(&HeadingAnglePID, 0,
-			PathFollowStatus.path_diff_angle);
+									 PathFollowStatus.path_diff_angle);
 	MecanumChassis.target_omega = omega_ctrl;
-//	if (TIM1_100ms_Flag)
-//	{
-//		uprintf("PathFollow|diff_ang:%6.2f omega_ctrl:%5.2f \r\n",
-//				PathFollowStatus.path_diff_angle, MecanumChassis.target_omega);
-//	}
-	if(fabs(PathFollowStatus.path_diff_angle)>0.98)
+	//	if (TIM1_100ms_Flag)
+	//	{
+	//		uprintf("PathFollow|diff_ang:%6.2f omega_ctrl:%5.2f \r\n",
+	//				PathFollowStatus.path_diff_angle, MecanumChassis.target_omega);
+	//	}
+	if (fabs(PathFollowStatus.path_diff_angle) > 1.047)
 	{
-		MecanumChassis.target_speed = 0.2;
+		MecanumChassis.target_speed = 0.15;
 	}
 	else
 	{
-		MecanumChassis.target_speed = 0.4;
+		MecanumChassis.target_speed = 0.47;
 	}
 }
