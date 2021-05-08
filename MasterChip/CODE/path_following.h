@@ -1,20 +1,28 @@
 #ifndef PATH_FOLLOWING_H_
 #define PATH_FOLLOWING_H_
 
+#include "headfile.h"
+#include "pid.h"
+
 typedef struct PathFollowStatus_t
 {
-    uint8 meet_cross;         // åå­—
-    uint8 meet_island_first;  // ç¬¬ä¸€æ¬¡è¯†åˆ«åˆ°ç¯å²›
-    uint8 meet_island_second; // ç¬¬äºŒæ¬¡è¯†åˆ«åˆ°ç¯å²›
-    uint8 meet_left_fork;     // å·¦å²”è·¯
-    uint8 meet_right_fork;    // å³å²”è·¯
-    uint8 meet_garage;        // è½¦åº“
+    uint8 meet_cross;         // Ê®×Ö
+    uint8 meet_island_first;  // µÚÒ»´ÎÊ¶±ğµ½»·µº
+    uint8 meet_island_second; // µÚ¶ş´ÎÊ¶±ğµ½»·µº
+    uint8 meet_left_fork;     // ×ó²íÂ·
+    uint8 meet_right_fork;    // ÓÒ²íÂ·
+    uint8 meet_garage;        // ³µ¿â
+    uint8 meet_left_big_curve;
+    uint8 meet_right_big_curve;
+    uint8 image_process_done;
     uint8 begin;
-    float path_diff_angle; //  èµ›é“æ–¹å‘ä¸è½¦å¤´æ–¹å‘(90Â°)çš„å¤¹è§’(rad)
+    float path_diff_angle; //  ÈüµÀ·½ÏòÓë³µÍ··½Ïò(90¡ã)µÄ¼Ğ½Ç(rad)
 
 } PathFollowStatus_t;
 
 extern PathFollowStatus_t PathFollowStatus;
+extern PID_t HeadingAnglePID;
+extern PID_t YawPID;
 
 void PathFollowing_Init();
 void PathFollowing_Exe();

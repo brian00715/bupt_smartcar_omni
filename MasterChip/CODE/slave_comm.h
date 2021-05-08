@@ -4,5 +4,6 @@
 
 void SlaveComm_Init();
 void SlaveComm_UARTCallback();
+void SlaveComm_Exe();
 
 #endif

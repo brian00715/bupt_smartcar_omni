@@ -39,15 +39,16 @@ int main(void)
 	Encoder_Init();										 // 编码器初始化
 														 //	icm20602_init_spi();   // ICM20602硬件SPI初始化
 	MecanumChassis_Init();								 // 底盘初始化
+	PathFollowing_Init();
 	//	ips114_init();
 	//    elec_init();
 
 	// 摄像头舵机端口
 	//	pwm_init(PWM1_CH2_A9, 200, 0);
-	timer_pit_interrupt_ms(TIMER_1, 5);							   //200HZ, 与上一行等效
-	TIM_ITConfig((TIM_TypeDef *)TIM1_BASE, TIM_IT_Update, ENABLE); //使能TIM中断,允许更新中断
-	TIM_ClearITPendingBit((TIM_TypeDef *)TIM1_BASE, TIM_IT_Update);
-	nvic_init(TIM1_UP_IRQn, 0, 1, ENABLE);
+	timer_pit_interrupt_ms(TIMER_1, 5);							 //200HZ, 与上一行等效
+	TIM_ITConfig((TIM_TypeDef *) TIM1_BASE, TIM_IT_Update, ENABLE); //使能TIM中断,允许更新中断
+	TIM_ClearITPendingBit((TIM_TypeDef *) TIM1_BASE, TIM_IT_Update);
+	nvic_init(TIM1_UP_IRQn, 0, 0, ENABLE);
 	// ------------------------------------------------------------------------------------
 
 	EnableGlobalIRQ(0);
@@ -56,6 +57,7 @@ int main(void)
 	while (1)
 	{
 		CMD_Exe();
+		SlaveComm_Exe();
 		MecanumChassis_Exe();
 		PathFollowing_Exe();
 
@@ -92,11 +94,15 @@ int main(void)
 				sendValuePack(&txpack);
 				break;
 			case 3:
+				txpack.floats[0] = MecanumChassis.motor[3].target_rpm * 1.0;
+				txpack.floats[1] = MecanumChassis.motor[3].now_rpm * 1.0;
+				sendValuePack(&txpack);
 				break;
 			default:
 				break;
 			}
 		}
+
 		if (TIM1_100ms_Flag)
 		{
 			//			uprintf("%d %d\r\n",MecanumChassis.motor[0].now_rpm,MecanumChassis.motor[1].now_rpm);
@@ -104,11 +110,31 @@ int main(void)
 
 		if (gpio_get(KEY1) == RESET)
 		{
-			systick_delay_ms(50);
+			systick_delay_ms(80);
 			if (gpio_get(KEY1) == RESET)
 			{
 				uprintf("key1 pressed!\r\n");
 				Motor_SelfCheck();
+			}
+		}
+		if (gpio_get(KEY2) == RESET)
+		{
+			systick_delay_ms(80);
+			if (gpio_get(KEY2) == RESET)
+			{
+				uprintf("key2 pressed!\r\n");
+				PathFollowStatus.begin = (PathFollowStatus.begin + 1) % 2;
+				uprintf("path follow change to %d\r\n", PathFollowStatus.begin);
+				if (PathFollowStatus.begin)
+				{
+					MecanumChassis.ctrl_mode = CTRL_MODE_DIFF;
+				}
+				else
+				{
+					MecanumChassis.ctrl_mode = CTRL_MODE_CMD;
+					MecanumChassis.target_speed = 0;
+					MecanumChassis.target_omega = 0;
+				}
 			}
 		}
 	}

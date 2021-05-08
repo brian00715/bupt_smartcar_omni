@@ -145,6 +145,10 @@ void MecanumChassis_DiffDrive(float speed, float omega)
 	target_speed[1] = right_wheel_speed;
 	target_speed[2] = right_wheel_speed * drift_damp_coff;
 	target_speed[3] = left_wheel_speed * drift_damp_coff;
+	for(int i=0;i<4;i++)
+	{
+		__LIMIT(target_speed[i],MAX_ROTATE_VEL);
+	}
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -173,12 +177,12 @@ void MecanumChassis_Exe()
 	case CTRL_MODE_OMNI:
 		MecanumChassis_OmniDrive(MecanumChassis.target_speed,
 								 MecanumChassis.target_dir, MecanumChassis.target_omega);
-
 		Motor_RpmCtrl();
 		break;
 	case CTRL_MODE_DIFF:
 		MecanumChassis_DiffDrive(MecanumChassis.target_speed, MecanumChassis.target_omega);
 		Motor_RpmCtrl();
+		break;
 	case CTRL_MODE_TUNING:
 		Motor_RpmCtrl();
 		break;

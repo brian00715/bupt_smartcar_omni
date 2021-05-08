@@ -1,7 +1,8 @@
 #include "ch32v10x_usart.h"
 #include "ch32v10x_rcc.h"
 #include "board.h"
-
+#include "isr.h"
+#include "cmd.h"
 #include "stdarg.h"
 
 void board_init(void)
@@ -30,22 +31,19 @@ void board_init(void)
 //}
 //#endif
 
-
-uint8_t print_buffer[100];
 void uprintf(char *fmt, ...)
 {
 	int size;
 	va_list arg_ptr;
 	va_start(arg_ptr, fmt);
-	size = vsnprintf(print_buffer, 100, fmt, arg_ptr);
+	size = vsnprintf(UART1_TxBuffer, UART1_TX_BUFFER_SIZE, fmt, arg_ptr);
 	va_end(arg_ptr);
-	for (int i = 0; i < size; i++)
-	{
-		while (USART_GetFlagStatus((USART_TypeDef*) UARTN[DEBUG_UART],
-				USART_FLAG_TC) == RESET)
-			;
-		USART_SendData((USART_TypeDef*) UARTN[DEBUG_UART], print_buffer[i]);
-	}
-
+	 for (int i = 0; i < size; i++)
+	 {
+	 	while (USART_GetFlagStatus((USART_TypeDef *)UARTN[DEBUG_UART],
+	 							   USART_FLAG_TC) == RESET)
+	 		;
+	 	USART_SendData((USART_TypeDef *)UARTN[DEBUG_UART], UART1_TxBuffer[i]);
+	 }
+//	UART_DMA_SendData(DMA1_Channel4, UART1_TxBuffer, size);
 }
-
