@@ -149,18 +149,12 @@ void TIM1_UP_IRQHandler(void)
 		{
 			TIM1_100ms_Flag = 0;
 		}
-		//硬件SPI采集
-		//		get_icm20602_accdata_spi();
-		//		get_icm20602_gyro_spi();
-		//		if (icm_gyro_z > 2000)
-		//		{
-		//			icm_gyro_z = 2000;
-		//		}
-		//		else if (icm_gyro_z < -2000)
-		//		{
-		//			icm_gyro_z = -2000;
-		//		}
-		//		MecanumChassis.posture_status.yaw = KalmanFilter(icm_acc_z * 1.0, icm_gyro_z * 1.0);
+		//硬件SPI采集陀螺仪数据
+		get_icm20602_accdata_spi();
+		get_icm20602_gyro_spi();
+		icm_acc_z = (int16)((float)icm_acc_z / 4096);	   // ±8g
+		icm_gyro_z = (int16)((float)icm_gyro_z / 16.4); // ±2000dps,16 bit adc
+		MecanumChassis.posture_status.yaw = KalmanFilter(icm_acc_z * 1.0, icm_gyro_z * 1.0);
 		//		MecanumChassis.posture_status.yaw += RAD2ANGLE(icm_gyro_z * 0.005); // 偏航角积分
 
 		// >>>采集编码器12的数据<<<
@@ -284,14 +278,13 @@ void USART1_IRQHandler(void)
 		DMA_Cmd(DMA1_Channel5, ENABLE); //开启下一次DMA
 	}
 	// >>>DMA发送<<<
-//	if (USART_GetITStatus(USART1, USART_IT_TC) != RESET) // 全部数据发送完成，产生该标记
-//	{
-//		USART_ClearITPendingBit(USART1, USART_IT_TC); // 清除完成标记
-//		DMA_Cmd(DMA1_Channel4, DISABLE);			  // 关闭DMA
-//		memset(UART1_TxBuffer,0,sizeof(uint8)*UART1_TX_BUFFER_SIZE);
-//		DMA1_Channel4->CNTR = 0;					  // 清除数据长度
-//	}
-
+	//	if (USART_GetITStatus(USART1, USART_IT_TC) != RESET) // 全部数据发送完成，产生该标记
+	//	{
+	//		USART_ClearITPendingBit(USART1, USART_IT_TC); // 清除完成标记
+	//		DMA_Cmd(DMA1_Channel4, DISABLE);			  // 关闭DMA
+	//		memset(UART1_TxBuffer,0,sizeof(uint8)*UART1_TX_BUFFER_SIZE);
+	//		DMA1_Channel4->CNTR = 0;					  // 清除数据长度
+	//	}
 }
 
 void USART2_IRQHandler(void)
@@ -317,10 +310,11 @@ void USART3_IRQHandler(void)
 		uint16_t tmp;
 		UNUSED(tmp); // 避免GCC编译器警告
 		tmp = USART3->STATR;
-		tmp = USART3->DATAR;														// 根据应用手册，必须要有这两步，否则清标志位的操作其实并不生效
+		tmp = USART3->DATAR;														//根据应用手册，必须要有这两步，否则清标志位的操作其实并不生效
 		DMA_Cmd(DMA1_Channel3, DISABLE);											//关闭本次DMA
 		UART3_RxLen = UART3_RX_BUFFER_SIZE - DMA_GetCurrDataCounter(DMA1_Channel3); //得到真正接收数据个数
 		DMA1_Channel3->CNTR = UART3_RX_BUFFER_SIZE;
+
 		SlaveComm_UARTCallback(); // 中断回调函数
 
 		DMA_Cmd(DMA1_Channel3, ENABLE); //开启下一次DMA

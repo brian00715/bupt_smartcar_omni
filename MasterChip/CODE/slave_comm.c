@@ -70,16 +70,16 @@ void SlaveComm_UARTCallback()
 
 void SlaveComm_Exe()
 {
-    if (UART3_RxOK)
-    {
-//        uprintf(
-//            "SlaveData|encoder-[0]:%4d [1]:%4d [2]:%4d [3]:%4d imageOK:%d angle:%6.2f LCurve:%d RCurve:%d\r\n",
-//            MecanumChassis.motor[0].now_rpm, MecanumChassis.motor[1].now_rpm,
-//            MecanumChassis.motor[2].now_rpm, MecanumChassis.motor[3].now_rpm,
-//            PathFollowStatus.image_process_done,
-//            PathFollowStatus.path_diff_angle,
-//            PathFollowStatus.meet_left_big_curve,
-//            PathFollowStatus.meet_right_big_curve);
-        UART3_RxOK = 0;
-    }
+    // if (UART3_RxOK)
+    // {
+    //     uprintf(
+    //         "SlaveData|encoder-[0]:%4d [1]:%4d [2]:%4d [3]:%4d imageOK:%d angle:%6.2f LCurve:%d RCurve:%d\r\n",
+    //         MecanumChassis.motor[0].now_rpm, MecanumChassis.motor[1].now_rpm,
+    //         MecanumChassis.motor[2].now_rpm, MecanumChassis.motor[3].now_rpm,
+    //         PathFollowStatus.image_process_done,
+    //         PathFollowStatus.path_diff_angle,
+    //         PathFollowStatus.meet_left_big_curve,
+    //         PathFollowStatus.meet_right_big_curve);
+    //     UART3_RxOK = 0;
+    // }
 }

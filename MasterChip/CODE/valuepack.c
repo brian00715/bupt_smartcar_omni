@@ -17,10 +17,6 @@ long rdIndex = 0;
 unsigned char vp_rxbuff[VALUEPACK_BUFFER_SIZE];
 unsigned char vp_txbuff[TXPACK_BYTE_SIZE + 3];
 
-uint8_t usart2_rx_flag = 0;
-uint8_t usart2_rx_buffer[100];
-uint8_t usart2_tx_buffer[100];
-uint16_t usart2_tx_len = 100;
 
 
 struct TxPack txpack;

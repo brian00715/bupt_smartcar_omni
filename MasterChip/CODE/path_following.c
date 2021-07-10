@@ -31,9 +31,9 @@ PID_t NormalPID;	   // ·¨ÏòÐÞÕýPID
 
 void PathFollowing_Init()
 {
-	HeadingAnglePID.kp = 1.5;
+	HeadingAnglePID.kp = 1.8;
 	HeadingAnglePID.ki = 0.0;
-	HeadingAnglePID.kd = 0.01;
+	HeadingAnglePID.kd = 0.3;
 	HeadingAnglePID.ctrl_max = 10;
 	HeadingAnglePID.int_duty = 0.01;
 	HeadingAnglePID.int_max = 5;
@@ -62,6 +62,8 @@ void PathFollowing_Init()
 	PathFollowStatus.meet_left_big_curve = 0;
 	PathFollowStatus.meet_right_big_curve = 0;
 	PathFollowStatus.image_process_done = 0;
+	PathFollowStatus.curve_speed = 0.2;
+	PathFollowStatus.forthright_speed = 0.45;
 }
 
 /**
@@ -70,22 +72,34 @@ void PathFollowing_Init()
  */
 void PathFollowing_Exe()
 {
-	if (!PathFollowStatus.begin)
+	if (!(PathFollowStatus.begin && UART3_RxOK))
+	{
+		MecanumChassis.target_speed = 0;
+		MecanumChassis.target_omega = 0;
 		return;
+	}
 	float omega_ctrl = PID_GetOutput(&HeadingAnglePID, 0,
-									 PathFollowStatus.path_diff_angle);
+			PathFollowStatus.path_diff_angle);
 	MecanumChassis.target_omega = omega_ctrl;
 	//	if (TIM1_100ms_Flag)
 	//	{
 	//		uprintf("PathFollow|diff_ang:%6.2f omega_ctrl:%5.2f \r\n",
 	//				PathFollowStatus.path_diff_angle, MecanumChassis.target_omega);
 	//	}
-	if (fabs(PathFollowStatus.path_diff_angle) > 1.047)
+	MecanumChassis.target_speed = PathFollowStatus.forthright_speed
+			- fabs(PathFollowStatus.path_diff_angle) / 5.2;
+	if (MecanumChassis.target_speed < 0.3)
 	{
-		MecanumChassis.target_speed = 0.15;
+		MecanumChassis.target_speed = 0.3;
 	}
-	else
-	{
-		MecanumChassis.target_speed = 0.47;
-	}
+//		if (fabs(PathFollowStatus.path_diff_angle) > PathFollowStatus.angle_thres)
+//		{
+//			MecanumChassis.target_speed = PathFollowStatus.curve_speed;
+//		}
+//		else
+//		{
+//			MecanumChassis.target_speed = PathFollowStatus.forthright_speed;
+//		}
+	UART3_RxOK = 0;
+
 }
