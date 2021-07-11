@@ -4,26 +4,34 @@
 #include "headfile.h"
 #include "pid.h"
 
-typedef struct PathFollowStatus_t
+// 巡线数据
+typedef struct PathFollow_t
 {
-    uint8 meet_cross;         // 十字
-    uint8 meet_island_first;  // 第一次识别到环岛
-    uint8 meet_island_second; // 第二次识别到环岛
-    uint8 meet_left_fork;     // 左岔路
-    uint8 meet_right_fork;    // 右岔路
-    uint8 meet_garage;        // 车库
-    uint8 meet_left_big_curve;
-    uint8 meet_right_big_curve;
-    uint8 image_process_done;
+    PathFollowStateMachine_e state;
     uint8 begin;
-    float path_diff_angle; //  赛道方向与车头方向(90°)的夹角(rad)
-    float forthright_speed;
-    float curve_speed;
+    uint8 image_process_done;
+    float heading_err;      // 赛道方向与车头方向(90°)的夹角(rad)
+    uint8 normal_err;       // 赛道线与视野中心的横向偏差
+    float forthright_speed; // 前进默认速度
+    float curve_speed;      // 弯道默认速度
     float angle_thres;
+} PathFollow_t;
 
-} PathFollowStatus_t;
+// 巡线状态机
+typedef enum PathFollowStateMachine_e
+{
+    PATH_FOLLOW_NONE = 0,
+    PATH_FOLLOW_NORMAL = 1,
+    PATH_FOLLOW_MEER_CROSS = 2,
+    PATH_FOLLOW_MEET_ISLAND_FIRST = 3,
+    PATH_FOLLOW_MEET_ISLAND_SECOND = 4,
+    PATH_FOLLOW_GO_LEFT_FORK = 5,  // 左岔路
+    PATH_FOLLOW_GO_RIGHT_FORK = 6, // 右岔路
+    PATH_FOLLOW_MEET_GARAGE = 7,   // 车库
+    PATH_FOLLOW_MEET_LEFT_BIG_CURVE = 8,
+    PATH_FOLLOW_MEET_RIGHT_BIG_CURVE = 9,
+} PathFollowStateMachine_e;
 
-extern PathFollowStatus_t PathFollowStatus;
 extern PID_t HeadingAnglePID;
 extern PID_t YawPID;
 

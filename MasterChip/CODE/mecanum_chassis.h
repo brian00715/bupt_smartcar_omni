@@ -5,20 +5,20 @@
 
 //=================================宏和ENUM=================================
 
-typedef enum CONTROL_MODE
+typedef enum CtrlMode_e
 {
 	CTRL_MODE_NONE = 0,
 	CTRL_MODE_CMD,	  // CMD控制模式
 	CTRL_MODE_OMNI,	  // 全向驱动模式
 	CTRL_MODE_DIFF,	  // 差分驱动模式
 	CTRL_MODE_TUNING, // 调试模式
-} CONTROL_MODE;
+} CtrlMode_e;
 
-typedef enum POS_MODE
+typedef enum PosMode_e
 {
 	POS_MODE_RELATIVE = 0, // 车模坐标系下的相对位姿
 	POS_MODE_ABSOLUTE	   // 世界坐标系下的绝对位姿
-} POS_MODE;
+} PosMode_e;
 
 //=================================结构体=================================
 typedef struct PostureStatus_t // 底盘位姿状态结构体，由全场定位模块更新
@@ -30,16 +30,17 @@ typedef struct PostureStatus_t // 底盘位姿状态结构体，由全场定位模块更新
 
 typedef struct BaseChassis_t // 底盘抽象结构体
 {
-	float target_speed;		// 目标速度大小(m/s)
-	float target_dir;		// 目标速度方向(rad)
-	float target_omega;		// 目标角速度(rad/s)
-	float target_yaw;		// 目标偏航角
-	CONTROL_MODE ctrl_mode; // 控制模式：无/手柄/CMD/自动
-	POS_MODE pos_mode;		// 坐标模式：相对/绝对
-	PostureStatus_t posture_status;
-	Motor_t motor[4];										 // 驱动电机，编号为左上角开始顺时针0123
-	char send_ctrl_msg_flag;								 // 控制发送频率
-	char motor_self_check_ok;								 // 电机自检完成
+	float target_speed;	  // 目标速度大小(m/s)
+	float target_dir;	  // 目标速度方向(rad)
+	float target_omega;	  // 目标角速度(rad/s)
+	float target_yaw;	  // 目标偏航角
+	CtrlMode_e ctrl_mode; // 控制模式：无/手柄/CMD/自动
+	PosMode_e pos_mode;	  // 坐标模式：相对/绝对
+	PostureStatus_t PostureStatus;
+	PathFollow_t PathFollowing;
+	Motor_t motor[4];		  // 驱动电机，编号为左上角开始顺时针0123
+	char send_ctrl_msg_flag;  // 控制发送频率
+	char motor_self_check_ok; // 电机自检完成
 } BaseChassis_t;
 
 //=================================全局变量=================================

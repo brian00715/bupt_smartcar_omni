@@ -1,22 +1,3 @@
-/*********************************************************************************************************************
- * COPYRIGHT NOTICE
- * Copyright (c) 2020,逐飞科技
- * All rights reserved.
- * 技术讨论QQ群：一群：179029047(已满)  二群：244861897(已满)  三群：824575535
- *
- * 以下所有内容版权均属逐飞科技所有，未经允许不得用于商业用途，
- * 欢迎各位使用并传播本程序，修改内容时必须保留逐飞科技的版权声明。
- *
- * @file            isr
- * @company         成都逐飞科技有限公司
- * @author          逐飞科技(QQ790875685)
- * @version         查看doc内version文件 版本说明
- * @Software        MounRiver Studio V1.3
- * @Target core     CH32V103R8T6
- * @Taobao          https://seekfree.taobao.com/
- * @date            2020-12-04
- ********************************************************************************************************************/
-
 #include "headfile.h"
 #include "string.h"
 #include "isr.h"
@@ -40,7 +21,7 @@ void DMA1_Channel3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast
 void DMA1_Channel4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 //void DMA1_Channel5_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 //void DMA1_Channel6_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-//void DMA1_Channel7_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+void DMA1_Channel7_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void ADC1_2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI9_5_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM1_BRK_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -127,7 +108,7 @@ void TIM1_UP_IRQHandler(void)
 		if (tim1_5ms_cnt % 2 == 0)
 		{
 			TIM1_10ms_Flag = 1;
-			MecanumChassis.send_ctrl_msg_flag = 1;
+			MecanumChassis.send_ctrl_msg_flag = 1; // 限制电机控制命令频率
 		}
 		else
 		{
@@ -152,10 +133,10 @@ void TIM1_UP_IRQHandler(void)
 		//硬件SPI采集陀螺仪数据
 		get_icm20602_accdata_spi();
 		get_icm20602_gyro_spi();
-		icm_acc_z = (int16)((float)icm_acc_z / 4096);	   // ±8g
-		icm_gyro_z = (int16)((float)icm_gyro_z / 16.4); // ±2000dps,16 bit adc
-		MecanumChassis.posture_status.yaw = KalmanFilter(icm_acc_z * 1.0, icm_gyro_z * 1.0);
-		//		MecanumChassis.posture_status.yaw += RAD2ANGLE(icm_gyro_z * 0.005); // 偏航角积分
+		icm_acc_z = ((float)icm_acc_raw_z / 4096);				// ±8g
+		icm_gyro_z = __ANGLE2RAD((float)icm_gyro_raw_z / 16.4); // ±2000dps,16 bit adc
+		// MecanumChassis.PostureStatus.yaw = KalmanFilter(icm_acc_raw_z * 1.0, icm_gyro_raw_z * 1.0);
+		MecanumChassis.PostureStatus.yaw += icm_gyro_z * 0.005; // 偏航角积分
 
 		// >>>采集编码器12的数据<<<
 		encoder_data[0] = timer_quad_get(TIMER_2); //编码器取值
@@ -219,80 +200,79 @@ void TIM3_IRQHandler(void)
 	}
 }
 
-void TIM4_IRQHandler(void)
-{
-	if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)
-	{
-		TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
-	}
-}
+// void TIM4_IRQHandler(void)
+// {
+// 	if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)
+// 	{
+// 		TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
+// 	}
+// }
 
-uint8_t UART1_RxBuffer[UART1_RX_BUFFER_SIZE] = {0};
-uint8_t UART1_TxBuffer[UART1_TX_BUFFER_SIZE] = {0};
-uint8_t UART1_RxBufferCnt = 0;
-uint8_t UART1_RxComplete = 0;
-uint8_t UART1_RxIDLEFlag = 0;		// 闲时中断标志位
-uint8_t UART1_RxBufferOverflow = 0; // 缓冲数组溢出标志
-uint8_t UART1_TxDMAOK = 0;
+uint8_t UART2_RxBuffer[UART2_RX_BUFFER_SIZE] = {0};
+uint8_t UART2_RxArray[UART2_RX_BUFFER_SIZE] = {0};
+uint8_t UART2_TxBuffer[UART2_TX_BUFFER_SIZE] = {0};
+uint8_t UART2_RxBufferCnt = 0;
+uint8_t UART2_RxComplete = 0;
+uint8_t UART2_RxIDLEFlag = 0;		// 闲时中断标志位
+uint8_t UART2_RxBufferOverflow = 0; // 缓冲数组溢出标志
+uint8_t UART2_TxDMAOK = 0;
 void USART1_IRQHandler(void)
 {
+}
+
+void USART2_IRQHandler(void)
+{
 	//>>>中断方式接收数据<<<
-	//	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-	//	{
-	//		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-	//
-	//		UART1_RxBuffer[UART1_RxBufferCnt++] = USART_ReceiveData(USART1);
-	//
-	//		if (UART1_RxBuffer[UART1_RxBufferCnt - 1] == 0x0D) // XCOM 的发送新行只有0X0D
-	//		{
-	//			UART1_RxBuffer[UART1_RxBufferCnt - 1] ='\0';
-	//			UART1_RxComplete = 1;
-	//			UART1_RxBufferCnt = 0;
-	//		}
-	//		if (UART1_RxBufferCnt == RX_BUFFER_SIZE - 1)
-	//		{
-	//			UART1_RxBufferCnt = 0;
-	//			UART1_RxBuffer[UART1_RxBufferCnt] ='\0';
-	//			UART_RxBufferOverflow  = 1;
-	////			memset(UART_RxBuffer, 0, sizeof(uint8_t) * RX_BUFFER_SIZE);
-	//		}
-	//	}
+	if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
+	{
+		USART_ClearITPendingBit(USART2, USART_IT_RXNE);
+
+		UART2_RxBuffer[UART2_RxBufferCnt++] = USART_ReceiveData(USART2);
+
+		if (UART2_RxBuffer[UART2_RxBufferCnt - 1] == 0x0D) // XCOM 的发送新行只有0X0D
+		{
+			UART2_RxBuffer[UART2_RxBufferCnt - 1] = '\0';
+			UART2_RxComplete = 1;
+			UART2_RxBufferCnt = 0;
+			CMD_UARTCallback();
+		}
+		if (UART2_RxBufferCnt == UART2_RX_BUFFER_SIZE - 1)
+		{
+			UART2_RxBufferCnt = 0;
+			UART2_RxBuffer[UART2_RxBufferCnt] = '\0';
+			UART2_RxBufferOverflow = 1;
+			//memset(UART2_RxBuffer, 0, sizeof(uint8_t) * UART2_RX_BUFFER_SIZE);
+		}
+	}
 
 	// >>>DMA方式接收数据<<<
-	if (USART_GetFlagStatus(USART1, USART_FLAG_IDLE) != RESET)
-	{
-		USART_ClearFlag(USART1, USART_FLAG_IDLE);
-		UART1_RxIDLEFlag = 1;
-		uint16_t tmp;
-		UNUSED(tmp); // 避免GCC编译器警告
-		tmp = USART1->STATR;
-		tmp = USART1->DATAR;			 // 根据应用手册，必须要有这两步，否则清标志位的操作其实并不生效
-		DMA_Cmd(DMA1_Channel5, DISABLE); //关闭本次DMA
+	// if (USART_GetFlagStatus(USART2, USART_FLAG_IDLE) != RESET)
+	// {
+	// 	USART_ClearFlag(USART2, USART_FLAG_IDLE);
+	// 	UART2_RxIDLEFlag = 1;
+	// 	uint16_t tmp;
+	// 	UNUSED(tmp); // 避免GCC编译器警告
+	// 	tmp = USART2->STATR;
+	// 	tmp = USART2->DATAR;			 // 根据应用手册，必须要有这两步，否则清标志位的操作其实并不生效
+	// 	DMA_Cmd(DMA1_Channel7, DISABLE); //关闭本次DMA
 
-		uint8_t num = UART1_RX_BUFFER_SIZE - DMA_GetCurrDataCounter(DMA1_Channel5); //得到真正接收数据个数
-		DMA1_Channel5->CNTR = UART1_RX_BUFFER_SIZE;
-		UART1_RxBuffer[num] = ' '; // 末尾加空格，否则无法正常解析最后一个参数
-		UART1_RxBuffer[num + 1] = '\0';
-		CMD_UARTCallback();
+	// 	uint8_t num = UART2_RX_BUFFER_SIZE - DMA_GetCurrDataCounter(DMA1_Channel7); //得到真正接收数据个数
+	// 	DMA1_Channel7->CNTR = UART2_RX_BUFFER_SIZE;
+	// 	UART2_RxBuffer[num] = ' '; // 末尾加空格，否则无法正常解析最后一个参数
+	// 	UART2_RxBuffer[num + 1] = '\0';
+	// 	CMD_UARTCallback();
 
-		DMA_Cmd(DMA1_Channel5, ENABLE); //开启下一次DMA
-	}
+	// 	DMA_Cmd(DMA1_Channel7, ENABLE); //开启下一次DMA
+	// }
+
 	// >>>DMA发送<<<
 	//	if (USART_GetITStatus(USART1, USART_IT_TC) != RESET) // 全部数据发送完成，产生该标记
 	//	{
 	//		USART_ClearITPendingBit(USART1, USART_IT_TC); // 清除完成标记
 	//		DMA_Cmd(DMA1_Channel4, DISABLE);			  // 关闭DMA
-	//		memset(UART1_TxBuffer,0,sizeof(uint8)*UART1_TX_BUFFER_SIZE);
+	//		memset(UART2_TxBuffer,0,sizeof(uint8)*UART2_TX_BUFFER_SIZE);
 	//		DMA1_Channel4->CNTR = 0;					  // 清除数据长度
 	//	}
-}
-
-void USART2_IRQHandler(void)
-{
-	if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
-	{
-		USART_ClearITPendingBit(USART2, USART_IT_RXNE);
-	}
 }
 
 uint8_t UART3_RxBuffer[UART3_RX_BUFFER_SIZE] =
@@ -329,23 +309,11 @@ void DMA1_Channel3_IRQHandler(void)
 	}
 }
 
-void DMA1_Channel4_IRQHandler(void)
+void DMA1_Channel7_IRQHandler(void)
 {
-	if (SET == DMA_GetFlagStatus(DMA1_FLAG_TC4))
+	if (SET == DMA_GetFlagStatus(DMA1_FLAG_TC7)) // 传输完成标志位
 	{
-		DMA_ClearFlag(DMA1_FLAG_TC4);
-		//		if (camera_type == CAMERA_BIN_UART)
-		//			ov7725_uart_dma();
-		//		else if (camera_type == CAMERA_GRAYSCALE)
-		//		mt9v03x_dma();
-	}
-}
-
-void DMA1_Channel5_IRQHandler(void)
-{
-	if (SET == DMA_GetFlagStatus(DMA1_FLAG_TC5)) // 传输完成标志位
-	{
-		DMA_ClearFlag(DMA1_FLAG_TC5);
+		DMA_ClearFlag(DMA1_FLAG_TC7);
 	}
 }
 

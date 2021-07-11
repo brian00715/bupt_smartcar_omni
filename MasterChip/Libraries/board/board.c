@@ -36,14 +36,14 @@ void uprintf(char *fmt, ...)
 	int size;
 	va_list arg_ptr;
 	va_start(arg_ptr, fmt);
-	size = vsnprintf(UART1_TxBuffer, UART1_TX_BUFFER_SIZE, fmt, arg_ptr);
+	size = vsnprintf(UART2_TxBuffer, UART2_TX_BUFFER_SIZE, fmt, arg_ptr);
 	va_end(arg_ptr);
 	 for (int i = 0; i < size; i++)
 	 {
 	 	while (USART_GetFlagStatus((USART_TypeDef *)UARTN[DEBUG_UART],
 	 							   USART_FLAG_TC) == RESET)
 	 		;
-	 	USART_SendData((USART_TypeDef *)UARTN[DEBUG_UART], UART1_TxBuffer[i]);
+	 	USART_SendData((USART_TypeDef *)UARTN[DEBUG_UART], UART2_TxBuffer[i]);
 	 }
-//	UART_DMA_SendData(DMA1_Channel4, UART1_TxBuffer, size);
+//	UART_DMA_SendData(DMA1_Channel4, UART2_TxBuffer, size);
 }

@@ -8,9 +8,9 @@
 
 extern uint8_t *CMD_Buffer[CMD_SIZE_X]; // 指针数组，每个元素都指向分割后的元字符串
 extern uint8_t CMD_BufferCnt;
-extern uint8_t UART1_RxBuffer[UART1_RX_BUFFER_SIZE];
-extern uint8_t UART1_RxComplete;
-extern uint8_t UART1_RxIDLEFlag;
+extern uint8_t UART2_RxBuffer[UART2_RX_BUFFER_SIZE];
+extern uint8_t UART2_RxComplete;
+extern uint8_t UART2_RxIDLEFlag;
 extern char CMD_RxOK;
 
 void CMD_Init(void);

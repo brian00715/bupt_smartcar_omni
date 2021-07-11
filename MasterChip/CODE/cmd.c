@@ -34,22 +34,22 @@ void CMD_Init()
 {
 	uart_init(DEBUG_UART, DEBUG_UART_BAUD, DEBUG_UART_TX_PIN,
 			  DEBUG_UART_RX_PIN);
-	nvic_init(USART1_IRQn, 0, 1, ENABLE); // 配置UART NVIC
+	nvic_init(USART2_IRQn, 0, 1, ENABLE); // 配置UART NVIC
 
 	// >>>DMA方式接收数据<<<
-	USART_ITConfig(USART1, USART_IT_IDLE, ENABLE); // 开启闲时中断
-	UART_DMA_ReceiveInit(USART1, DMA1_Channel5, (u32)(&USART1->DATAR),
-						 (u32)UART1_RxBuffer, UART1_RX_BUFFER_SIZE); // USART1 DMA初始化
-	nvic_init(DMA1_Channel5_IRQn, 0, 1, ENABLE);					 // 配置DMA NVIC
+	// USART_ITConfig(USART2, USART_IT_IDLE, ENABLE); // 开启闲时中断
+	// UART_DMA_ReceiveInit(USART2, DMA1_Channel7, (u32)(&USART2->DATAR),
+	// 					 (u32)UART2_RxBuffer, UART2_RX_BUFFER_SIZE); // USART1 DMA初始化
+	// nvic_init(DMA1_Channel7_IRQn, 0, 1, ENABLE);					 // 配置DMA NVIC
 
 	// >>>DMA方式发送数据<<< 实测由于DMA太快，串口发送速度跟不上DMA速度，导致发送数据经常被覆盖
 	//	USART_ITConfig(USART1, USART_IT_TC, ENABLE); //  开启串口发送完成中断
 	//	UART_DMA_SendInit(USART1, DMA1_Channel4,
-	//					  (u32)UART1_TxBuffer, (u32)(&USART1->DATAR));
+	//					  (u32)UART2_TxBuffer, (u32)(&USART1->DATAR));
 	//	nvic_init(DMA1_Channel4_IRQn, 0, 1, ENABLE); // 配置DMA NVIC
 
 	// >>>中断方式接收数据<<<
-	//	uart_rx_irq(UART_1, ENABLE); // 使能串口接收中断
+	uart_rx_irq(UART_2, ENABLE); // 使能串口接收中断
 }
 
 /**
@@ -152,31 +152,30 @@ void UART_DMA_SendData(DMA_Channel_TypeDef *dman, uint8 *data, uint8 len)
 	DMA_Cmd(dman, ENABLE); // 启动DMA发送
 }
 
-char CMD_RxOK = 0; // 串口接收完成标志，给CMD_Exe用
-uint8_t *CMD_Buffer[CMD_SIZE_X] =
-	{0}; // 指针数组，每个元素都指向分割后的元字符串
+char CMD_RxOK = 0;					   // 串口接收完成标志，给CMD_Exe用
+uint8_t *CMD_Buffer[CMD_SIZE_X] = {0}; // 指针数组，每个元素都指向分割后的元字符串
 uint8_t CMD_BufferCnt = 0;
-uint8_t CMD_Argc = 0; // 指令参数数量
-char *CMD_Argv[CMD_SIZE_X] =
-	{0}; // 指向指令参数的指针数据
+uint8_t CMD_Argc = 0;			  // 指令参数数量
+char *CMD_Argv[CMD_SIZE_X] = {0}; // 指向指令参数的指针数据
 /**
  * @brief CMD的抽象UART中断回调函数
  * 
  */
 void CMD_UARTCallback(void)
 {
-	// uint8_t *clr = DMAaRxBuffer;
-	// while (*(clr++) == '\0' && clr < DMAaRxBuffer + DMA_BUFFER_SIZE) // 找到开头，避免传输噪声
-	// {
-	// }
-	// strcpy((char *)DMAUSART_RX_BUF, (char *)(clr - 1));
-	// if (DMAUSART_RX_BUF[0] != '\0')
-	// {
-	// 	DMA_RxOK_Flag = 1;
-	// }
-	// memset(DMAaRxBuffer, 0, 98);
+	// 中断接收的一些必要步骤
+	uint8_t *clr = UART2_RxBuffer;
+	while ((*(clr++) == '\0' || *(clr++) == '\n') && clr < UART2_RxBuffer + UART2_RX_BUFFER_SIZE) // 找到开头，避免传输噪声
+	{
+	}
+	strcpy((char *)UART2_RxArray, (char *)(clr - 1));
+	if (UART2_RxArray[0] != '\0')
+	{
+		CMD_RxOK = 1;
+	}
+	memset(UART2_RxBuffer, 0, UART2_RX_BUFFER_SIZE * sizeof(uint8));
 
-	CMD_RxOK = 1;
+	// CMD_RxOK = 1;
 }
 
 /**
@@ -188,13 +187,13 @@ void CMD_Exe(void)
 {
 	if (CMD_RxOK)
 	{
-		CMD_CommandParse((char *)UART1_RxBuffer, &CMD_Argc, CMD_Argv); // 解析指令
-																	   //	for (int i = 0; i < CMD_Argc; i++)
-																	   //	{
-																	   //		uprintf("%s ", CMD_Argv[i]);
-																	   //	}
-		CMD_CommandExe(CMD_Argc, CMD_Argv);							   // 执行指令
-		memset(UART1_RxBuffer, 0, sizeof(uint8_t) * UART1_RX_BUFFER_SIZE);
+		CMD_CommandParse((char *)UART2_RxArray, &CMD_Argc, CMD_Argv); // 解析指令
+																	  //	for (int i = 0; i < CMD_Argc; i++)
+																	  //	{
+																	  //		uprintf("%s ", CMD_Argv[i]);
+																	  //	}
+		CMD_CommandExe(CMD_Argc, CMD_Argv);							  // 执行指令
+		memset(UART2_RxArray, 0, sizeof(uint8_t) * UART2_RX_BUFFER_SIZE);
 
 		CMD_RxOK = 0;
 	}
@@ -241,6 +240,12 @@ int CMD_CommandExe(int argc, char **argv)
 			uprintf("[%d]:%d", i, MecanumChassis.motor[i].target_duty);
 		}
 		uprintf("\r\n");
+	}
+	else if (strcmp(argv[0], "YPID") == 0) // YAW PID
+	{
+		MecanumChassis.target_yaw = atof(argv[1]);
+		YawPID.kp =  atof(argv[2]);
+		uprintf("CMD|targetyaw:%.2f kp:%5.2f\r\n", MecanumChassis.target_yaw,YawPID.kp);
 	}
 	else if (strcmp(argv[0], "SRPM") == 0) //SetRPM
 	{
