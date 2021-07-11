@@ -57,7 +57,8 @@ int main(void)
     while (1)
     {
         //Image_Binary(123);                       //二值化
-        Image_Processing();
+        // Image_Processing();
+        Img_Prc();
         ips114_showint32(180, 0, count, 10);
         if (Image_Process_Flag == 1) //摄像头处理完成标志位
         {
@@ -79,7 +80,8 @@ int main(void)
                 ips114_showuint8(188, 3, Image_Llost[0]);
                 ips114_showuint8(188, 4, Image_Rlost_Sum);
                 ips114_showuint8(188, 5, Image_Rlost[0]);
-                ips114_showfloat(188, 7, Image_MAdd_float, 2, 3);
+                // ips114_showfloat(188, 7, Image_MAdd_float, 2, 3);
+                ips114_showint16(188, 7, Image_Error);
                 //Uart_Sendimg(UART_1,camera_buffer_addr,MT9V03X_W, MT9V03X_H);    //图像分辨率在SEEKFREE_MT9V03X.h中查看
                 //oled_dis_bmp(MT9V03X_H, MT9V03X_W, camera_buffer_addr,123);      //oled显示摄像头图像，最后个数据为二值化的阈值
                 ips114_displayimage032_zoom1(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, 0, 0, MT9V03X_W , MT9V03X_H * 2);

@@ -233,12 +233,13 @@ void TIM4_IRQHandler(void) {
 //            uart_putchar(UART_3,Image_Process_Flag);   //发送是否进行图像处理标志，1为已进行图像处理，0为未进行图像处理
             if(Image_Process_Flag ==1)
             {
-                uart_putchar(UART_3,Image_Process_Flag);   //发送是否进行图像处理标志，1为已进行图像处理，0为未进行图像处理
+                uart_putchar(UART_3,1);   //发送是否进行图像处理标志，1为已进行图像处理，0为未进行图像处理
                 Image_Process_Flag = 0;
             }
             else uart_putchar(UART_3,0);
 //            uart_putchar(UART_3,0x22);
-            uart_putdoublechar(UART_3, Image_MAdd_int);    //发送整形中线差和
+            uart_putdoublechar(UART_3, Image_Error);
+            // uart_putdoublechar(UART_3, Image_MAdd_int);    //发送整形中线差和
 //            uart_putdoublechar(UART_3,Image_XieLv_int);   //发送整形斜率（原斜率*1000）
             uart_putchar(UART_3,Image_Mline[0]); //发送中点坐标
 //            uart_putchar(UART_3,0x23);
