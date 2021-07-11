@@ -130,6 +130,13 @@ void TIM1_UP_IRQHandler(void)
 		{
 			TIM1_100ms_Flag = 0;
 		}
+
+		if (tim1_5ms_cnt % 200 == 0) // 1s
+		{
+			if (UART3_RxOK)
+				uprintf("Slave Send OK.\r\n");
+		}
+
 		//硬件SPI采集陀螺仪数据
 		get_icm20602_accdata_spi();
 		get_icm20602_gyro_spi();

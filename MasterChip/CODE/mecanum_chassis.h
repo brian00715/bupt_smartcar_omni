@@ -2,6 +2,7 @@
 #define MECANUM_CHASSIS_H_
 
 #include "motor.h"
+#include "path_following.h"
 
 //=================================ºêºÍENUM=================================
 

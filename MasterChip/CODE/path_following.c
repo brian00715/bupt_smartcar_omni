@@ -39,7 +39,7 @@ void PathFollowing_Init()
 	HeadingAnglePID.sub_pid_thres = 2;
 	HeadingAnglePID.sub_pid_kp = 0.8;
 
-	YawPID.kp = 0.2;
+	YawPID.kp = 0.5;
 	YawPID.ki = 0.0;
 	YawPID.kd = 0.05;
 	YawPID.ctrl_max = 10;
@@ -57,6 +57,7 @@ void PathFollowing_Init()
 	MecanumChassis.PathFollowing.forthright_speed = 0.45;
 }
 
+static float now_yaw = 0;
 /**
  * @brief 巡线控制状态机
  * TODO:未完成
@@ -65,10 +66,27 @@ void PathFollowing_Exe()
 {
 	if (!(MecanumChassis.PathFollowing.begin && UART3_RxOK))
 	{
-		MecanumChassis.target_speed = 0;
-		MecanumChassis.target_omega = 0;
 		return;
 	}
+
+	float omega_ctrl;
+	omega_ctrl = PID_GetOutput(&YawPID, 0, MecanumChassis.PathFollowing.heading_err);
+	if (fabs(MecanumChassis.PathFollowing.heading_err) < __ANGLE2RAD(1))
+	{
+		omega_ctrl = 0;
+	}
+	MecanumChassis.target_omega = omega_ctrl;
+	MecanumChassis.target_dir = 1.5708;
+	MecanumChassis.target_speed = 0.1;
+
+	if (TIM1_20ms_Flag)
+		uprintf("speed:%5.2f omega:%5.2f\r\n", MecanumChassis.target_speed, MecanumChassis.target_omega);
+
+	//	MecanumChassis.target_speed = MecanumChassis.PathFollowing.forthright_speed - fabs(MecanumChassis.PathFollowing.heading_err) / 5.2;
+	//	if (MecanumChassis.target_speed < 0.3)
+	//	{
+	//		MecanumChassis.target_speed = 0.3;
+	//	}
 
 	switch (MecanumChassis.PathFollowing.state)
 	{
@@ -76,19 +94,16 @@ void PathFollowing_Exe()
 		/* code */
 		break;
 	case PATH_FOLLOW_NORMAL:
-		float omega_ctrl = PID_GetOutput(&HeadingAnglePID, 0,
-										 MecanumChassis.PathFollowing.heading_err);
-		MecanumChassis.target_omega = omega_ctrl;
 
-		MecanumChassis.target_speed = MecanumChassis.PathFollowing.forthright_speed - fabs(MecanumChassis.PathFollowing.heading_err) / 5.2;
-		if (MecanumChassis.target_speed < 0.3)
-		{
-			MecanumChassis.target_speed = 0.3;
-		}
 		break;
 	case PATH_FOLLOW_MEET_LEFT_BIG_CURVE:
 		break;
 	case PATH_FOLLOW_MEET_RIGHT_BIG_CURVE:
+		break;
+	case PATH_FOLLOW_GO_LEFT_FORK:
+		MecanumChassis.PathFollowing.state = PATH_FOLLOW_NORMAL;
+		now_yaw = MecanumChassis.PostureStatus.yaw;
+		MecanumChassis.target_yaw = now_yaw += 1.5708;
 		break;
 	default:
 		break;

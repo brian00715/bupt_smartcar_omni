@@ -58,8 +58,8 @@ int main(void)
 	{
 		CMD_Exe();
 		SlaveComm_Exe();
-		MecanumChassis_Exe();
 		PathFollowing_Exe();
+		MecanumChassis_Exe();
 
 		extern int wave_index;
 		if (TIM1_10ms_Flag)
@@ -124,6 +124,7 @@ int main(void)
 				if (MecanumChassis.PathFollowing.begin && UART3_RxOK) // ¿ªÊ¼Ñ²Ïß
 				{
 					MecanumChassis.ctrl_mode = CTRL_MODE_OMNI;
+					MecanumChassis.PathFollowing.state = PATH_FOLLOW_NORMAL;
 				}
 				else
 				{

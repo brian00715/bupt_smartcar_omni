@@ -272,11 +272,11 @@ int CMD_CommandExe(int argc, char **argv)
 	else if (strcmp(argv[0], "FOL") == 0) // PathFollowTuning
 	{
 
-		PathFollowStatus.forthright_speed = atof(argv[1]);
-		PathFollowStatus.curve_speed = atof(argv[2]);
-		PathFollowStatus.angle_thres = atof(argv[3]);
+		MecanumChassis.PathFollowing.forthright_speed = atof(argv[1]);
+		MecanumChassis.PathFollowing.curve_speed = atof(argv[2]);
+		MecanumChassis.PathFollowing.angle_thres = atof(argv[3]);
 		uprintf("Chassis|forthright_speed:%5.2f curve_speed:%5.2f angle_thres:%5.2f\r\n",
-				PathFollowStatus.forthright_speed, PathFollowStatus.curve_speed, PathFollowStatus.angle_thres);
+				MecanumChassis.PathFollowing.forthright_speed, MecanumChassis.PathFollowing.curve_speed, MecanumChassis.PathFollowing.angle_thres);
 	}
 	else if (strcmp(argv[0], "GA") == 0) // Teleop_GoAhead
 	{
