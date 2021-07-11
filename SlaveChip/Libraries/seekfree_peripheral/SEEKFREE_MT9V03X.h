@@ -41,8 +41,8 @@
 
 //配置摄像头参数
 
-#define MT9V03X_W               80           //图像宽度  范围1-752       RT102X RT105X RT106X 采集时列宽度必须为4的倍数
-#define MT9V03X_H               60           //图像高度	范围1-480
+#define MT9V03X_W               188           //图像宽度  范围1-752       RT102X RT105X RT106X 采集时列宽度必须为4的倍数
+#define MT9V03X_H               50           //图像高度	范围1-480
 //设置二值化阈值
 //#define MT9V03X_Threshold       123               //二值化阈值
 

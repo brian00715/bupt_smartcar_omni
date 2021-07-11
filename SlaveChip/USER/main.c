@@ -66,37 +66,48 @@ int main(void)
                 //Image_Binary(Threshold);                       //二值化
 //                Image_Processing();
 //                ips114_showint32(180, 0, count, 10);
-                ips114_showuint16(180, 1, Threshold_ChaHe);
-                ips114_showuint8(180, 2, Image_TuBian_Sum);
-                ips114_showuint8(180, 3, Image_TuBian[0]);
-                ips114_showuint8(180, 4, Image_GuaiDian_Sum);
-                ips114_showuint8(180, 5, Image_GuaiDian[0]);
+                ips114_showuint16(188, 1, Threshold_ChaHe);
+                // ips114_showuint8(188, 2, Image_MTuBian_Sum);
+                // ips114_showuint8(188, 3, Image_MTuBian[0]);
+                // ips114_showuint8(188, 4, Image_MGuaiDian_Sum);
+                // ips114_showuint8(188, 5, Image_MGuaiDian[0]);
 //                ips114_showuint8(180, 3, Image_LBig_Curve_Flag);
 //                ips114_showuint8(180, 4, Image_RBig_Curve_Flag);
-                ips114_showfloat(180, 6, Image_XieLv_float[0], 2, 3);
-                ips114_showfloat(180, 7, Image_XieLv_float[1], 2, 3);
+//                ips114_showfloat(188, 6, Image_XieLv_float[0], 2, 3);
+//                ips114_showfloat(188, 7, Image_XieLv_float[1], 2, 3);
+                ips114_showuint8(188, 2, Image_Llost_Sum);
+                ips114_showuint8(188, 3, Image_Llost[0]);
+                ips114_showuint8(188, 4, Image_Rlost_Sum);
+                ips114_showuint8(188, 5, Image_Rlost[0]);
+                ips114_showfloat(188, 7, Image_MAdd_float, 2, 3);
                 //Uart_Sendimg(UART_1,camera_buffer_addr,MT9V03X_W, MT9V03X_H);    //图像分辨率在SEEKFREE_MT9V03X.h中查看
                 //oled_dis_bmp(MT9V03X_H, MT9V03X_W, camera_buffer_addr,123);      //oled显示摄像头图像，最后个数据为二值化的阈值
-                ips114_displayimage032_zoom1(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, 0, 0, MT9V03X_W * 2, MT9V03X_H * 2);
-                for (int i = 59; i >= 5; i--)
+                ips114_displayimage032_zoom1(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, 0, 0, MT9V03X_W , MT9V03X_H * 2);
+                for (int i = 49; i >= 5; i--)
                 {
                     //                ips114_drawpoint(Image_Lline[i],i,RED);
                     //                ips114_drawpoint(Image_Rline[i],i,PINK);
                     //                ips114_drawpoint(Image_Mline[i],i,GREEN);
-                    ips114_drawpoint(Image_Lline[i] * 2, 2 * i, RED);
-                    ips114_drawpoint(Image_Lline[i] * 2, 2 * i + 1, RED);
-                    ips114_drawpoint(Image_Lline[i] * 2 + 1, 2 * i + 1, RED);
-                    ips114_drawpoint(Image_Lline[i] * 2 + 1, 2 * i, RED);
-
-                    ips114_drawpoint(Image_Rline[i] * 2, 2 * i, PINK);
-                    ips114_drawpoint(Image_Rline[i] * 2, 2 * i + 1, PINK);
-                    ips114_drawpoint(Image_Rline[i] * 2 + 1, 2 * i + 1, PINK);
-                    ips114_drawpoint(Image_Rline[i] * 2 + 1, 2 * i, PINK);
-
-                    ips114_drawpoint(Image_Mline[i] * 2, 2 * i, GREEN);
-                    ips114_drawpoint(Image_Mline[i] * 2, 2 * i + 1, GREEN);
-                    ips114_drawpoint(Image_Mline[i] * 2 + 1, 2 * i + 1, GREEN);
-                    ips114_drawpoint(Image_Mline[i] * 2 + 1, 2 * i, GREEN);
+//                    ips114_drawpoint(Image_Lline[i] * 2, 2 * i, RED);
+//                    ips114_drawpoint(Image_Lline[i] * 2, 2 * i + 1, RED);
+//                    ips114_drawpoint(Image_Lline[i] * 2 + 1, 2 * i + 1, RED);
+//                    ips114_drawpoint(Image_Lline[i] * 2 + 1, 2 * i, RED);
+//
+//                    ips114_drawpoint(Image_Rline[i] * 2, 2 * i, PINK);
+//                    ips114_drawpoint(Image_Rline[i] * 2, 2 * i + 1, PINK);
+//                    ips114_drawpoint(Image_Rline[i] * 2 + 1, 2 * i + 1, PINK);
+//                    ips114_drawpoint(Image_Rline[i] * 2 + 1, 2 * i, PINK);
+//
+//                    ips114_drawpoint(Image_Mline[i] * 2, 2 * i, GREEN);
+//                    ips114_drawpoint(Image_Mline[i] * 2, 2 * i + 1, GREEN);
+//                    ips114_drawpoint(Image_Mline[i] * 2 + 1, 2 * i + 1, GREEN);
+//                    ips114_drawpoint(Image_Mline[i] * 2 + 1, 2 * i, GREEN);
+                    ips114_drawpoint(Image_Lline[i], 2 * i, RED);
+                    ips114_drawpoint(Image_Lline[i], 2 * i + 1, RED);
+                    ips114_drawpoint(Image_Rline[i], 2 * i, PINK);
+                    ips114_drawpoint(Image_Rline[i], 2 * i + 1, PINK);
+                    ips114_drawpoint(Image_Mline[i], 2 * i, GREEN);
+                    ips114_drawpoint(Image_Mline[i], 2 * i + 1, GREEN);
                 }
 //                for(int i=0;i>Image_GuaiDian_Sum;i++)
 //                {

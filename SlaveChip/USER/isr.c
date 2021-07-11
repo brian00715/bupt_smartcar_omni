@@ -238,9 +238,15 @@ void TIM4_IRQHandler(void) {
             }
             else uart_putchar(UART_3,0);
 //            uart_putchar(UART_3,0x22);
-            uart_putdoublechar(UART_3,Image_XieLv_int);   //发送整形斜率（原斜率*1000）
+            uart_putdoublechar(UART_3, Image_MAdd_int);    //发送整形中线差和
+//            uart_putdoublechar(UART_3,Image_XieLv_int);   //发送整形斜率（原斜率*1000）
+            uart_putchar(UART_3,Image_Mline[0]); //发送中点坐标
 //            uart_putchar(UART_3,0x23);
-            uart_putchar(UART_3,Image_LBig_Curve_Flag);uart_putchar(UART_3,Image_RBig_Curve_Flag); //发送左大弯和右大弯标志位
+//            uart_putchar(UART_3,Image_LBig_Curve_Flag);uart_putchar(UART_3,Image_RBig_Curve_Flag); //发送左大弯和右大弯标志位
+            if(Image_LBig_Curve_Flag) uart_putchar(UART_3,8);
+            else if(Image_RBig_Curve_Flag) uart_putchar(UART_3,9);
+            else uart_putchar(UART_3,1);
+
             uart_putchar(UART_3, 0xee);uart_putchar(UART_3, 0x11);      //帧尾
         }
     }
