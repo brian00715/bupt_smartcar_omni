@@ -133,8 +133,8 @@ void TIM1_UP_IRQHandler(void)
 
 		if (tim1_5ms_cnt % 200 == 0) // 1s
 		{
-			if (UART3_RxOK)
-				uprintf("Slave Send OK.\r\n");
+			//			if (UART3_RxOK)
+			// uprintf("Slave Send OK.\r\n");
 		}
 
 		//硬件SPI采集陀螺仪数据
@@ -143,7 +143,10 @@ void TIM1_UP_IRQHandler(void)
 		icm_acc_z = ((float)icm_acc_raw_z / 4096);				// ±8g
 		icm_gyro_z = __ANGLE2RAD((float)icm_gyro_raw_z / 16.4); // ±2000dps,16 bit adc
 		// MecanumChassis.PostureStatus.yaw = KalmanFilter(icm_acc_raw_z * 1.0, icm_gyro_raw_z * 1.0);
-		MecanumChassis.PostureStatus.yaw += icm_gyro_z * 0.005; // 偏航角积分
+		if (fabs(icm_gyro_z) > 0.023) // 过滤零漂
+		{
+			MecanumChassis.PostureStatus.yaw += icm_gyro_z * 0.005; // 偏航角积分
+		}
 
 		// >>>采集编码器12的数据<<<
 		encoder_data[0] = timer_quad_get(TIMER_2); //编码器取值

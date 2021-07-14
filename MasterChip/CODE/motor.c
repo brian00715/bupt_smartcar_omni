@@ -111,7 +111,7 @@ void Motor_SelfCheck(void)
 				encoder_min = encoder_data[i];
 			}
 		}
-		if (curr_time - start_time > 1000)
+		if (curr_time - start_time > 500)
 		{
 			for (int i = 0; i < 4; i++)
 			{
@@ -137,7 +137,7 @@ void Motor_SelfCheck(void)
 				encoder_min = encoder_data[i];
 			}
 		}
-		if (curr_time - start_time > 1000)
+		if (curr_time - start_time > 500)
 		{
 			break;
 		}

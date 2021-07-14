@@ -58,10 +58,12 @@ void SlaveComm_UARTCallback()
     if (MecanumChassis.PathFollowing.image_process_done == 1) // 0:未处理完图像 1: 处理完图像
     {
         MecanumChassis.PathFollowing.heading_err = ((int16)(UART3_RxBuffer[7] << 8 | UART3_RxBuffer[8])) * 1.0;
-        MecanumChassis.PathFollowing.heading_err = atan(
-            MecanumChassis.PathFollowing.heading_err / 1000.0);
-        MecanumChassis.PathFollowing.normal_err = UART3_RxBuffer[9];
-        MecanumChassis.PathFollowing.state = UART3_RxBuffer[10]; // 赛道元素标志
+        MecanumChassis.PathFollowing.normal_err = UART3_RxBuffer[9] - 94;
+        if(MecanumChassis.PathFollowing.state!= UART3_RxBuffer[10])
+        {
+            uprintf("Status updated! now:%d\r\n",UART3_RxBuffer[10]);
+        }
+        MecanumChassis.PathFollowing.state = UART3_RxBuffer[10]; // 赛道状态标志位
     }
     memset(UART3_RxBuffer, 0, sizeof(uint8_t) * UART3_RX_BUFFER_SIZE);
     UART3_RxOK = 1;

@@ -243,10 +243,35 @@ int CMD_CommandExe(int argc, char **argv)
 	}
 	else if (strcmp(argv[0], "YPID") == 0) // YAW PID
 	{
-		MecanumChassis.target_yaw = atof(argv[1]);
-		YawPID.kp =  atof(argv[2]);
-		uprintf("CMD|targetyaw:%.2f kp:%5.2f\r\n", MecanumChassis.target_yaw,YawPID.kp);
+		float kp = atof(argv[1]);
+		float ki = atof(argv[2]);
+		float kd = atof(argv[3]);
+		float int_duty = atof(argv[4]);
+		YawPID.kp = kp;
+		YawPID.ki = ki;
+		YawPID.kd = kd;
+		YawPID.int_duty = int_duty;
+		uprintf("YawPID|kp:%.3f ki:%.3f kd:%.3f intduty:%.2f\r\n", kp, ki,
+				kd, int_duty);
 	}
+	else if (strcmp(argv[0], "CD") == 0) // CamServoDuty
+	{
+		MecanumChassis.cam_servo_duty = (uint32)atoi(argv[1]);
+		uprintf("CamServoDuty :%d\r\n", MecanumChassis.cam_servo_duty);
+	}
+	// else if (strcmp(argv[0], "NPID") == 0) // Normal PID
+	// {
+	// 	float kp = atof(argv[1]);
+	// 	float ki = atof(argv[2]);
+	// 	float kd = atof(argv[3]);
+	// 	float int_duty = atof(argv[4]);
+	// 	NormalPID.kp = kp;
+	// 	NormalPID.ki = ki;
+	// 	NormalPID.kd = kd;
+	// 	NormalPID.int_duty = int_duty;
+	// 	uprintf("NormalPID|kp:%.3f ki:%.3f kd:%.3f intduty:%.2f\r\n", kp, ki,
+	// 			kd, int_duty);
+	// }
 	else if (strcmp(argv[0], "SRPM") == 0) //SetRPM
 	{
 		for (int i = 0; i < 4; i++)
@@ -272,11 +297,11 @@ int CMD_CommandExe(int argc, char **argv)
 	else if (strcmp(argv[0], "FOL") == 0) // PathFollowTuning
 	{
 
-		MecanumChassis.PathFollowing.forthright_speed = atof(argv[1]);
+		MecanumChassis.PathFollowing.forward_speed = atof(argv[1]);
 		MecanumChassis.PathFollowing.curve_speed = atof(argv[2]);
 		MecanumChassis.PathFollowing.angle_thres = atof(argv[3]);
-		uprintf("Chassis|forthright_speed:%5.2f curve_speed:%5.2f angle_thres:%5.2f\r\n",
-				MecanumChassis.PathFollowing.forthright_speed, MecanumChassis.PathFollowing.curve_speed, MecanumChassis.PathFollowing.angle_thres);
+		uprintf("Chassis|forward_speed:%5.2f curve_speed:%5.2f angle_thres:%5.2f\r\n",
+				MecanumChassis.PathFollowing.forward_speed, MecanumChassis.PathFollowing.curve_speed, MecanumChassis.PathFollowing.angle_thres);
 	}
 	else if (strcmp(argv[0], "GA") == 0) // Teleop_GoAhead
 	{
@@ -341,42 +366,32 @@ int CMD_CommandExe(int argc, char **argv)
 			MecanumChassis.target_speed, MecanumChassis.target_dir,
 			MecanumChassis.target_omega);
 	}
-	else if (strcmp(argv[0], "MPID") == 0) // Motor PID Tuning
-	{
-		int i = atoi(argv[1]);
-		float kp = atof(argv[2]);
-		float ki = atof(argv[3]);
-		float kd = atof(argv[4]);
-		float int_duty = atof(argv[5]);
-		float sub_pid_thres = atof(argv[6]);
-		float sub_pid_kp = atof(argv[7]);
-		MotorPID[i].kp = kp;
-		MotorPID[i].ki = ki;
-		MotorPID[i].kd = kd;
-		MotorPID[i].int_duty = int_duty;
-		MotorPID[i].sub_pid_thres = sub_pid_thres;
-		MotorPID[i].sub_pid_kp = sub_pid_kp;
-		uprintf(
-			"MotorPID|[%d] kp:%.3f ki:%.3f kd:%.3f intduty:%.2f thres:%.2f sub_kp:%.2f\r\n",
-			i, kp, ki, kd, int_duty, sub_pid_thres, sub_pid_kp);
-	}
-	else if (strcmp(argv[0], "HPID") == 0) // Heading PID Tuning
-	{
-		float kp = atof(argv[1]);
-		float ki = atof(argv[2]);
-		float kd = atof(argv[3]);
-		float int_duty = atof(argv[4]);
-		HeadingAnglePID.kp = kp;
-		HeadingAnglePID.ki = ki;
-		HeadingAnglePID.kd = kd;
-		HeadingAnglePID.int_duty = int_duty;
-		uprintf("HeadingPID|kp:%.3f ki:%.3f kd:%.3f intduty:%.2f\r\n", kp, ki,
-				kd, int_duty);
-	}
+	// else if (strcmp(argv[0], "MPID") == 0) // Motor PID Tuning
+	// {
+	// 	int i = atoi(argv[1]);
+	// 	float kp = atof(argv[2]);
+	// 	float ki = atof(argv[3]);
+	// 	float kd = atof(argv[4]);
+	// 	float int_duty = atof(argv[5]);
+	// 	float sub_pid_thres = atof(argv[6]);
+	// 	float sub_pid_kp = atof(argv[7]);
+	// 	MotorPID[i].kp = kp;
+	// 	MotorPID[i].ki = ki;
+	// 	MotorPID[i].kd = kd;
+	// 	MotorPID[i].int_duty = int_duty;
+	// 	MotorPID[i].sub_pid_thres = sub_pid_thres;
+	// 	MotorPID[i].sub_pid_kp = sub_pid_kp;
+	// 	uprintf(
+	// 		"MotorPID|[%d] kp:%.3f ki:%.3f kd:%.3f intduty:%.2f thres:%.2f sub_kp:%.2f\r\n",
+	// 		i, kp, ki, kd, int_duty, sub_pid_thres, sub_pid_kp);
+	// }
 	else if (strcmp(argv[0], "WV") == 0) // ÐéÄâÊ¾²¨Æ÷
 	{
 		wave_index = atoi(argv[1]);
 		uprintf("Opened motor[%d] wave!\r\n", wave_index);
+	}
+	else if (strcmp(argv[0], "CAMT") == 0) // camera turn
+	{
 	}
 	return 1;
 }

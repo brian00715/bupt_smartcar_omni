@@ -138,5 +138,9 @@ int main(void)
 				}
 			}
 		}
+		if (gpio_get(KEY3) == RESET)
+		{
+			systick_delay_ms(80);
+		}
 	}
 }

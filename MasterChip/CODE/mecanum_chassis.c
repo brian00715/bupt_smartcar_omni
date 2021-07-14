@@ -87,16 +87,22 @@ void PostureStatusInit(void)
  **/
 int MecanumChassis_OmniDrive(float speed, float dir, float omega)
 {
-	float absolute_angle_offset = 0; //使用绝对坐标时，根据全场定位测得的偏航角进行补偿
+	// float absolute_angle_offset = 0; //使用绝对坐标时，根据全场定位测得的偏航角进行补偿
+	// if (MecanumChassis.pos_mode == POS_MODE_ABSOLUTE)
+	// {
+	// 	absolute_angle_offset = MecanumChassis.PostureStatus.yaw - 1.5708; // 车头初始方向90°
+	// 	if (absolute_angle_offset > PI)
+	// 	{
+	// 		absolute_angle_offset = -(2 * PI - absolute_angle_offset);
+	// 	}
+	// }
+	// dir -= absolute_angle_offset;
+
 	if (MecanumChassis.pos_mode == POS_MODE_ABSOLUTE)
 	{
-		absolute_angle_offset = MecanumChassis.PostureStatus.yaw - 1.5708; // 车头初始方向90°
-		if (absolute_angle_offset > PI)
-		{
-			absolute_angle_offset = -(2 * PI - absolute_angle_offset);
-		}
+		dir -= MecanumChassis.PostureStatus.yaw;
 	}
-	dir -= absolute_angle_offset;
+
 	float vx = speed * cos(dir); // 速度分量
 	float vy = speed * sin(dir);
 	__LIMIT(omega, MAX_ROTATE_VEL); // omega需要参与运算，故提前限制大小
