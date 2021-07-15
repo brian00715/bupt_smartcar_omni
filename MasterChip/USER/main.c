@@ -64,6 +64,9 @@ int main(void)
 		extern int wave_index;
 		if (TIM1_10ms_Flag)
 		{
+			pwm_duty(PWM1_CH2_A9,MecanumChassis.cam_servo_duty);
+			// uprintf("gyro_z:%6.3f yaw:%6.3f gyro_y:%6.3f acc_z:%6.3f\r\n",
+			// 		icm_gyro_z, MecanumChassis.PostureStatus.yaw, icm_gyro_y, icm_acc_z);
 			//>>>观测车轮转速<<<
 			// switch (wave_index)
 			// {
@@ -98,10 +101,11 @@ int main(void)
 			// sendValuePack(&txpack);
 		}
 
-		if (TIM1_100ms_Flag)
+		if (TIM1_500ms_Flag)
 		{
 			//	uprintf("%d %d\r\n",MecanumChassis.motor[0].now_rpm,MecanumChassis.motor[1].now_rpm);
 			//			uprintf("%5.2f %5.2f \r\n",MecanumChassis.target_speed, MecanumChassis.target_omega);
+			// uprintf("tar_yaw:%6.3f now_yaw:%6.3f ctrl:%6.3f\r\n", CMD_TargetYaw, MecanumChassis.PostureStatus.yaw, MecanumChassis.target_omega);
 		}
 
 		if (gpio_get(KEY1) == RESET)

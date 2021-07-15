@@ -13,6 +13,8 @@ extern uint8_t UART2_RxComplete;
 extern uint8_t UART2_RxIDLEFlag;
 extern char CMD_RxOK;
 
+extern float CMD_TargetYaw;
+
 void CMD_Init(void);
 void CMD_Exe(void);
 void UART_DMA_ReceiveInit(USART_TypeDef *usart, DMA_Channel_TypeDef *dma_ch, uint32 src_addr,

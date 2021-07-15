@@ -104,7 +104,7 @@ void UART_DMA_ReceiveInit(USART_TypeDef *usart, DMA_Channel_TypeDef *dma_ch,
  * @param src_addr 源地址，buffer
  * @param des_addr 目的地址，UART数据寄存器
  */
-void UART_DMA_SendInit(USART_TypeDef *usart, DMA_Channel_TypeDef *dma_ch,
+/*void UART_DMA_SendInit(USART_TypeDef *usart, DMA_Channel_TypeDef *dma_ch,
 					   uint32 src_addr, uint32 des_addr)
 {
 	DMA_InitTypeDef DMA_InitStructure;
@@ -132,7 +132,7 @@ void UART_DMA_SendInit(USART_TypeDef *usart, DMA_Channel_TypeDef *dma_ch,
 	DMA_ITConfig(dma_ch, DMA_IT_TC, ENABLE);	  //配置DMA传输完成中断
 	DMA_Cmd(dma_ch, ENABLE);					  //开启DMA
 	USART_DMACmd(usart, USART_DMAReq_Tx, ENABLE); // 使能UART DMA发送
-}
+}*/
 
 /**
  * @brief 串口DMA发送数据
@@ -142,7 +142,7 @@ void UART_DMA_SendInit(USART_TypeDef *usart, DMA_Channel_TypeDef *dma_ch,
  * @param data 数据
  * @param len 数据长度
  */
-void UART_DMA_SendData(DMA_Channel_TypeDef *dman, uint8 *data, uint8 len)
+/*void UART_DMA_SendData(DMA_Channel_TypeDef *dman, uint8 *data, uint8 len)
 {
 	while (DMA_GetCurrDataCounter(dman))
 		; // 检查DMA发送通道内是否还有数据
@@ -150,7 +150,7 @@ void UART_DMA_SendData(DMA_Channel_TypeDef *dman, uint8 *data, uint8 len)
 	DMA_Cmd(dman, DISABLE);
 	dman->CNTR = len;	   // 设置发送长度
 	DMA_Cmd(dman, ENABLE); // 启动DMA发送
-}
+}*/
 
 char CMD_RxOK = 0;					   // 串口接收完成标志，给CMD_Exe用
 uint8_t *CMD_Buffer[CMD_SIZE_X] = {0}; // 指针数组，每个元素都指向分割后的元字符串
@@ -225,6 +225,7 @@ int CMD_CommandParse(char *cmd_line, uint8_t *argc, char *argv[])
 }
 
 int wave_index = -1;
+float CMD_TargetYaw = 0;
 /**
  * @brief 指令执行函数
  * @param argc 指令个数
@@ -232,28 +233,41 @@ int wave_index = -1;
  */
 int CMD_CommandExe(int argc, char **argv)
 {
-	if (strcmp(argv[0], "SD") == 0) //SetDuty
+	if (strcmp(argv[0], "SCM") == 0) // SetCtrlMode
 	{
-		for (int i = 0; i < 4; i++)
-		{
-			MecanumChassis.motor[i].target_duty = atoi(argv[i + 1]);
-			uprintf("[%d]:%d", i, MecanumChassis.motor[i].target_duty);
-		}
-		uprintf("\r\n");
+		MecanumChassis.ctrl_mode = (MecanumChassis.ctrl_mode + 1) % 5;
+		uprintf("CMD|Ctrl mode change to %d\r\n", MecanumChassis.ctrl_mode);
 	}
+	// if (strcmp(argv[0], "SD") == 0) //SetDuty
+	// {
+	// 	for (int i = 0; i < 4; i++)
+	// 	{
+	// 		MecanumChassis.motor[i].target_duty = atoi(argv[i + 1]);
+	// 		uprintf("[%d]:%d", i, MecanumChassis.motor[i].target_duty);
+	// 	}
+	// 	uprintf("\r\n");
+	// }
 	else if (strcmp(argv[0], "YPID") == 0) // YAW PID
 	{
 		float kp = atof(argv[1]);
 		float ki = atof(argv[2]);
 		float kd = atof(argv[3]);
 		float int_duty = atof(argv[4]);
+		float ctrl_max = atof(argv[5]);
 		YawPID.kp = kp;
 		YawPID.ki = ki;
 		YawPID.kd = kd;
 		YawPID.int_duty = int_duty;
-		uprintf("YawPID|kp:%.3f ki:%.3f kd:%.3f intduty:%.2f\r\n", kp, ki,
-				kd, int_duty);
+		YawPID.ctrl_max = ctrl_max;
+		uprintf("YawPID|kp:%.3f ki:%.3f kd:%.3f intduty:%.2f ctrl_max:%.2f\r\n", kp, ki,
+				kd, int_duty, ctrl_max);
 	}
+	// else if (strcmp(argv[0], "SY") == 0) // Set Yaw
+	// {
+	// 	CMD_TargetYaw = atof(argv[1]);
+	// 	uprintf("CMD|target_yaw:%6.2f now:%6.3f\r\n", CMD_TargetYaw, MecanumChassis.PostureStatus.yaw);
+	// 	YawPID.int_sum = 0;
+	// }
 	else if (strcmp(argv[0], "CD") == 0) // CamServoDuty
 	{
 		MecanumChassis.cam_servo_duty = (uint32)atoi(argv[1]);
@@ -272,35 +286,31 @@ int CMD_CommandExe(int argc, char **argv)
 	// 	uprintf("NormalPID|kp:%.3f ki:%.3f kd:%.3f intduty:%.2f\r\n", kp, ki,
 	// 			kd, int_duty);
 	// }
-	else if (strcmp(argv[0], "SRPM") == 0) //SetRPM
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			MecanumChassis.motor[i].target_rpm = atoi(argv[i + 1]);
-			uprintf("[%d]:%d", i, MecanumChassis.motor[i].target_rpm);
-		}
-		uprintf("\r\n");
-	}
-	else if (strcmp(argv[0], "SCM") == 0) // SetCtrlMode
-	{
-		MecanumChassis.ctrl_mode = (MecanumChassis.ctrl_mode + 1) % 5;
-		uprintf("CMD|Ctrl mode change to %d\r\n", MecanumChassis.ctrl_mode);
-	}
-	else if (strcmp(argv[0], "DF") == 0) // DiffDrive
-	{
-		MecanumChassis.target_speed = atof(argv[1]);
-		MecanumChassis.target_omega = atof(argv[2]);
-		MecanumChassis.target_dir = 0;
-		uprintf("Chassis|target_speed:%5.2f target_omega:%5.2f\r\n",
-				MecanumChassis.target_speed, MecanumChassis.target_omega);
-	}
+	// else if (strcmp(argv[0], "SRPM") == 0) //SetRPM
+	// {
+	// 	for (int i = 0; i < 4; i++)
+	// 	{
+	// 		MecanumChassis.motor[i].target_rpm = atoi(argv[i + 1]);
+	// 		uprintf("[%d]:%d", i, MecanumChassis.motor[i].target_rpm);
+	// 	}
+	// 	uprintf("\r\n");
+	// }
+
+	// else if (strcmp(argv[0], "DF") == 0) // DiffDrive
+	// {
+	// 	MecanumChassis.target_speed = atof(argv[1]);
+	// 	MecanumChassis.target_omega = atof(argv[2]);
+	// 	MecanumChassis.target_dir = 0;
+	// 	uprintf("Chassis|target_speed:%5.2f target_omega:%5.2f\r\n",
+	// 			MecanumChassis.target_speed, MecanumChassis.target_omega);
+	// }
 	else if (strcmp(argv[0], "FOL") == 0) // PathFollowTuning
 	{
 
 		MecanumChassis.PathFollowing.forward_speed = atof(argv[1]);
 		MecanumChassis.PathFollowing.curve_speed = atof(argv[2]);
 		MecanumChassis.PathFollowing.angle_thres = atof(argv[3]);
-		uprintf("Chassis|forward_speed:%5.2f curve_speed:%5.2f angle_thres:%5.2f\r\n",
+		uprintf("Chassis|forward_speed:%5.2f curve_speed-:%5.2f angle_thres:%5.2f\r\n",
 				MecanumChassis.PathFollowing.forward_speed, MecanumChassis.PathFollowing.curve_speed, MecanumChassis.PathFollowing.angle_thres);
 	}
 	else if (strcmp(argv[0], "GA") == 0) // Teleop_GoAhead

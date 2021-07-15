@@ -39,5 +39,6 @@ extern uint8_t UART3_RxLen;
 extern char TIM1_10ms_Flag;
 extern char TIM1_20ms_Flag;
 extern char TIM1_100ms_Flag;
+extern uint8 TIM1_500ms_Flag;
 
 #endif

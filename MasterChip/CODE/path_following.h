@@ -4,6 +4,10 @@
 #include "headfile.h"
 #include "pid.h"
 
+#define CAM_SERVO_90_DUTY 4000
+#define CAM_SERVO_0_DUTY 2000
+#define CAM_SERVO_DUTY_PER_RAD (1273.24f) // 1 rad 对应的占空比
+
 // 巡线状态
 typedef enum PathFollowStateMachine_e
 {
@@ -41,6 +45,10 @@ typedef enum PathFollowStateMachine_e
     PATH_FOLLOW_START,      // 出库后识别到赛道
     PATH_FOLLOW_OUT_GARAGE, // 出库状态
 
+    PATH_FOLLOW_LEFT_FORK_DONE, // 已经出三岔，看到正常道路
+    PATH_FOLLOW_RIGHT_FORK_DONE,
+    PATH_FOLLOW_LEFT_FORK_DONE2,
+    PATH_FOLLOW_RIGHT_FORK_DONE2
 } PathFollowStateMachine_e;
 
 typedef struct PathFollow_t
@@ -48,17 +56,17 @@ typedef struct PathFollow_t
     PathFollowStateMachine_e state;
     uint8 begin;
     uint8 image_process_done;
-    float heading_err;      // 赛道方向与车头方向(90°)的夹角(rad)
-    int16 normal_err;       // 赛道线与视野中心的横向偏差
+    float heading_err;   // 赛道方向与车头方向(90°)的夹角(rad)
+    int16 normal_err;    // 赛道线与视野中心的横向偏差
     float forward_speed; // 前进默认速度
-    float curve_speed;      // 弯道默认速度
+    float curve_speed;   // 弯道默认速度
     float angle_thres;
     uint8_t en_turn_ctrl; // 开启自转闭环
+    uint8_t fork_turn_done;
 } PathFollow_t;
 
-extern PID_t HeadingAnglePID;
+extern PID_t HeadingPID;
 extern PID_t YawPID;
-extern PID_t NormalPID; // 法向修正PID
 
 void PathFollowing_Init();
 void PathFollowing_Exe();

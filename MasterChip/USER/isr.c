@@ -99,6 +99,7 @@ uint8 tim1_5ms_cnt = 0;
 char TIM1_10ms_Flag = 0;
 char TIM1_20ms_Flag = 0;
 char TIM1_100ms_Flag = 0;
+uint8 TIM1_500ms_Flag = 0;
 void TIM1_UP_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
@@ -137,15 +138,25 @@ void TIM1_UP_IRQHandler(void)
 			// uprintf("Slave Send OK.\r\n");
 		}
 
+		if (tim1_5ms_cnt % 100 == 0)
+		{
+			TIM1_500ms_Flag = 1;
+		}
+		else
+		{
+			TIM1_500ms_Flag = 0;
+		}
+
 		//硬件SPI采集陀螺仪数据
 		get_icm20602_accdata_spi();
 		get_icm20602_gyro_spi();
 		icm_acc_z = ((float)icm_acc_raw_z / 4096);				// ±8g
 		icm_gyro_z = __ANGLE2RAD((float)icm_gyro_raw_z / 16.4); // ±2000dps,16 bit adc
+		icm_gyro_y = __ANGLE2RAD((float)icm_gyro_raw_y / 16.4);
 		// MecanumChassis.PostureStatus.yaw = KalmanFilter(icm_acc_raw_z * 1.0, icm_gyro_raw_z * 1.0);
 		if (fabs(icm_gyro_z) > 0.023) // 过滤零漂
 		{
-			MecanumChassis.PostureStatus.yaw += icm_gyro_z * 0.005; // 偏航角积分
+			MecanumChassis.PostureStatus.yaw += (icm_gyro_z - 0.019) * 0.005; // 偏航角积分
 		}
 
 		// >>>采集编码器12的数据<<<

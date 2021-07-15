@@ -102,7 +102,7 @@
 
 extern int16 icm_gyro_raw_x,icm_gyro_raw_y,icm_gyro_raw_z;
 extern int16 icm_acc_raw_x,icm_acc_raw_y,icm_acc_raw_z;
-extern float icm_gyro_z; 
+extern float icm_gyro_z,icm_gyro_y; 
 extern float icm_acc_z;
 
 

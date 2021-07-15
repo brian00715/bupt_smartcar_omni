@@ -6,8 +6,7 @@
 
 
 //=================================ºêºÍENUM=================================
-#define CAM_SERVO_90_DUTY 3900
-#define CAM_SERVO_0_DUTY 1950
+
 
 
 typedef enum CtrlMode_e
