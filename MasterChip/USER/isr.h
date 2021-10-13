@@ -41,4 +41,6 @@ extern char TIM1_20ms_Flag;
 extern char TIM1_100ms_Flag;
 extern uint8 TIM1_500ms_Flag;
 
+extern int32 time_count;
+
 #endif

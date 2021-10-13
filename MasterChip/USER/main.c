@@ -25,7 +25,7 @@
 #include "valuepack.h"
 #include "slave_comm.h"
 #include "path_following.h"
-
+static uint32 out_garage_time;
 int main(void)
 {
 	DisableGlobalIRQ();
@@ -64,7 +64,7 @@ int main(void)
 		extern int wave_index;
 		if (TIM1_10ms_Flag)
 		{
-			pwm_duty(PWM1_CH2_A9,MecanumChassis.cam_servo_duty);
+			pwm_duty(PWM1_CH2_A9, MecanumChassis.cam_servo_duty);
 			// uprintf("gyro_z:%6.3f yaw:%6.3f gyro_y:%6.3f acc_z:%6.3f\r\n",
 			// 		icm_gyro_z, MecanumChassis.PostureStatus.yaw, icm_gyro_y, icm_acc_z);
 			//>>>观测车轮转速<<<
@@ -117,18 +117,34 @@ int main(void)
 				Motor_SelfCheck();
 			}
 		}
-		if (gpio_get(KEY2) == RESET) // 开始循迹
+
+		if (MecanumChassis.PathFollowing.begin)
+		{
+			if ((systick_getval_ms() - out_garage_time) >= OUT_GARAGE_DELAY_TIME_MS) // 车身已位于赛道中心
+			{
+				MecanumChassis.PathFollowing.state = PATH_FOLLOW_NORMAL;
+				MecanumChassis.target_dir = 1.5708;
+			}
+		}
+		if (gpio_get(KEY2) == RESET)
 		{
 			systick_delay_ms(80);
 			if (gpio_get(KEY2) == RESET)
 			{
 				uprintf("key2 pressed!\r\n");
+				systick_start();
+				out_garage_time = systick_getval_ms();
+				MecanumChassis.PathFollowing.out_garage_shift = 1;
 				MecanumChassis.PathFollowing.begin = (MecanumChassis.PathFollowing.begin + 1) % 2;
 				uprintf("path follow change to %d\r\n", MecanumChassis.PathFollowing.begin);
-				if (MecanumChassis.PathFollowing.begin && UART3_RxOK) // 开始巡线
+				if (MecanumChassis.PathFollowing.begin && UART3_RxOK) // 开始巡线状态
 				{
 					MecanumChassis.ctrl_mode = CTRL_MODE_OMNI;
-					MecanumChassis.PathFollowing.state = PATH_FOLLOW_NORMAL;
+					// MecanumChassis.PathFollowing.state = PATH_FOLLOW_NORMAL;
+					// 出库横移
+					MecanumChassis.target_speed = 0.2;
+					MecanumChassis.target_dir = 3.14; // 左移3.14，右移0
+					MecanumChassis.target_omega = 0;
 				}
 				else
 				{

@@ -4,9 +4,11 @@
 #include "headfile.h"
 #include "pid.h"
 
-#define CAM_SERVO_90_DUTY 4000
-#define CAM_SERVO_0_DUTY 2000
+#define CAM_SERVO_90_DUTY (4000)
+#define CAM_SERVO_0_DUTY (2000)
 #define CAM_SERVO_DUTY_PER_RAD (1273.24f) // 1 rad 对应的占空比
+
+#define OUT_GARAGE_DELAY_TIME_MS (1200) // 出库延时时间(ms)
 
 // 巡线状态
 typedef enum PathFollowStateMachine_e
@@ -37,13 +39,13 @@ typedef enum PathFollowStateMachine_e
     PATH_FOLLOW_RIGHT_FORK_EXPORT,
     PATH_FOLLOW_RIGHT_FORK_OUT,
 
-    PATH_FOLLOW_FINALL_FIRST,      // 第一次经过终点
-    PATH_FOLLOW_FINALL_SECOND,     // 第二次经过终点
-    PATH_FOLLOW_STOP,              // 入库
-    PATH_FOLLOW_FINALL_FIRST_WAIT, // 第一次识别到终点的延时标志位
+    PATH_FOLLOW_FINALL_FIRST,  // 第一次经过终点
+    PATH_FOLLOW_FINALL_SECOND, // 第二次经过终点
+    PATH_FOLLOW_STOP,          // 入库
 
     PATH_FOLLOW_START,      // 出库后识别到赛道
     PATH_FOLLOW_OUT_GARAGE, // 出库状态
+    PATH_FOLLOW_START0 = 27,
 
     PATH_FOLLOW_LEFT_FORK_DONE, // 已经出三岔，看到正常道路
     PATH_FOLLOW_RIGHT_FORK_DONE,
@@ -61,13 +63,14 @@ typedef struct PathFollow_t
     float forward_speed; // 前进默认速度
     float curve_speed;   // 弯道默认速度
     float angle_thres;
-    uint8_t en_turn_ctrl; // 开启自转闭环
-    uint8_t fork_turn_done;
+    uint8 en_turn_ctrl;    // 开启自转闭环
+    uint8 fork_turn_done;  // 自转闭环完成
+    uint8 out_garage_shift; // 出库横移标志
 } PathFollow_t;
 
 extern PID_t HeadingPID;
 extern PID_t YawPID;
-
+extern uint8 stop_flag;
 void PathFollowing_Init();
 void PathFollowing_Exe();
 

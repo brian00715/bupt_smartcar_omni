@@ -8,6 +8,7 @@
 #include "encoder.h"
 #include "slave_comm.h"
 
+int32 time_count = 0;
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -100,12 +101,45 @@ char TIM1_10ms_Flag = 0;
 char TIM1_20ms_Flag = 0;
 char TIM1_100ms_Flag = 0;
 uint8 TIM1_500ms_Flag = 0;
+int stop_count = 0;
 void TIM1_UP_IRQHandler(void)
 {
 	if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
 	{
 		TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
+		time_count++;
 		tim1_5ms_cnt++;
+
+		if (stop_flag == 1)
+		{
+			stop_count++;
+			if (stop_count <= 10)
+			{
+				MecanumChassis.target_speed = 0.52;
+				MecanumChassis.target_omega = 0;
+				MecanumChassis.target_dir = 1.5708;
+			}
+			else if(stop_count<=100)
+			{
+				MecanumChassis.target_speed =  0.52;
+				MecanumChassis.target_omega = -1.61;
+				MecanumChassis.target_dir = 1.5708;
+			}
+			else if(stop_count<=125)
+			{
+				MecanumChassis.target_speed =  0.52;
+				MecanumChassis.target_omega = 0;
+				MecanumChassis.target_dir = 1.5708;
+			}
+			
+			else
+			{
+				MecanumChassis.target_speed = 0;
+				MecanumChassis.target_omega = 0;
+				MecanumChassis.target_dir = 1.5708;
+			}
+		}
+
 		if (tim1_5ms_cnt % 2 == 0)
 		{
 			TIM1_10ms_Flag = 1;
