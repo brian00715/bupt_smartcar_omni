@@ -82,14 +82,12 @@
         }                           \
 
 
-#define Min(A, B) ((A) <= (B) ? (A) : (B))
-#define Max(A, B) ((A) >= (B) ? (A) : (B))
-#define SL_OK 0
-#define SL_ERROR 1
+#define __MIN(A, B) ((A) <= (B) ? (A) : (B))
+#define __MAX(A, B) ((A) >= (B) ? (A) : (B))
 //角度制转化为弧度制
-#define ANGLE2RAD(x) (((x)*1.0) / 180.0f * PI)
+#define __ANGLE2RAD(x) (((x)*1.0) / 180.0f * PI)
 //弧度制转换为角度制
-#define RAD2ANGLE(x) (((x)*1.0) / PI * 180.0f)
+#define __RAD2ANGLE(x) (((x)*1.0) / PI * 180.0f)
 
 //=================================结构体=================================
 

@@ -1,7 +1,6 @@
 #ifndef VALUEPACK_H
 #define VALUEPACK_H
 
-
 // 本程序通过DMA和USART 进行数据包的接收和发送
 // 接收的数据自动写入到buffer中，通过定时调用readValuePack()函数来解析，定时间隔建议在10ms以内。
 // 数据发送也采用DMA

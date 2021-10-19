@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="84748de4-6e5d-44fe-bc1d-2d46ce0884df" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../MasterChip.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CODE/path_following.c" beforeDir="false" afterPath="$PROJECT_DIR$/CODE/path_following.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CODE/path_following.h" beforeDir="false" afterPath="$PROJECT_DIR$/CODE/path_following.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/USER/isr.c" beforeDir="false" afterPath="$PROJECT_DIR$/USER/isr.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/USER/isr.h" beforeDir="false" afterPath="$PROJECT_DIR$/USER/isr.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/USER/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/USER/main.c" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="JupyterTrust" id="8d483bc8-d9cd-41a2-afa5-5b331dda2270" />
+  <component name="ProjectId" id="1w7VLE2TXPJEMWCPE2XcryB4QoU" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="sortByType" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="84748de4-6e5d-44fe-bc1d-2d46ce0884df" name="Default Changelist" comment="" />
+      <created>1627809557098</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1627809557098</updated>
+      <workItem from="1627809558516" duration="272000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="555" y="176" key="FileChooserDialogImpl" timestamp="1627809778477">
+      <screen x="0" y="0" width="1549" height="871" />
+    </state>
+    <state x="555" y="176" key="FileChooserDialogImpl/0.0.1549.871@0.0.1549.871" timestamp="1627809778477" />
+  </component>
+</project>

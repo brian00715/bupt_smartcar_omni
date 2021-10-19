@@ -9,12 +9,11 @@
  * 
  */
 
-//----------------------------Kalman Filter-----------------------------------------------
 float K1 = 0.02;
 static float angle = 0, angle_dot = 0;
 float Q_angle = 0.001; // 过程噪声的协方差
-float Q_gyro = 0.003;  //0.003 过程噪声的协方差 过程噪声的协方差为一个一行两列矩阵
-float R_angle = 0.5;   //测量噪声的协方差 及测量偏差
+float Q_gyro = 0.003;  // 0.003 过程噪声的协方差 过程噪声的协方差为一个一行两列矩阵
+float R_angle = 0.5;   // 测量噪声的协方差 及测量偏差
 float dt = 0.005;	   //
 char C_0 = 1;
 float Q_bias = 0, Angle_err = 0;

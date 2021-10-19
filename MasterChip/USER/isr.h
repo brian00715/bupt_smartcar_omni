@@ -19,25 +19,28 @@
 #ifndef __ISR_H
 #define __ISR_H
 
-#define UART1_RX_BUFFER_SIZE (50)
-#define UART1_TX_BUFFER_SIZE (100)
+#define UART2_RX_BUFFER_SIZE (50)
+#define UART2_TX_BUFFER_SIZE (100)
 #define UART3_RX_BUFFER_SIZE (30)
 
-extern uint8_t UART1_RxBuffer[UART1_RX_BUFFER_SIZE];
-extern uint8_t UART1_TxBuffer[UART1_TX_BUFFER_SIZE];
-extern uint8_t UART1_RxBufferCnt;
-extern uint8_t UART1_RxComplete;
-extern uint8_t UART1_RxIDLEFlag;
-extern uint8_t UART1_RxBufferOverflow; // 缓冲数组溢出标志
+extern uint8_t UART2_RxBuffer[UART2_RX_BUFFER_SIZE];
+extern uint8_t UART2_RxArray[UART2_RX_BUFFER_SIZE];
+extern uint8_t UART2_TxBuffer[UART2_TX_BUFFER_SIZE];
+extern uint8_t UART2_RxBufferCnt;
+extern uint8_t UART2_RxComplete;
+extern uint8_t UART2_RxIDLEFlag;
+extern uint8_t UART2_RxBufferOverflow; // 缓冲数组溢出标志
 
 extern uint8_t UART3_RxBuffer[UART3_RX_BUFFER_SIZE];
 extern uint8_t UART3_RxBufferCnt;
 extern uint8_t UART3_RxOK;
 extern uint8_t UART3_RxLen;
 
-
 extern char TIM1_10ms_Flag;
 extern char TIM1_20ms_Flag;
 extern char TIM1_100ms_Flag;
+extern uint8 TIM1_500ms_Flag;
+
+extern int32 time_count;
 
 #endif

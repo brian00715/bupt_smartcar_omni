@@ -25,11 +25,11 @@ void SlaveComm_Init()
     nvic_init(USART3_IRQn, 0, 2, ENABLE); // 配置UART NVIC
     // >>>DMA方式接收数据<<<
     USART_ITConfig(USART3, USART_IT_IDLE, ENABLE); // 开启闲时中断
-    UART_DMA_ReceiveInit(USART3,DMA1_Channel3, (u32)(&USART3->DATAR),
-                  (uint32)UART3_RxBuffer, UART3_RX_BUFFER_SIZE); // USART DMA初始化
-    nvic_init(DMA1_Channel3_IRQn, 0, 0, ENABLE);                 // 配置DMA NVIC
-                                                                 // >>>中断方式接收数据<<<
-                                                                 //	uart_rx_irq(UART_1, ENABLE); // 使能串口接收中断
+    UART_DMA_ReceiveInit(USART3, DMA1_Channel3, (u32)(&USART3->DATAR),
+                         (uint32)UART3_RxBuffer, UART3_RX_BUFFER_SIZE); // USART DMA初始化
+    nvic_init(DMA1_Channel3_IRQn, 0, 0, ENABLE);                        // 配置DMA NVIC
+                                                                        // >>>中断方式接收数据<<<
+                                                                        //	uart_rx_irq(UART_3, ENABLE); // 使能串口接收中断
 }
 
 /**
@@ -54,32 +54,33 @@ void SlaveComm_UARTCallback()
     MecanumChassis.motor[1].now_rpm = encoder_data[1];
     MecanumChassis.motor[2].now_rpm = encoder_data[2];
     MecanumChassis.motor[3].now_rpm = encoder_data[3];
-    PathFollowStatus.image_process_done = UART3_RxBuffer[6];
-    if (PathFollowStatus.image_process_done == 1) // 0:未处理完图像 1: 处理完图像
+    MecanumChassis.PathFollowing.image_process_done = UART3_RxBuffer[6];
+    if (MecanumChassis.PathFollowing.image_process_done == 1) // 0:未处理完图像 1: 处理完图像
     {
-        PathFollowStatus.path_diff_angle = ((int16)(UART3_RxBuffer[7] << 8 | UART3_RxBuffer[8]))*1.0;
-        PathFollowStatus.path_diff_angle = atan(
-            PathFollowStatus.path_diff_angle / 1000.0);
-        PathFollowStatus.meet_left_big_curve = UART3_RxBuffer[9];
-        PathFollowStatus.meet_right_big_curve = UART3_RxBuffer[10];
+        MecanumChassis.PathFollowing.heading_err = ((int16)(UART3_RxBuffer[7] << 8 | UART3_RxBuffer[8])) * 1.0;
+        MecanumChassis.PathFollowing.normal_err = UART3_RxBuffer[9] - 94;
+        if(MecanumChassis.PathFollowing.state!= UART3_RxBuffer[10])
+        {
+            uprintf("Status updated! now:%d\r\n",UART3_RxBuffer[10]);
+        }
+        MecanumChassis.PathFollowing.state = UART3_RxBuffer[10]; // 赛道状态标志位
     }
     memset(UART3_RxBuffer, 0, sizeof(uint8_t) * UART3_RX_BUFFER_SIZE);
     UART3_RxOK = 1;
 }
 
-
 void SlaveComm_Exe()
 {
-    if (UART3_RxOK)
-    {
-//        uprintf(
-//            "SlaveData|encoder-[0]:%4d [1]:%4d [2]:%4d [3]:%4d imageOK:%d angle:%6.2f LCurve:%d RCurve:%d\r\n",
-//            MecanumChassis.motor[0].now_rpm, MecanumChassis.motor[1].now_rpm,
-//            MecanumChassis.motor[2].now_rpm, MecanumChassis.motor[3].now_rpm,
-//            PathFollowStatus.image_process_done,
-//            PathFollowStatus.path_diff_angle,
-//            PathFollowStatus.meet_left_big_curve,
-//            PathFollowStatus.meet_right_big_curve);
-        UART3_RxOK = 0;
-    }
+    // if (UART3_RxOK)
+    // {
+    //     uprintf(
+    //         "SlaveData|encoder-[0]:%4d [1]:%4d [2]:%4d [3]:%4d imageOK:%d angle:%6.2f LCurve:%d RCurve:%d\r\n",
+    //         MecanumChassis.motor[0].now_rpm, MecanumChassis.motor[1].now_rpm,
+    //         MecanumChassis.motor[2].now_rpm, MecanumChassis.motor[3].now_rpm,
+    //         MecanumChassis.PathFollowing.image_process_done,
+    //         MecanumChassis.PathFollowing.heading_err,
+    //         MecanumChassis.PathFollowing.meet_left_big_curve,
+    //         MecanumChassis.PathFollowing.meet_right_big_curve);
+    //     UART3_RxOK = 0;
+    // }
 }

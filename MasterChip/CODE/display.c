@@ -11,8 +11,8 @@ void display_entry(void *parameter)
 //        ips114_displayimage032(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);
 //        count++;
 //
-//        ips114_showint16(0, 4, icm_gyro_x);
-//        ips114_showint16(0, 5, icm_acc_x);
+//        ips114_showint16(0, 4, icm_gyro_raw_x);
+//        ips114_showint16(0, 5, icm_acc_raw_x);
 //        ips114_showint16(0, 6, encoder_data[0]);
 //        ips114_showint32(0, 7, count, 10);
 //    }
