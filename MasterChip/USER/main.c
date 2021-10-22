@@ -12,13 +12,9 @@
 //打开新的工程或者工程移动了位置务必执行以下操作
 //右键单击工程，选择刷新
 #include "headfile.h"
-#include "display.h"
-#include "timer_pit.h"
 #include "encoder.h"
-#include "buzzer.h"
 #include "button.h"
 #include "motor.h"
-#include "elec.h"
 #include "cmd.h"
 #include "isr.h"
 #include "mecanum_chassis.h"

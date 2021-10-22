@@ -1,3 +1,12 @@
+/**
+ * @file valuepack.c
+ * @author 
+ * @brief 虚拟示波器，配合手机app“蓝牙调试器”使用
+ * @version 0.1
+ * @date 
+ * @copyright Copyright (c) 2021
+ * 
+ */
 #include "valuepack.h"
 #include "zf_uart.h"
 
