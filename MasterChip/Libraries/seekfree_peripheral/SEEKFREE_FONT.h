@@ -23,7 +23,7 @@
 #include "common.h"
 
 
-
+#ifdef USE_IPS114
 //-------常用颜色----------
 #define RED          	0xF800	//红色
 #define BLUE         	0x001F  //蓝色
@@ -49,5 +49,6 @@ extern const uint8 oled_8x16[];
 
 extern const uint8 oled_16x16_chinese[][16];
 
+#endif
 
 #endif

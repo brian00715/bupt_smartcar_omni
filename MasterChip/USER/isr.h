@@ -19,9 +19,17 @@
 #ifndef __ISR_H
 #define __ISR_H
 
-#define UART2_RX_BUFFER_SIZE (50)
-#define UART2_TX_BUFFER_SIZE (100)
-#define UART3_RX_BUFFER_SIZE (30)
+#define UART1_TX_BUFFER_SIZE (20)
+#define UART1_RX_BUFFER_SIZE (30)
+#define UART2_RX_BUFFER_SIZE (30)
+#define UART2_TX_BUFFER_SIZE (80)
+#define UART3_RX_BUFFER_SIZE (20)
+
+extern uint8_t UART1_RxBuffer[UART1_RX_BUFFER_SIZE];
+extern uint8_t UART1_RxBufferCnt;
+extern uint8_t UART1_RxComplete;
+extern uint8_t UART1_RxIDLEFlag;       // 闲时中断标志位
+extern uint8_t UART1_RxBufferOverflow; // 缓冲数组溢出标志
 
 extern uint8_t UART2_RxBuffer[UART2_RX_BUFFER_SIZE];
 extern uint8_t UART2_RxArray[UART2_RX_BUFFER_SIZE];

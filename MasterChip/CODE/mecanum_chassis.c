@@ -14,6 +14,7 @@
 #include "sci_compute.h"
 #include "motor.h"
 #include "path_following.h"
+#include "handle.h"
 #define MECANUM_X_ASSM
 // ===========================================Private==============================================
 
@@ -133,8 +134,10 @@ int MecanumChassis_OmniDrive(float speed, float dir, float omega)
 	//m/s转为占空比
 	for (int i = 0; i < 4; i++)
 	{
-		MecanumChassis.motor[i].target_rpm = target_speed[i] * 100;
+		MecanumChassis.motor[i].target_rpm = target_speed[i] * 100; // target_speed单位m/s，target_rpm对应编码器数值
 	}
+
+	Motor_RpmCtrl();
 }
 
 float drift_damp_coff = 0.85; // 遏止转向漂移的阻尼系数
@@ -162,6 +165,8 @@ void MecanumChassis_DiffDrive(float speed, float omega)
 	{
 		MecanumChassis.motor[i].target_rpm = target_speed[i] * 100;
 	}
+
+	Motor_RpmCtrl();
 }
 
 /**
@@ -185,11 +190,15 @@ void MecanumChassis_Exe()
 	case CTRL_MODE_OMNI:
 		MecanumChassis_OmniDrive(MecanumChassis.target_speed,
 								 MecanumChassis.target_dir, MecanumChassis.target_omega);
-		Motor_RpmCtrl();
+
 		break;
 	case CTRL_MODE_DIFF:
 		MecanumChassis_DiffDrive(MecanumChassis.target_speed, MecanumChassis.target_omega);
-		Motor_RpmCtrl();
+		break;
+	case CTRL_MODE_HANDLE:
+		Handle_Exe();
+		MecanumChassis_OmniDrive(MecanumChassis.target_speed,
+								 MecanumChassis.target_dir, MecanumChassis.target_omega);
 		break;
 	case CTRL_MODE_TUNING:
 		Motor_RpmCtrl();

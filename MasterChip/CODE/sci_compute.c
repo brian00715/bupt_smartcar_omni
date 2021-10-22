@@ -8,6 +8,7 @@
  * @copyright Copyright (c) 2021
  * 
  */
+#include "sci_compute.h"
 
 float K1 = 0.02;
 static float angle = 0, angle_dot = 0;
@@ -57,4 +58,41 @@ float KalmanFilter(float Accel, float Gyro)
 	angle_dot = Gyro - Q_bias; //输出值(后验估计)的微分=角速度
 
 	return angle;
+}
+
+
+float AngleLimit180(float angle)
+{
+  while (angle > 180)
+  {
+    angle -= 360;
+  }
+  while (angle <= -180)
+  {
+    angle += 360;
+  }
+  return angle;
+}
+
+float AngleLimitPI(float angle)
+{
+  while (angle > PI)
+  {
+    angle -= 2 * PI;
+  }
+  while (angle <= -PI)
+  {
+    angle += 2 * PI;
+  }
+  return angle;
+}
+
+/**
+ * @brief 两角差值，限制在[0,pi]
+ *
+ */
+float AngleLimitDiff(float a, float b)
+{
+  float out = a - b;
+  return AngleLimitPI(out);
 }

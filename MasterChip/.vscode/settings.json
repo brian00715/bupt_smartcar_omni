@@ -2,6 +2,7 @@
     "files.associations": {
         "headfile.h": "c",
         "mecanum_chassis.h": "c",
-        "seekfree_icm20602.h": "c"
+        "seekfree_icm20602.h": "c",
+        "cmd.h": "c"
     }
 }

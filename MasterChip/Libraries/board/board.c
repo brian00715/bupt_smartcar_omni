@@ -1,9 +1,11 @@
 #include "ch32v10x_usart.h"
 #include "ch32v10x_rcc.h"
 #include "board.h"
-#include "isr.h"
 #include "cmd.h"
 #include "stdarg.h"
+#include "isr.h"
+#include "zf_systick.h"
+
 
 void board_init(void)
 {
@@ -33,17 +35,26 @@ void board_init(void)
 
 void uprintf(char *fmt, ...)
 {
+#ifdef CMD_TX_USE_DMA
+		while (DMA_GetCurrDataCounter(DMA1_Channel6))
+			; // 检查DMA发送通道内是否还有数据
+#endif
 	int size;
 	va_list arg_ptr;
 	va_start(arg_ptr, fmt);
 	size = vsnprintf(UART2_TxBuffer, UART2_TX_BUFFER_SIZE, fmt, arg_ptr);
 	va_end(arg_ptr);
-	 for (int i = 0; i < size; i++)
+#ifdef CMD_TX_USE_BLOCK
+	for (int i = 0; i < size; i++)
 	 {
 	 	while (USART_GetFlagStatus((USART_TypeDef *)UARTN[DEBUG_UART],
 	 							   USART_FLAG_TC) == RESET)
 	 		;
 	 	USART_SendData((USART_TypeDef *)UARTN[DEBUG_UART], UART2_TxBuffer[i]);
 	 }
-//	UART_DMA_SendData(DMA1_Channel4, UART2_TxBuffer, size);
+	memset(UART2_TxBuffer,0,sizeof(uint8_t)*UART2_TX_BUFFER_SIZE);
+#endif
+#ifdef CMD_TX_USE_DMA
+	UART_DMA_EnableSendData(DMA1_Channel6, UART2_TxBuffer, size);
+#endif
 }

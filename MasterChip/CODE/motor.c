@@ -15,6 +15,7 @@
 #include "mecanum_chassis.h"
 #include <math.h>
 #include "encoder.h"
+#include "slave_comm.h"
 
 extern BaseChassis_t MecanumChassis;
 // kp ki kd int_duty int_max int_sum last_err last_delta_err use_sub_pid sub_pid_kp sub_pid_thres
@@ -152,8 +153,6 @@ void Motor_SelfCheck(void)
 	uprintf("---------------------------------------------\r\n");
 }
 
-extern int wave_index;
-extern char TIM1_100ms_Flag;
 /**
  * @brief 电机占空比环
  * 
@@ -167,19 +166,6 @@ void Motor_DutyCtrl()
 		duty_ctrl[i] = (int32_t)PID_GetOutput(&MotorPID[i],
 											  MecanumChassis.motor[i].target_duty,
 											  MecanumChassis.motor[i].now_duty);
-#ifdef DEBUG
-		if (wave_index == i)
-		{
-			if (TIM1_100ms_Flag)
-			{
-				uprintf("Tuning|[%d] now:%d target:%d err:%d ctrl:%d\r\n", i,
-						MecanumChassis.motor[i].now_duty,
-						MecanumChassis.motor[i].target_duty,
-						MecanumChassis.motor[i].target_duty - MecanumChassis.motor[i].now_duty,
-						duty_ctrl[i]);
-			}
-		}
-#endif
 	}
 	if (MecanumChassis.send_ctrl_msg_flag)
 	{
@@ -199,8 +185,12 @@ void Motor_RpmCtrl(void)
 		uprintf("## Please press key1 to take motor self check first! ##\r\n");
 		return;
 	}
-	int rpm_value[4] =
-		{0};
+	if (!EncoderDataUpdated) // 从UART3接收到了从单片机采集的后两轮的编码器值
+	{
+		// uprintf("## Can't get updated encoder value, check uart3 comm! ##\r\n");
+		return;
+	}
+	int rpm_value[4] = {0};
 	for (int i = 0; i < 4; i++)
 	{
 		rpm_value[i] = (int32_t)PID_GetOutput(&MotorPID[i],
@@ -230,6 +220,7 @@ void Motor_RpmCtrl(void)
 		Motor_SetDuty(duty_ctrl[0], duty_ctrl[1], duty_ctrl[2], duty_ctrl[3]);
 		MecanumChassis.send_ctrl_msg_flag = 0;
 	}
+	EncoderDataUpdated = 0;
 }
 
 /**

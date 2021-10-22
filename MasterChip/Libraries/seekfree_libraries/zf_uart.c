@@ -164,7 +164,7 @@ void uart_putstr(UARTN_enum uartn, const uint8 *str)
 void uart_rx_irq(UARTN_enum uartn,uint8 status)
 {
     USART_ITConfig(((USART_TypeDef*)UARTN[uartn]), USART_IT_RXNE, ENABLE);
-    nvic_init(USART1_IRQn + uartn, 1, 0, status);
+    nvic_init(USART1_IRQn + uartn, 1, 1, status);
 }
 
 //-------------------------------------------------------------------------------------------------------------------

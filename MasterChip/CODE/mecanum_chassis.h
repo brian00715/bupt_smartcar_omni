@@ -4,10 +4,7 @@
 #include "motor.h"
 #include "path_following.h"
 
-
 //=================================宏和ENUM=================================
-
-
 
 typedef enum CtrlMode_e
 {
@@ -15,6 +12,7 @@ typedef enum CtrlMode_e
 	CTRL_MODE_CMD,	  // CMD控制模式
 	CTRL_MODE_OMNI,	  // 全向驱动模式
 	CTRL_MODE_DIFF,	  // 差分驱动模式
+	CTRL_MODE_HANDLE, // 手柄控制模式
 	CTRL_MODE_TUNING, // 调试模式
 } CtrlMode_e;
 

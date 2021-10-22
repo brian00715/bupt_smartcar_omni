@@ -22,16 +22,15 @@
 void SlaveComm_Init()
 {
     uart_init(UART_3, 256000, UART3_TX_B10, UART3_RX_B11);
-    nvic_init(USART3_IRQn, 0, 2, ENABLE); // 配置UART NVIC
     // >>>DMA方式接收数据<<<
     USART_ITConfig(USART3, USART_IT_IDLE, ENABLE); // 开启闲时中断
+    nvic_init(USART3_IRQn, 1, 1, ENABLE); // 配置UART NVIC
     UART_DMA_ReceiveInit(USART3, DMA1_Channel3, (u32)(&USART3->DATAR),
                          (uint32)UART3_RxBuffer, UART3_RX_BUFFER_SIZE); // USART DMA初始化
-    nvic_init(DMA1_Channel3_IRQn, 0, 0, ENABLE);                        // 配置DMA NVIC
-                                                                        // >>>中断方式接收数据<<<
-                                                                        //	uart_rx_irq(UART_3, ENABLE); // 使能串口接收中断
+    nvic_init(DMA1_Channel3_IRQn, 1, 2, ENABLE);                        // 配置DMA NVIC
 }
 
+uint8 EncoderDataUpdated = 0; // 接收到从机数据编码器数值才会更新，不更新就不能跑速度环
 /**
  * @brief 从机通信串口中断回调函数
  * 
@@ -50,10 +49,11 @@ void SlaveComm_UARTCallback()
         encoder_data[2] *= encoder_coff[2];
         encoder_data[3] *= encoder_coff[3];
     }
-    MecanumChassis.motor[0].now_rpm = encoder_data[0];
+    MecanumChassis.motor[0].now_rpm = encoder_data[0]; //直接使用编码器数值作为当前转速
     MecanumChassis.motor[1].now_rpm = encoder_data[1];
     MecanumChassis.motor[2].now_rpm = encoder_data[2];
     MecanumChassis.motor[3].now_rpm = encoder_data[3];
+    EncoderDataUpdated = 1;
     MecanumChassis.PathFollowing.image_process_done = UART3_RxBuffer[6];
     if (MecanumChassis.PathFollowing.image_process_done == 1) // 0:未处理完图像 1: 处理完图像
     {
@@ -61,7 +61,7 @@ void SlaveComm_UARTCallback()
         MecanumChassis.PathFollowing.normal_err = UART3_RxBuffer[9] - 94;
         if(MecanumChassis.PathFollowing.state!= UART3_RxBuffer[10])
         {
-            uprintf("Status updated! now:%d\r\n",UART3_RxBuffer[10]);
+            // uprintf("Status updated! now:%d\r\n",UART3_RxBuffer[10]);
         }
         MecanumChassis.PathFollowing.state = UART3_RxBuffer[10]; // 赛道状态标志位
     }

@@ -5,7 +5,7 @@
 
 //=================================ºêºÍENUM=================================
 
-#define abs(x) ((x)>0?(x):(-x))
+#define abs(x) ( (x) > 0 ? (x) : (-x))
 
 #define PI 3.14159265358979323846
 /**
@@ -96,5 +96,9 @@
 float AngleLimitPI(float angle);
 float AngleLimitDiff(float a, float b);
 float KalmanFilter(float Accel, float Gyro);
+float Angle_Subtract(float a, float b);
+float AngleLimit180(float angle);
+float AngleLimitPI(float angle);
+float AngleLimitDiff(float a, float b);
 
 #endif

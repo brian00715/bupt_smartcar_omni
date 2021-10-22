@@ -33,11 +33,14 @@
 
  ********************************************************************************************************************/
 
+#include "SEEKFREE_IPS114_SPI.h"
+#ifdef USE_IPS114
+
 #include "zf_spi.h"
 #include "zf_gpio.h"
 #include "zf_systick.h"
 #include "SEEKFREE_PRINTF.h"
-#include "SEEKFREE_IPS114_SPI.h"
+
 
 //-------------------------------------------------------------------------------------------------------------------
 //  @brief      内部调用，用户无需关心
@@ -778,4 +781,4 @@ void ips114_display_chinese(uint16 x, uint16 y, uint8 size, const uint8 *p, uint
         }   
     }
 }
-
+#endif

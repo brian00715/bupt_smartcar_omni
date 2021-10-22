@@ -34,22 +34,29 @@ void CMD_Init()
 {
 	uart_init(DEBUG_UART, DEBUG_UART_BAUD, DEBUG_UART_TX_PIN,
 			  DEBUG_UART_RX_PIN);
-	nvic_init(USART2_IRQn, 0, 1, ENABLE); // 配置UART NVIC
 
 	// >>>DMA方式接收数据<<<
-	// USART_ITConfig(USART2, USART_IT_IDLE, ENABLE); // 开启闲时中断
-	// UART_DMA_ReceiveInit(USART2, DMA1_Channel7, (u32)(&USART2->DATAR),
-	// 					 (u32)UART2_RxBuffer, UART2_RX_BUFFER_SIZE); // USART1 DMA初始化
-	// nvic_init(DMA1_Channel7_IRQn, 0, 1, ENABLE);					 // 配置DMA NVIC
+#ifdef CMD_RX_USE_DMA
+	USART_ITConfig(USART2, USART_IT_IDLE, ENABLE); // 开启闲时中断
+	nvic_init(USART2_IRQn, 1, 3, ENABLE);		   // 配置UART NVIC
+	UART_DMA_ReceiveInit(USART2, DMA1_Channel7, (u32)(&USART2->DATAR),
+						 (u32)UART2_RxBuffer, UART2_RX_BUFFER_SIZE); // USART1 DMA初始化
+	nvic_init(DMA1_Channel7_IRQn, 1, 4, ENABLE);					 // 配置DMA NVIC
 
-	// >>>DMA方式发送数据<<< 实测由于DMA太快，串口发送速度跟不上DMA速度，导致发送数据经常被覆盖
-	//	USART_ITConfig(USART1, USART_IT_TC, ENABLE); //  开启串口发送完成中断
-	//	UART_DMA_SendInit(USART1, DMA1_Channel4,
-	//					  (u32)UART2_TxBuffer, (u32)(&USART1->DATAR));
-	//	nvic_init(DMA1_Channel4_IRQn, 0, 1, ENABLE); // 配置DMA NVIC
-
+#endif
 	// >>>中断方式接收数据<<<
+#ifdef CMD_RX_USE_IT
 	uart_rx_irq(UART_2, ENABLE); // 使能串口接收中断
+#endif
+
+#ifdef CMD_TX_USE_DMA
+	// >>>DMA方式发送数据<<<  使用该方式时，要先判断DMA发送是否完成再更新源的数据，否则发送的数据会被覆盖
+//		USART_ITConfig(USART2, USART_IT_TC, ENABLE); //  开启串口发送完成中断
+//		nvic_init(USART2_IRQn, 1, 2, ENABLE); // 配置UART NVIC
+		UART_DMA_SendInit(USART2, DMA1_Channel6,
+						  (u32)UART2_TxBuffer, (u32)(&USART2->DATAR));
+
+#endif
 }
 
 /**
@@ -92,7 +99,8 @@ void UART_DMA_ReceiveInit(USART_TypeDef *usart, DMA_Channel_TypeDef *dma_ch,
 	DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;							//非内存到内存模式
 	DMA_Init(dma_ch, &DMA_InitStructure);
 
-	DMA_Cmd(dma_ch, ENABLE);					  //开启DMA
+//	DMA_ITConfig(dma_ch, DMA_IT_TC, ENABLE);	  // 开启DMA传输完成中断;其实开了没啥用，可以用阻塞查询方式
+	DMA_Cmd(dma_ch, ENABLE); //开启DMA
 	USART_DMACmd(usart, USART_DMAReq_Rx, ENABLE); // 使能UART DMA接收
 }
 
@@ -104,9 +112,11 @@ void UART_DMA_ReceiveInit(USART_TypeDef *usart, DMA_Channel_TypeDef *dma_ch,
  * @param src_addr 源地址，buffer
  * @param des_addr 目的地址，UART数据寄存器
  */
-/*void UART_DMA_SendInit(USART_TypeDef *usart, DMA_Channel_TypeDef *dma_ch,
+void UART_DMA_SendInit(USART_TypeDef *usart, DMA_Channel_TypeDef *dma_ch,
 					   uint32 src_addr, uint32 des_addr)
 {
+	USART_Cmd(usart,DISABLE);
+
 	DMA_InitTypeDef DMA_InitStructure;
 
 	if (DMA1_Channel1 == dma_ch || DMA1_Channel2 == dma_ch || DMA1_Channel3 == dma_ch || DMA1_Channel4 == dma_ch ||
@@ -130,9 +140,14 @@ void UART_DMA_ReceiveInit(USART_TypeDef *usart, DMA_Channel_TypeDef *dma_ch,
 	DMA_Init(dma_ch, &DMA_InitStructure);			   //初始化
 
 	DMA_ITConfig(dma_ch, DMA_IT_TC, ENABLE);	  //配置DMA传输完成中断
-	DMA_Cmd(dma_ch, ENABLE);					  //开启DMA
+	nvic_init(DMA1_Channel6_IRQn, 1, 3, ENABLE); // 配置DMA NVIC
+
+	DMA_ClearFlag(DMA1_FLAG_TC6);
+	DMA_Cmd(dma_ch, DISABLE);					  //先关闭DMA，否则将发送非期望数据
+	USART_Cmd(usart,ENABLE);
 	USART_DMACmd(usart, USART_DMAReq_Tx, ENABLE); // 使能UART DMA发送
-}*/
+}
+
 
 /**
  * @brief 串口DMA发送数据
@@ -142,15 +157,15 @@ void UART_DMA_ReceiveInit(USART_TypeDef *usart, DMA_Channel_TypeDef *dma_ch,
  * @param data 数据
  * @param len 数据长度
  */
-/*void UART_DMA_SendData(DMA_Channel_TypeDef *dman, uint8 *data, uint8 len)
+void UART_DMA_EnableSendData(DMA_Channel_TypeDef *dman, uint8 *data, uint8 len)
 {
-	while (DMA_GetCurrDataCounter(dman))
-		; // 检查DMA发送通道内是否还有数据
+//	while (DMA_GetCurrDataCounter(dman))
+//		; // 检查DMA发送通道内是否还有数据
 	//DMA发送数据-要先关 设置发送长度 开启DMA
 	DMA_Cmd(dman, DISABLE);
 	dman->CNTR = len;	   // 设置发送长度
 	DMA_Cmd(dman, ENABLE); // 启动DMA发送
-}*/
+}
 
 char CMD_RxOK = 0;					   // 串口接收完成标志，给CMD_Exe用
 uint8_t *CMD_Buffer[CMD_SIZE_X] = {0}; // 指针数组，每个元素都指向分割后的元字符串
@@ -163,7 +178,7 @@ char *CMD_Argv[CMD_SIZE_X] = {0}; // 指向指令参数的指针数据
  */
 void CMD_UARTCallback(void)
 {
-	// 中断接收的一些必要步骤
+	// 一些必要步骤
 	uint8_t *clr = UART2_RxBuffer;
 	while ((*(clr++) == '\0' || *(clr++) == '\n') && clr < UART2_RxBuffer + UART2_RX_BUFFER_SIZE) // 找到开头，避免传输噪声
 	{
@@ -175,7 +190,7 @@ void CMD_UARTCallback(void)
 	}
 	memset(UART2_RxBuffer, 0, UART2_RX_BUFFER_SIZE * sizeof(uint8));
 
-	// CMD_RxOK = 1;
+	 CMD_RxOK = 1;
 }
 
 /**
@@ -188,10 +203,6 @@ void CMD_Exe(void)
 	if (CMD_RxOK)
 	{
 		CMD_CommandParse((char *)UART2_RxArray, &CMD_Argc, CMD_Argv); // 解析指令
-																	  //	for (int i = 0; i < CMD_Argc; i++)
-																	  //	{
-																	  //		uprintf("%s ", CMD_Argv[i]);
-																	  //	}
 		CMD_CommandExe(CMD_Argc, CMD_Argv);							  // 执行指令
 		memset(UART2_RxArray, 0, sizeof(uint8_t) * UART2_RX_BUFFER_SIZE);
 
@@ -238,15 +249,10 @@ int CMD_CommandExe(int argc, char **argv)
 		MecanumChassis.ctrl_mode = (MecanumChassis.ctrl_mode + 1) % 5;
 		uprintf("CMD|Ctrl mode change to %d\r\n", MecanumChassis.ctrl_mode);
 	}
-	// if (strcmp(argv[0], "SD") == 0) //SetDuty
-	// {
-	// 	for (int i = 0; i < 4; i++)
-	// 	{
-	// 		MecanumChassis.motor[i].target_duty = atoi(argv[i + 1]);
-	// 		uprintf("[%d]:%d", i, MecanumChassis.motor[i].target_duty);
-	// 	}
-	// 	uprintf("\r\n");
-	// }
+	else if (strcmp(argv[0], "hello") == 0)
+	{
+		uprintf("hello from wch :)\r\n");
+	}
 	else if (strcmp(argv[0], "YPID") == 0) // YAW PID
 	{
 		float kp = atof(argv[1]);
@@ -376,32 +382,10 @@ int CMD_CommandExe(int argc, char **argv)
 			MecanumChassis.target_speed, MecanumChassis.target_dir,
 			MecanumChassis.target_omega);
 	}
-	// else if (strcmp(argv[0], "MPID") == 0) // Motor PID Tuning
-	// {
-	// 	int i = atoi(argv[1]);
-	// 	float kp = atof(argv[2]);
-	// 	float ki = atof(argv[3]);
-	// 	float kd = atof(argv[4]);
-	// 	float int_duty = atof(argv[5]);
-	// 	float sub_pid_thres = atof(argv[6]);
-	// 	float sub_pid_kp = atof(argv[7]);
-	// 	MotorPID[i].kp = kp;
-	// 	MotorPID[i].ki = ki;
-	// 	MotorPID[i].kd = kd;
-	// 	MotorPID[i].int_duty = int_duty;
-	// 	MotorPID[i].sub_pid_thres = sub_pid_thres;
-	// 	MotorPID[i].sub_pid_kp = sub_pid_kp;
-	// 	uprintf(
-	// 		"MotorPID|[%d] kp:%.3f ki:%.3f kd:%.3f intduty:%.2f thres:%.2f sub_kp:%.2f\r\n",
-	// 		i, kp, ki, kd, int_duty, sub_pid_thres, sub_pid_kp);
-	// }
 	else if (strcmp(argv[0], "WV") == 0) // 虚拟示波器
 	{
 		wave_index = atoi(argv[1]);
 		uprintf("Opened motor[%d] wave!\r\n", wave_index);
-	}
-	else if (strcmp(argv[0], "CAMT") == 0) // camera turn
-	{
 	}
 	return 1;
 }

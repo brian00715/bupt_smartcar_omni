@@ -10,6 +10,9 @@
  */
 
 #include "path_following.h"
+
+
+
 #include "pid.h"
 #include "sci_compute.h"
 #include "mecanum_chassis.h"
@@ -24,6 +27,9 @@ uint8 leftsancha_done = 0;
 uint8 rightsancha_done = 0;
 int32 circle_count = 0;
 int32 circle_ass = 0;
+PID_t HeadingPID; // 差分驱动时航向角PID
+PID_t YawPID;	  // 偏航角驱动时的PID
+#ifdef USE_PATH_FOLLOWING
 /*
  两种驱动方案：
  1. 差分驱动
@@ -32,20 +38,9 @@ int32 circle_ass = 0;
  用赛道斜率与车头正方向的偏差角作为输入量，输出偏航角的角速度
  */
 
-PID_t HeadingPID; // 差分驱动时航向角PID
-PID_t YawPID;	  // 偏航角驱动时的PID
+
 void PathFollowing_Init()
 {
-	// HeadingAnglePID.kp = 1.8;
-	// HeadingAnglePID.ki = 0.0;
-	// HeadingAnglePID.kd = 0.3;
-	// HeadingAnglePID.ctrl_max = 10;
-	// HeadingAnglePID.int_duty = 0.01;
-	// HeadingAnglePID.int_max = 5;
-	// HeadingAnglePID.use_sub_pid = 0;
-	// HeadingAnglePID.sub_pid_thres = 2;
-	// HeadingAnglePID.sub_pid_kp = 0.8;
-
 	HeadingPID.kp = 0.038;
 	HeadingPID.ki = 0.0;
 	HeadingPID.kd = 0.01;
@@ -75,7 +70,6 @@ void PathFollowing_Init()
 static uint32 fork_delay_start = 0;
 static uint8 fork_count_flag = 0;
 static uint8 round_int_flag = 0;	  // 环岛偏航角积分标志
-static uint8 fork_turn_done_once = 0; // 保证出三叉时yaw只被复位一次
 /**
  * @brief 巡线控制状态机
  */
@@ -710,3 +704,5 @@ void PathFollowing_Exe()
 
 	UART3_RxOK = 0;
 }
+
+#endif
