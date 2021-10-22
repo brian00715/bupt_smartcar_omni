@@ -16,15 +16,12 @@
 #include <math.h>
 #include "encoder.h"
 #include "slave_comm.h"
+#include "isr.h"
+#include "cmd.h"
 
 extern BaseChassis_t MecanumChassis;
 // kp ki kd int_duty int_max int_sum last_err last_delta_err use_sub_pid sub_pid_kp sub_pid_thres
-PID_t MotorPID[4] =
-	{
-		{2.8, 0.3, 0.04, 0.032, 800, 0, 0, 0, 1, 0.8, 2},
-		{2.8, 0.3, 0.04, 0.032, 800, 0, 0, 0, 1, 0.8, 2},
-		{1.5, 0.58, 0.005, 0.05, 800, 0, 0, 0, 1},
-		{1.5, 0.58, 0.005, 0.05, 800, 0, 0, 0, 1}};
+PID_t MotorPID[4] ={0};
 
 void Motor_Init(void)
 {
@@ -40,45 +37,49 @@ void Motor_Init(void)
 	pwm_init(MOTOR3_B, 17000, 0);
 	gpio_init(MOTOR4_A, GPO, 0, GPIO_PIN_CONFIG);
 	pwm_init(MOTOR4_B, 17000, 0);
-	MotorPID[0].kp = 2.8;
-	MotorPID[0].ki = 0.3;
-	MotorPID[0].kd = 0.04;
+	MotorPID[0].kp = 0.5;
+	MotorPID[0].ki = 3.5;
+	MotorPID[0].kd = 0.0;
 	MotorPID[0].ctrl_max = 340;
-	MotorPID[0].int_duty = 0.032;
+//	MotorPID[0].int_duty = 0.032;
 	MotorPID[0].int_max = 800;
-	MotorPID[0].use_sub_pid = 1;
-	MotorPID[0].sub_pid_thres = 2;
-	MotorPID[0].sub_pid_kp = 0.8;
-
-	MotorPID[1].kp = 2.8;
-	MotorPID[1].ki = 0.3;
-	MotorPID[1].kd = 0.04;
+//	MotorPID[0].use_sub_pid = 1;
+//	MotorPID[0].sub_pid_thres = 2;
+//	MotorPID[0].sub_pid_kp = 0.5;
+	MotorPID[0].dead_th = 3;
+//
+	MotorPID[1].kp = 0.5;
+	MotorPID[1].ki = 3.5;
+	MotorPID[1].kd = 0.0;
 	MotorPID[1].ctrl_max = 340;
-	MotorPID[1].int_duty = 0.032;
+//	MotorPID[1].int_duty = 0.032;
 	MotorPID[1].int_max = 800;
-	MotorPID[1].use_sub_pid = 1;
-	MotorPID[1].sub_pid_thres = 2;
-	MotorPID[1].sub_pid_kp = 0.8;
-
-	MotorPID[2].kp = 2.8;
-	MotorPID[2].ki = 0.3;
-	MotorPID[2].kd = 0.04;
+//	MotorPID[1].use_sub_pid = 1;
+//	MotorPID[1].sub_pid_thres = 2;
+//	MotorPID[1].sub_pid_kp = 0.5;
+	MotorPID[1].dead_th = 3;
+//
+	MotorPID[2].kp = 0.5;
+	MotorPID[2].ki = 3.5;
+	MotorPID[2].kd = 0.0;
 	MotorPID[2].ctrl_max = 340;
-	MotorPID[2].int_duty = 0.032;
+//	MotorPID[2].int_duty = 0.032;
 	MotorPID[2].int_max = 800;
-	MotorPID[2].use_sub_pid = 1;
-	MotorPID[2].sub_pid_thres = 2;
-	MotorPID[2].sub_pid_kp = 0.8;
-
-	MotorPID[3].kp = 2.8;
-	MotorPID[3].ki = 0.3;
-	MotorPID[3].kd = 0.04;
+//	MotorPID[2].use_sub_pid = 1;
+//	MotorPID[2].sub_pid_thres = 2;
+//	MotorPID[2].sub_pid_kp = 0.5;
+	MotorPID[2].dead_th = 3;
+//
+	MotorPID[3].kp = 0.5;
+	MotorPID[3].ki = 3.5;
+	MotorPID[3].kd = 0.0;
 	MotorPID[3].ctrl_max = 340;
-	MotorPID[3].int_duty = 0.032;
+//	MotorPID[3].int_duty = 0.032;
 	MotorPID[3].int_max = 800;
-	MotorPID[3].use_sub_pid = 1;
-	MotorPID[3].sub_pid_thres = 2;
-	MotorPID[3].sub_pid_kp = 0.8;
+//	MotorPID[3].use_sub_pid = 1;
+//	MotorPID[3].sub_pid_thres = 2;
+//	MotorPID[3].sub_pid_kp = 0.5;
+	MotorPID[3].dead_th = 3;
 	Motor_SetDuty(0, 0, 0, 0);
 }
 
@@ -94,7 +95,7 @@ void Motor_SelfCheck(void)
 	start_time = systick_getval_ms();
 	uprintf("---------------------------------------------\r\n");
 	uprintf("Motor|Start motor self checking! Time:%d\r\n", start_time);
-	Motor_SetDuty(10000, 10000, 10000, 10000);
+	Motor_SetDuty(3000, 3000, 3000, 3000);
 	encoder_max = 0;
 	encoder_min = 0;
 
@@ -123,7 +124,7 @@ void Motor_SelfCheck(void)
 	}
 
 	start_time = systick_getval_ms();
-	Motor_SetDuty(-10000, -10000, -10000, -10000);
+	Motor_SetDuty(-3000, -3000, -3000, -3000);
 	while (1)
 	{
 		int curr_time = systick_getval_ms();
@@ -174,7 +175,7 @@ void Motor_DutyCtrl()
 	}
 }
 
-// #define DEBUG
+ #define DEBUG
 /**
  * @brief ×ªËÙ»·
  */
@@ -193,13 +194,13 @@ void Motor_RpmCtrl(void)
 	int rpm_value[4] = {0};
 	for (int i = 0; i < 4; i++)
 	{
-		rpm_value[i] = (int32_t)PID_GetOutput(&MotorPID[i],
+		rpm_value[i] = MecanumChassis.motor[i].now_rpm+ (int32_t)PID_GetIncrementOutput(&MotorPID[i],
 											  MecanumChassis.motor[i].target_rpm,
 											  MecanumChassis.motor[i].now_rpm);
 #ifdef DEBUG
 		if (wave_index == i)
 		{
-			if (TIM1_100ms_Flag)
+			if (TIM1_20ms_Flag)
 			{
 				uprintf("Tuning|[%d] now:%d target:%d err:%d ctrl:%d\r\n", i,
 						MecanumChassis.motor[i].now_rpm,

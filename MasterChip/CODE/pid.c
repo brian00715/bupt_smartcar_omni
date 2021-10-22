@@ -35,8 +35,8 @@ float PID_GetOutput(PID_t *pid, float target, float now)
 	err = target - now;
 	delta_err = err - pid->last_err;
 
-	delta_err *= 0.384f;
-	delta_err += pid->last_delta_err * 0.615f; //µÍÍ¨ÂË²¨
+//	delta_err *= 0.384f;
+//	delta_err += pid->last_delta_err * 0.615f; //µÍÍ¨ÂË²¨
 
 	pid->last_err = err;
 	pid->last_delta_err = delta_err;
@@ -49,11 +49,28 @@ float PID_GetOutput(PID_t *pid, float target, float now)
 	{
 		if (fabs(err) < fabs(pid->sub_pid_thres))
 		{
-			result = target + err * pid->sub_pid_kp;
+			result =  err * pid->sub_pid_kp+pid->int_sum * pid->ki;
 		}
 	}
 	__LIMIT(result, pid->ctrl_max);
 	return result;
+}
+
+float PID_GetIncrementOutput(PID_t *PID, float target, float now)
+{
+  float err = target - now;
+  float delta = PID->kp * (err - PID->last_err) +
+                PID->ki * err +
+                PID->kd * (err - 2 * PID->last_err + PID->last_last_err);
+  PID->last_last_err = PID->last_err;
+  PID->last_err = err;
+  __LIMIT(delta,PID->ctrl_max);
+//  if(fabs(err)<PID->dead_th)
+//  {
+//	  PID->dead_delta = delta;
+//	  delta = 0;
+//  }
+  return delta;
 }
 
 void PID_Reset(PID_t *pid)

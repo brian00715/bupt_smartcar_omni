@@ -26,10 +26,7 @@
 #define UART3_RX_BUFFER_SIZE (20)
 
 extern uint8_t UART1_RxBuffer[UART1_RX_BUFFER_SIZE];
-extern uint8_t UART1_RxBufferCnt;
-extern uint8_t UART1_RxComplete;
-extern uint8_t UART1_RxIDLEFlag;       // 闲时中断标志位
-extern uint8_t UART1_RxBufferOverflow; // 缓冲数组溢出标志
+extern uint8_t UART1_RxLen;
 
 extern uint8_t UART2_RxBuffer[UART2_RX_BUFFER_SIZE];
 extern uint8_t UART2_RxArray[UART2_RX_BUFFER_SIZE];

@@ -14,7 +14,7 @@
 #define UNUSED(x) (void)(x) // 用于避免GCC变量不使用的警告
 
 // ======================物理参数=========================
-#define MAX_ROTATE_VEL (1.0f)
+#define MAX_ROTATE_VEL (4.0f)
 #define WHEEL_FRONT2BACK (0.195f) // m
 #define WHEEL_LEFT2RIGHT (0.1745f)
 #define DRIVE_WHEEL_RADIUS (0.0275f) //m

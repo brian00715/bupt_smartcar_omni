@@ -23,7 +23,7 @@ uint8 Handle_PrintRockerStatus_Flag = 0;
 
 #define HANDLE_LEFT_ROCKER_TH (20)
 #define HADNLE_RIGHT_ROCKER_TH (108)
-#define HANDLE_RIGHT_ROCKER_SPD_TRANS_RATIO (0.5f)
+#define HANDLE_RIGHT_ROCKER_SPD_TRANS_RATIO (1.5f)
 
 void Handle_Init()
 {
@@ -61,8 +61,7 @@ void Handle_Exe()
 		MecanumChassis.target_dir = atan2f(Handle.left_rocker.y,
 				Handle.left_rocker.x);
 	}
-	MecanumChassis.target_speed = Handle_RockerMapping(
-			Handle.left_rocker.length, 128, 1.5, 0);
+	MecanumChassis.target_speed = (Handle.left_rocker.length*1.0f) / 100.0f;
 
 	// >>>>>>>>>>>>>>>>>>>>>>>>偏航角控制<<<<<<<<<<<<<<<<<<<<<<<<<<
 	float angle_offset = 0;
@@ -71,8 +70,11 @@ void Handle_Exe()
 		angle_offset = AngleLimitDiff(
 				atan2(Handle.right_rocker.y, Handle.right_rocker.x), PI / 2)
 				* (-1); // 与pi/2的偏差值，大小控制角速度
-		MecanumChassis.target_omega = angle_offset
+		MecanumChassis.target_omega =- angle_offset
 				* HANDLE_RIGHT_ROCKER_SPD_TRANS_RATIO;
+	}
+	else {
+		MecanumChassis.target_omega = 0;
 	}
 
 	Handle_UARTRxOK = 0;
@@ -89,46 +91,42 @@ void Handle_PrintRockerStatus()
 			Handle.right_rocker.length, Handle.right_rocker.dir);
 }
 
+uint8_t Handle_UARTRxData[UART1_RX_BUFFER_SIZE] =
+{ 0 };
 void Handle_UARTCallback()
 {
-	if (!(UART1_RxBuffer[0] == 's' && UART1_RxBuffer[1]==' '))
-		return;
-	char tmp[20]={0};
-	int8_t size  = strlen(UART1_RxBuffer);
-	if(size<3)
-		return;
-	strncpy(tmp,UART1_RxBuffer,strlen(UART1_RxBuffer)-2);
-
-//	char numeric[6];
-//	substring(numeric, UART1_RxBuffer, 2, 4);
-//	numeric[4] = '\0';
-//	Handle.left_rocker.x = atoi(numeric);
-//	memset(numeric, 0, sizeof(char) * 6);
-//
-//	substring(numeric, UART1_RxBuffer, 7, 4);
-//	numeric[4] = '\0';
-//	Handle.left_rocker.y = atoi(numeric);
-//	memset(numeric, 0, sizeof(char) * 6);
-//
-//	substring(numeric, UART1_RxBuffer, 12, 4);
-//	numeric[4] = '\0';
-//	Handle.right_rocker.x = atoi(numeric);
-//	memset(numeric, 0, sizeof(char) * 6);
-//
-//	substring(numeric, UART1_RxBuffer, 17, 4);
-//	numeric[4] = '\0';
-//	Handle.right_rocker.y = atoi(numeric);
-
-//	if (TIM1_10ms_Flag)
+	if (!(UART1_RxBuffer[0] == 's'&&strlen(UART1_RxBuffer)==23))
 	{
-//		uprintf("|%4d %4d %4d %4d|\r\n", Handle.left_rocker.x,
-//				Handle.left_rocker.y, Handle.right_rocker.x,
-//				Handle.right_rocker.y);
-		uprintf("|%s|\r\n",tmp);
-
+		return;
 	}
-	memset(UART1_RxBuffer, 0, sizeof(uint8_t) * UART1_RX_BUFFER_SIZE);
 
+//	strncpy(Handle_UARTRxData, UART1_RxBuffer, UART1_RxLen);
+
+	char numeric[6];
+	substring(numeric, UART1_RxBuffer, 2, 4);
+	numeric[4] = '\0';
+	Handle.left_rocker.x = atoi(numeric);
+	memset(numeric, 0, sizeof(char) * 6);
+
+	substring(numeric, UART1_RxBuffer, 7, 4);
+	numeric[4] = '\0';
+	Handle.left_rocker.y = atoi(numeric);
+	memset(numeric, 0, sizeof(char) * 6);
+
+	substring(numeric, UART1_RxBuffer, 12, 4);
+	numeric[4] = '\0';
+	Handle.right_rocker.x = atoi(numeric);
+	memset(numeric, 0, sizeof(char) * 6);
+
+	substring(numeric, UART1_RxBuffer, 17, 4);
+	numeric[4] = '\0';
+	Handle.right_rocker.y = atoi(numeric);
+
+//	uprintf("|%4d %4d %4d %4d|\r\n", Handle.left_rocker.x,
+//					Handle.left_rocker.y, Handle.right_rocker.x,
+//					Handle.right_rocker.y);
+
+//	uprintf("%s", UART1_RxBuffer);
 	Handle_UARTRxOK = 1;
 }
 

@@ -16,6 +16,7 @@ extern uint8_t CMD_BufferCnt;
 extern uint8_t UART2_RxBuffer[UART2_RX_BUFFER_SIZE];
 extern uint8_t UART2_RxComplete;
 extern uint8_t UART2_RxIDLEFlag;
+extern int wave_index;
 extern char CMD_RxOK;
 
 extern float CMD_TargetYaw;

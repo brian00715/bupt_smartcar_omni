@@ -36,8 +36,8 @@ void board_init(void)
 void uprintf(char *fmt, ...)
 {
 #ifdef CMD_TX_USE_DMA
-		while (DMA_GetCurrDataCounter(DMA1_Channel6))
-			; // 检查DMA发送通道内是否还有数据
+//		while (DMA_GetCurrDataCounter(DMA1_Channel6))
+//			; // 检查DMA发送通道内是否还有数据
 #endif
 	int size;
 	va_list arg_ptr;

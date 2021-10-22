@@ -19,11 +19,11 @@ void EXTI3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 //void DMA1_Channel1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 //void DMA1_Channel2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-void DMA1_Channel3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+//void DMA1_Channel3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 //void DMA1_Channel4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-void DMA1_Channel5_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+//void DMA1_Channel5_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void DMA1_Channel6_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-void DMA1_Channel7_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+//void DMA1_Channel7_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void ADC1_2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI9_5_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM1_BRK_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -264,15 +264,12 @@ void TIM3_IRQHandler(void)
 // 	}
 // }
 
-uint8_t UART1_RxBuffer[UART1_RX_BUFFER_SIZE] =
-{ 0 };
+uint8_t UART1_RxBuffer[UART1_RX_BUFFER_SIZE] ={ 0 };
+uint8_t UART1_RxLen = 0;
 
-uint8_t UART2_RxBuffer[UART2_RX_BUFFER_SIZE] =
-{ 0 };
-uint8_t UART2_RxArray[UART2_RX_BUFFER_SIZE] =
-{ 0 };
-uint8_t UART2_TxBuffer[UART2_TX_BUFFER_SIZE] =
-{ 0 };
+uint8_t UART2_RxBuffer[UART2_RX_BUFFER_SIZE] ={ 0 };
+uint8_t UART2_RxArray[UART2_RX_BUFFER_SIZE] ={ 0 };
+uint8_t UART2_TxBuffer[UART2_TX_BUFFER_SIZE] ={ 0 };
 uint8_t UART2_RxBufferCnt = 0;
 uint8_t UART2_RxComplete = 0;
 uint8_t UART2_RxIDLEFlag = 0;		// 闲时中断标志位
@@ -283,16 +280,23 @@ void USART1_IRQHandler(void)
 	if (USART_GetITStatus(USART1, USART_IT_IDLE) != RESET)
 	{
 		DMA_Cmd(DMA1_Channel5, DISABLE); //关闭本次DMA
+		USART_ITConfig(USART1, USART_IT_IDLE, DISABLE);
 
+		UNUSED(UART1_RxBuffer);
+		UART1_RxLen = UART1_RX_BUFFER_SIZE- DMA_GetCurrDataCounter(DMA1_Channel5); //得到真正接收数据个数
 		Handle_UARTCallback();
+		memset(UART1_RxBuffer, 0, sizeof(uint8_t) * UART1_RX_BUFFER_SIZE);
+
 
 		DMA1_Channel5->CNTR = UART1_RX_BUFFER_SIZE;
 		DMA_Cmd(DMA1_Channel5, ENABLE); //开启下一次DMA
-		USART_ClearITPendingBit(USART1, USART_IT_IDLE);
+
 		uint16_t tmp;
 		UNUSED(tmp); // 避免GCC编译器警告
 		tmp = USART1->STATR;
 		tmp = USART1->DATAR;			 // 根据应用手册，必须要有这两步，否则清标志位的操作其实并不生效
+		USART_ClearITPendingBit(USART1, USART_IT_IDLE);
+		USART_ITConfig(USART1, USART_IT_IDLE, ENABLE);
 
 	}
 }
@@ -404,11 +408,11 @@ void DMA1_Channel6_IRQHandler(void)
 {
 	if (SET == DMA_GetITStatus(DMA1_FLAG_TC6))
 	{
+		DMA_ClearFlag(DMA1_FLAG_TC6);
 		DMA_ClearFlag(DMA1_FLAG_GL6);
+
 		DMA_Cmd(DMA1_Channel6, DISABLE);			  // 关闭DMA
 		memset(UART2_TxBuffer, 0, sizeof(uint8) * UART2_TX_BUFFER_SIZE);
-		DMA1_Channel6->CNTR = 0;					  // 清除数据长度
-
 	}
 }
 
