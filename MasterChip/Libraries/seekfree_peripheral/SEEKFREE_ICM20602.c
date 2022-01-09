@@ -28,9 +28,9 @@
 #include "SEEKFREE_IIC.h"
 #include "SEEKFREE_ICM20602.h"
 int16 icm_gyro_raw_x, icm_gyro_raw_y, icm_gyro_raw_z; // 从ICM传回的原始数据
-float icm_gyro_z, icm_gyro_y;                         // 换算后的数据 degree/s
+float icm_gyro_z, icm_gyro_y;              // 换算后的数据 degree/s
 int16 icm_acc_raw_x, icm_acc_raw_y, icm_acc_raw_z;
-float icm_acc_z;
+float icm_acc_z,icm_acc_x,icm_acc_y;
 
 //-------------------------------------------------------------------------------------------------------------------
 //  @brief      ICM20602自检函数

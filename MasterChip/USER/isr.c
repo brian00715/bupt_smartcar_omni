@@ -7,7 +7,7 @@
 #include "mecanum_chassis.h"
 #include "encoder.h"
 #include "slave_comm.h"
-#include "handle.h"
+#include "rpi_comm.h"
 
 int32 time_count = 0;
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -111,36 +111,6 @@ void TIM1_UP_IRQHandler(void)
 		time_count++;
 		tim1_5ms_cnt++;
 
-		if (stop_flag == 1)
-		{
-			stop_count++;
-			if (stop_count <= 10)
-			{
-				MecanumChassis.target_speed = 0.52;
-				MecanumChassis.target_omega = 0;
-				MecanumChassis.target_dir = 1.5708;
-			}
-			else if (stop_count <= 100)
-			{
-				MecanumChassis.target_speed = 0.52;
-				MecanumChassis.target_omega = -1.61;
-				MecanumChassis.target_dir = 1.5708;
-			}
-			else if (stop_count <= 125)
-			{
-				MecanumChassis.target_speed = 0.52;
-				MecanumChassis.target_omega = 0;
-				MecanumChassis.target_dir = 1.5708;
-			}
-
-			else
-			{
-				MecanumChassis.target_speed = 0;
-				MecanumChassis.target_omega = 0;
-				MecanumChassis.target_dir = 1.5708;
-			}
-		}
-
 		if (tim1_5ms_cnt % 2 == 0)
 		{
 			TIM1_10ms_Flag = 1;
@@ -186,8 +156,11 @@ void TIM1_UP_IRQHandler(void)
 		get_icm20602_accdata_spi();
 		get_icm20602_gyro_spi();
 		icm_acc_z = ((float) icm_acc_raw_z / 4096);				// ±8g
+		icm_acc_y = ((float) icm_acc_raw_y / 4096);
+		icm_acc_x = ((float) icm_acc_raw_x / 4096);
 		icm_gyro_z = __ANGLE2RAD((float )icm_gyro_raw_z / 16.4); // ±2000dps,16 bit adc
 		icm_gyro_y = __ANGLE2RAD((float )icm_gyro_raw_y / 16.4);
+
 		// MecanumChassis.PostureStatus.yaw = KalmanFilter(icm_acc_raw_z * 1.0, icm_gyro_raw_z * 1.0);
 		if (fabs(icm_gyro_z) > 0.023) // 过滤零漂
 		{
@@ -284,7 +257,8 @@ void USART1_IRQHandler(void)
 
 		UNUSED(UART1_RxBuffer);
 		UART1_RxLen = UART1_RX_BUFFER_SIZE- DMA_GetCurrDataCounter(DMA1_Channel5); //得到真正接收数据个数
-		Handle_UARTCallback();
+		
+		RPiComm_UARTCallback();
 		memset(UART1_RxBuffer, 0, sizeof(uint8_t) * UART1_RX_BUFFER_SIZE);
 
 

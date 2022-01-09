@@ -96,3 +96,26 @@ float AngleLimitDiff(float a, float b)
   float out = a - b;
   return AngleLimitPI(out);
 }
+
+/**
+ * @brief float（32位）转为uint数组
+ */
+void float2buffer(float src,uint8* dst)
+{
+    UARTMsg_u tmp;
+    tmp.fl = src;
+    dst[0]=tmp.ui[0];
+    dst[1]=tmp.ui[1];
+    dst[2]=tmp.ui[2];
+    dst[3]=tmp.ui[3];
+}
+
+
+/**
+ * @brief int（16位）转为uint数组
+ */
+void int2buffer(int src,uint8* dst)
+{
+    dst[0]=(src>>8)&0xff;
+    dst[1]=(src)&0xff;
+}

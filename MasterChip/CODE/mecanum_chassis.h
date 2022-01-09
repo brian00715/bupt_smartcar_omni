@@ -2,7 +2,6 @@
 #define MECANUM_CHASSIS_H_
 
 #include "motor.h"
-#include "path_following.h"
 
 //=================================宏和ENUM=================================
 
@@ -40,7 +39,6 @@ typedef struct BaseChassis_t // 底盘抽象结构体
 	CtrlMode_e ctrl_mode; // 控制模式：无/手柄/CMD/自动
 	PosMode_e pos_mode;	  // 坐标模式：相对/绝对
 	PostureStatus_t PostureStatus;
-	PathFollow_t PathFollowing;
 	Motor_t motor[4];		  // 驱动电机，编号为左上角开始顺时针0123
 	uint32_t cam_servo_duty;  // 摄像头舵机占空比
 	char send_ctrl_msg_flag;  // 控制发送频率

@@ -12,7 +12,7 @@
 void InducerMax_Get(void);
 void Inducer_Show_Oled(void);
 void Inducer_Processing(void);
-
+void Inducer_Show_Ips(void);
 
 /*********************全局变量*************************/
 extern uint8 InducerMax_Get_Start_Flag;             //电感获取最大值开始标志

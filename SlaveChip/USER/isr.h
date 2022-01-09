@@ -19,8 +19,10 @@
 #ifndef __ISR_H
 #define __ISR_H
 
+#include "headfile.h"
 
 
+extern int32 time_count;
 
 #endif
 

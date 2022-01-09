@@ -53,7 +53,9 @@ CODE/imageprocessing.o: ../CODE/imageprocessing.c \
  ../Libraries/seekfree_peripheral/SEEKFREE_TSL1401.h \
  ../Libraries/seekfree_libraries/zf_gpio.h \
  ../Libraries/seekfree_peripheral/SEEKFREE_ABSOLUTE_ENCODER.h \
- ../CODE/imageprocessing.h ../CODE/inducercontrol.h
+ ../Libraries/seekfree_peripheral/SEEKFREE_FONT.h \
+ ../CODE/imageprocessing.h ../CODE/inducercontrol.h ../CODE/encoder.h \
+ ../USER/isr.h
 
 ../Libraries/seekfree_libraries/headfile.h:
 
@@ -165,6 +167,12 @@ CODE/imageprocessing.o: ../CODE/imageprocessing.c \
 
 ../Libraries/seekfree_peripheral/SEEKFREE_ABSOLUTE_ENCODER.h:
 
+../Libraries/seekfree_peripheral/SEEKFREE_FONT.h:
+
 ../CODE/imageprocessing.h:
 
 ../CODE/inducercontrol.h:
+
+../CODE/encoder.h:
+
+../USER/isr.h:

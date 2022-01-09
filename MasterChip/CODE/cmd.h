@@ -32,5 +32,6 @@ void CMD_UARTCallback(void);
 int CMD_CommandParse(char *cmd_line, uint8_t *argc, char *argv[]);
 int CMD_CommandExe(int argc, char **argv);
 void ToolBox_Scope(float *dataArray, int dataNum);
+char *substring(char *dst, char *src, int start, int len);
 
 #endif

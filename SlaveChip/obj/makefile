@@ -1,5 +1,5 @@
 ################################################################################
-# 自动生成的文件。不要编辑！
+# Automatically-generated file. Do not edit!
 ################################################################################
 
 -include ../makefile.init
@@ -41,34 +41,34 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 SECONDARY_FLASH += \
-Seekfree_CH32V103R8T6_Opensource_Library.hex \
+SlaveChip.hex \
 
 SECONDARY_LIST += \
-Seekfree_CH32V103R8T6_Opensource_Library.lst \
+SlaveChip.lst \
 
 SECONDARY_SIZE += \
-Seekfree_CH32V103R8T6_Opensource_Library.siz \
+SlaveChip.siz \
 
 
-# 所有目标
-all: Seekfree_CH32V103R8T6_Opensource_Library.elf secondary-outputs
+# All Target
+all: SlaveChip.elf secondary-outputs
 
-# 工具调用
-Seekfree_CH32V103R8T6_Opensource_Library.elf: $(OBJS) $(USER_OBJS)
-	@	@	riscv-none-embed-gcc -march=rv32imac -mabi=ilp32 -msmall-data-limit=8 -mno-save-restore -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -Wuninitialized  -g -T .ld -nostartfiles -Xlinker --gc-sections -L"../" -Wl,-Map,"Seekfree_CH32V103R8T6_Opensource_Library.map" --specs=nano.specs --specs=nosys.specs -o "Seekfree_CH32V103R8T6_Opensource_Library.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+# Tool invocations
+SlaveChip.elf: $(OBJS) $(USER_OBJS)
+	@	@	riscv-none-embed-gcc -march=rv32imac -mabi=ilp32 -msmall-data-limit=8 -mno-save-restore -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -Wuninitialized  -g -T .ld -nostartfiles -Xlinker --gc-sections -L"../" -Wl,-Map,"SlaveChip.map" --specs=nano.specs --specs=nosys.specs -o "SlaveChip.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@	@
-Seekfree_CH32V103R8T6_Opensource_Library.hex: Seekfree_CH32V103R8T6_Opensource_Library.elf
-	@	riscv-none-embed-objcopy -O ihex "Seekfree_CH32V103R8T6_Opensource_Library.elf"  "Seekfree_CH32V103R8T6_Opensource_Library.hex"
+SlaveChip.hex: SlaveChip.elf
+	@	riscv-none-embed-objcopy -O ihex "SlaveChip.elf"  "SlaveChip.hex"
 	@	@
-Seekfree_CH32V103R8T6_Opensource_Library.lst: Seekfree_CH32V103R8T6_Opensource_Library.elf
-	@	riscv-none-embed-objdump --source --all-headers --demangle --line-numbers --wide "Seekfree_CH32V103R8T6_Opensource_Library.elf" > "Seekfree_CH32V103R8T6_Opensource_Library.lst"
+SlaveChip.lst: SlaveChip.elf
+	@	riscv-none-embed-objdump --source --all-headers --demangle --line-numbers --wide "SlaveChip.elf" > "SlaveChip.lst"
 	@	@
-Seekfree_CH32V103R8T6_Opensource_Library.siz: Seekfree_CH32V103R8T6_Opensource_Library.elf
-	@	riscv-none-embed-size --format=berkeley "Seekfree_CH32V103R8T6_Opensource_Library.elf"
+SlaveChip.siz: SlaveChip.elf
+	@	riscv-none-embed-size --format=berkeley "SlaveChip.elf"
 	@	@
-# 其他目标
+# Other Targets
 clean:
-	-$(RM) $(ASM_UPPER_DEPS)$(OBJS)$(SECONDARY_FLASH)$(SECONDARY_LIST)$(SECONDARY_SIZE)$(ASM_DEPS)$(S_DEPS)$(S_UPPER_DEPS)$(C_DEPS) Seekfree_CH32V103R8T6_Opensource_Library.elf
+	-$(RM) $(ASM_UPPER_DEPS)$(OBJS)$(SECONDARY_FLASH)$(SECONDARY_LIST)$(SECONDARY_SIZE)$(ASM_DEPS)$(S_DEPS)$(S_UPPER_DEPS)$(C_DEPS) SlaveChip.elf
 	-@
 secondary-outputs: $(SECONDARY_FLASH) $(SECONDARY_LIST) $(SECONDARY_SIZE)
 

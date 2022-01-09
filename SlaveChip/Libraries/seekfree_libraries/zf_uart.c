@@ -123,6 +123,21 @@ void uart_putchar(UARTN_enum uartn, uint8 dat)
     while((((USART_TypeDef*)UARTN[uartn])->STATR & USART_FLAG_TXE)==0);
     ((USART_TypeDef*)UARTN[uartn])->DATAR = dat;
 }
+//-------------------------------------------------------------------------------------------------------------------
+//  @brief      串口发送两个字节
+//  @param      uartn       串口通道
+//  @param      dat         串口数据
+//  @return     void
+//  Sample usage:           uart_putchar(UART_1, 0x1143);        //串口1发送0x1143。
+//-------------------------------------------------------------------------------------------------------------------
+void uart_putdoublechar(UARTN_enum uartn, int16 dat)
+{
+    uint8 high,low;
+    high=(dat>>8)&0x00ff;
+    low=dat&0x00ff;
+    uart_putchar(uartn, high);
+    uart_putchar(uartn, low);
+}
 
 //-------------------------------------------------------------------------------------------------------------------
 //  @brief      串口发送数组

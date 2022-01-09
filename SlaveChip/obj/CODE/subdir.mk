@@ -1,17 +1,20 @@
 ################################################################################
-# 自动生成的文件。不要编辑！
+# Automatically-generated file. Do not edit!
 ################################################################################
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../CODE/encoder.c \
 ../CODE/imageprocessing.c \
 ../CODE/inducercontrol.c 
 
 OBJS += \
+./CODE/encoder.o \
 ./CODE/imageprocessing.o \
 ./CODE/inducercontrol.o 
 
 C_DEPS += \
+./CODE/encoder.d \
 ./CODE/imageprocessing.d \
 ./CODE/inducercontrol.d 
 

@@ -3,6 +3,9 @@
         "headfile.h": "c",
         "mecanum_chassis.h": "c",
         "seekfree_icm20602.h": "c",
-        "cmd.h": "c"
+        "cmd.h": "c",
+        "handle.h": "c",
+        "seekfree_font.h": "c",
+        "seekfree_ips114_spi.h": "c"
     }
 }

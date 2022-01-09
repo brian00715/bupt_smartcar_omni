@@ -2,6 +2,7 @@
 #define SCI_COMPUTE_H_
 
 #include "math.h"
+#include "headfile.h"
 
 //=================================宏和ENUM=================================
 
@@ -90,6 +91,13 @@
 #define __RAD2ANGLE(x) (((x)*1.0) / PI * 180.0f)
 
 //=================================结构体=================================
+typedef union UARTMsg_u
+{
+    float fl;
+    uint8 ui[4];
+    int in[2];
+}UARTMsg_u;
+
 
 //=================================函数声明=================================
 
@@ -100,5 +108,7 @@ float Angle_Subtract(float a, float b);
 float AngleLimit180(float angle);
 float AngleLimitPI(float angle);
 float AngleLimitDiff(float a, float b);
+void float2buffer(float src,uint8* dst);
+void int2buffer(int src,uint8* dst);
 
 #endif

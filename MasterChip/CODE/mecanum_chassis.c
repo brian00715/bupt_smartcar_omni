@@ -13,8 +13,7 @@
 #include "config.h"
 #include "sci_compute.h"
 #include "motor.h"
-#include "path_following.h"
-#include "handle.h"
+
 #define MECANUM_X_ASSM
 // ===========================================Private==============================================
 
@@ -194,11 +193,6 @@ void MecanumChassis_Exe()
 		break;
 	case CTRL_MODE_DIFF:
 		MecanumChassis_DiffDrive(MecanumChassis.target_speed, MecanumChassis.target_omega);
-		break;
-	case CTRL_MODE_HANDLE:
-		Handle_Exe();
-		MecanumChassis_OmniDrive(MecanumChassis.target_speed,
-								 MecanumChassis.target_dir, MecanumChassis.target_omega);
 		break;
 	case CTRL_MODE_TUNING:
 		Motor_RpmCtrl();

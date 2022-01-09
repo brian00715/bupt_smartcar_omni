@@ -21,7 +21,7 @@
 #define _SEEKFREE_FONT_h
 
 #include "common.h"
-
+// #define USE_IPS114
 
 #ifdef USE_IPS114
 //-------³£ÓÃÑÕÉ«----------

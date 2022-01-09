@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "board.h"
+#include <string.h>
 
 //------CH32V103 SDK头文件
 #include "ch32v10x.h"
@@ -76,10 +77,11 @@
 #include "SEEKFREE_WIRELESS.h"
 #include "SEEKFREE_TSL1401.h"
 #include "SEEKFREE_ABSOLUTE_ENCODER.h"
-
+#include "SEEKFREE_FONT.h"
 //-------自定义头文件
 #include "imageprocessing.h"
 #include "inducercontrol.h"
+#include "encoder.h"
 
 
 #endif

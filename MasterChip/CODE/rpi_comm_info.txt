@@ -1,0 +1,10 @@
+# 通信协议定义
+
+- 使用UART1
+- 全部以十六进制的形式表示
+
+树莓派向单片机发送的数据格式：
+| 底盘模式(uint) | 速度大小(float) | 速度方向(float) | 角速度(float) | 舵机pwm(float) | 
+
+单片机向树莓派发送的数据格式：
+0x00 0xff | vx(float) | vy(float) | vz(float) | yaw(float) | 编码器1(int) | 编码器2(int) | 编码器3(int) | 编码器4(int) |

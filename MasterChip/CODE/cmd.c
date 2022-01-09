@@ -23,7 +23,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "mecanum_chassis.h"
-#include "path_following.h"
 
 //-------------------------------------------------------------------------------------------------------------------
 //  @brief      CMD³õÊ¼»¯
@@ -268,27 +267,6 @@ int CMD_CommandExe(int argc, char **argv)
 	{
 		uprintf("hello from wch :)\r\n");
 	}
-//	else if (strcmp(argv[0], "YPID") == 0) // YAW PID
-//	{
-//		float kp = atof(argv[1]);
-//		float ki = atof(argv[2]);
-//		float kd = atof(argv[3]);
-//		float int_duty = atof(argv[4]);
-//		float ctrl_max = atof(argv[5]);
-//		YawPID.kp = kp;
-//		YawPID.ki = ki;
-//		YawPID.kd = kd;
-//		YawPID.int_duty = int_duty;
-//		YawPID.ctrl_max = ctrl_max;
-//		uprintf("YawPID|kp:%.3f ki:%.3f kd:%.3f intduty:%.2f ctrl_max:%.2f\r\n",
-//				kp, ki, kd, int_duty, ctrl_max);
-//	}
-	// else if (strcmp(argv[0], "SY") == 0) // Set Yaw
-	// {
-	// 	CMD_TargetYaw = atof(argv[1]);
-	// 	uprintf("CMD|target_yaw:%6.2f now:%6.3f\r\n", CMD_TargetYaw, MecanumChassis.PostureStatus.yaw);
-	// 	YawPID.int_sum = 0;
-	// }
 	else if (strcmp(argv[0], "CD") == 0) // CamServoDuty
 	{
 		MecanumChassis.cam_servo_duty = (uint32) atoi(argv[1]);
@@ -325,18 +303,7 @@ int CMD_CommandExe(int argc, char **argv)
 	// 	uprintf("Chassis|target_speed:%5.2f target_omega:%5.2f\r\n",
 	// 			MecanumChassis.target_speed, MecanumChassis.target_omega);
 	// }
-	else if (strcmp(argv[0], "FOL") == 0) // PathFollowTuning
-	{
 
-		MecanumChassis.PathFollowing.forward_speed = atof(argv[1]);
-		MecanumChassis.PathFollowing.curve_speed = atof(argv[2]);
-		MecanumChassis.PathFollowing.angle_thres = atof(argv[3]);
-		uprintf(
-				"Chassis|forward_speed:%5.2f curve_speed-:%5.2f angle_thres:%5.2f\r\n",
-				MecanumChassis.PathFollowing.forward_speed,
-				MecanumChassis.PathFollowing.curve_speed,
-				MecanumChassis.PathFollowing.angle_thres);
-	}
 	else if (strcmp(argv[0], "GA") == 0) // Teleop_GoAhead
 	{
 		MecanumChassis.target_speed = 0.2;
@@ -406,4 +373,31 @@ int CMD_CommandExe(int argc, char **argv)
 		uprintf("Opened motor[%d] wave!\r\n", wave_index);
 	}
 	return 1;
+}
+
+/**
+ * @brief ½ØÈ¡×Ö·û´®
+ * 
+ * @param dst 
+ * @param src 
+ * @param start 
+ * @param len 
+ * @return char* 
+ */
+char *substring(char *dst, char *src, int start, int len)
+{
+	char *p = dst;
+	char *q = src;
+	int length = strlen(src);
+	if (start >= length || start < 0)
+		return NULL;
+	if (len > length)
+		len = length - start;
+	q += start;
+	while (len--)
+	{
+		*(p++) = *(q++);
+	}
+	*(p++) = '\0';
+	return dst;
 }

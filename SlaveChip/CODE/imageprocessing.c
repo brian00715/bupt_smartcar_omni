@@ -7,28 +7,9 @@
  */
 
 #include "headfile.h"
+#include "isr.h"
+uint8 Threshold = 123;
+uint16 Threshold_ChaHe = 400;
+uint8 mt9v03x_image_binary[MT9V03X_H][MT9V03X_W];
+uint8_t Image_Show_Flag = 1;
 
-/*****************************************************************************
-  * @brief       摄像头数据二值化,用于图像处理
-  * @param       Threshold            二值化的阈值设置
-  * @return      void
-  ***************************************************************************/
-void Image_Binary(uint8 Threshold)
-{
-    uint8 i = 0, j = 0;
-    for (i = 0; i < MT9V03X_W; i++)
-    {
-        for (j = 0; j < MT9V03X_H; j++)
-        {
-            if (mt9v03x_image[i][j] <= Threshold)
-            {
-                mt9v03x_image[i][j] = 0;
-            }
-            else if (mt9v03x_image[i][j] > Threshold)
-            {
-                mt9v03x_image[i][j] = 255; //用于二值化后通过串口显示
-                //mt9v03x_image[i][j]=1;                  //用于二值化后进行图像处理
-            }
-        }
-    }
-}
