@@ -53,7 +53,8 @@ USER/isr.o: ../USER/isr.c ../Libraries/seekfree_libraries/headfile.h \
  ../Libraries/seekfree_libraries/zf_gpio.h \
  ../Libraries/seekfree_peripheral/SEEKFREE_ABSOLUTE_ENCODER.h \
  ../Libraries/seekfree_peripheral/SEEKFREE_FONT.h \
- ../CODE/imageprocessing.h ../CODE/inducercontrol.h ../CODE/encoder.h
+ ../CODE/imageprocessing.h ../CODE/inducercontrol.h ../CODE/encoder.h \
+ ../USER/isr.h ../CODE/master_comm.h
 
 ../Libraries/seekfree_libraries/headfile.h:
 
@@ -172,3 +173,7 @@ USER/isr.o: ../USER/isr.c ../Libraries/seekfree_libraries/headfile.h \
 ../CODE/inducercontrol.h:
 
 ../CODE/encoder.h:
+
+../USER/isr.h:
+
+../CODE/master_comm.h:

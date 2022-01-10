@@ -37,6 +37,7 @@ void Motor_Init(void)
 	pwm_init(MOTOR3_B, 17000, 0);
 	gpio_init(MOTOR4_A, GPO, 0, GPIO_PIN_CONFIG);
 	pwm_init(MOTOR4_B, 17000, 0);
+
 	MotorPID[0].kp = 0.5;
 	MotorPID[0].ki = 3.5;
 	MotorPID[0].kd = 0.0;

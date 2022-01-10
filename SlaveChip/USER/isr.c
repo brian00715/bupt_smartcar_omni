@@ -18,6 +18,8 @@
  ********************************************************************************************************************/
 
 #include "headfile.h"
+#include "isr.h"
+#include "master_comm.h"
 
 uint8 Gpio_Sup_Up[3] = {0};
 uint8 Gpio_Sup_Down[3] = {0};
@@ -272,8 +274,30 @@ void USART2_IRQHandler(void)
     }
 }
 
+uint8_t UART3_RxBuffer[UART3_RX_BUFFER_SIZE] =
+    {0};
+uint8_t UART3_RxBufferCnt = 0;
+uint8_t UART3_RxOK = 0;
+uint8_t UART3_RxLen = 0;
+uint8_t UART3_StartTrans = 0; // 从机开始发送数据
 void USART3_IRQHandler(void)
 {
+    // >>>DMA方式接收数据<<<
+    if (USART_GetFlagStatus(USART3, USART_FLAG_IDLE) != RESET)
+    {
+        USART_ClearFlag(USART3, USART_FLAG_IDLE);
+        uint16_t tmp;
+        UNUSED(tmp); // 避免GCC编译器警告
+        tmp = USART3->STATR;
+        tmp = USART3->DATAR;                                                        //根据应用手册，必须要有这两步，否则清标志位的操作其实并不生效
+        DMA_Cmd(DMA1_Channel3, DISABLE);                                            //关闭本次DMA
+        UART3_RxLen = UART3_RX_BUFFER_SIZE - DMA_GetCurrDataCounter(DMA1_Channel3); //得到真正接收数据个数
+        DMA1_Channel3->CNTR = UART3_RX_BUFFER_SIZE;
+
+        MasterComm_UARTCallback(); // 中断回调函数
+
+        DMA_Cmd(DMA1_Channel3, ENABLE); //开启下一次DMA
+    }
 }
 
 void DMA1_Channel4_IRQHandler(void)

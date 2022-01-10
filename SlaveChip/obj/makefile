@@ -1,5 +1,5 @@
 ################################################################################
-# Automatically-generated file. Do not edit!
+# 自动生成的文件。不要编辑！
 ################################################################################
 
 -include ../makefile.init
@@ -50,10 +50,10 @@ SECONDARY_SIZE += \
 SlaveChip.siz \
 
 
-# All Target
+# 所有目标
 all: SlaveChip.elf secondary-outputs
 
-# Tool invocations
+# 工具调用
 SlaveChip.elf: $(OBJS) $(USER_OBJS)
 	@	@	riscv-none-embed-gcc -march=rv32imac -mabi=ilp32 -msmall-data-limit=8 -mno-save-restore -O0 -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -Wuninitialized  -g -T .ld -nostartfiles -Xlinker --gc-sections -L"../" -Wl,-Map,"SlaveChip.map" --specs=nano.specs --specs=nosys.specs -o "SlaveChip.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@	@
@@ -66,7 +66,7 @@ SlaveChip.lst: SlaveChip.elf
 SlaveChip.siz: SlaveChip.elf
 	@	riscv-none-embed-size --format=berkeley "SlaveChip.elf"
 	@	@
-# Other Targets
+# 其他目标
 clean:
 	-$(RM) $(ASM_UPPER_DEPS)$(OBJS)$(SECONDARY_FLASH)$(SECONDARY_LIST)$(SECONDARY_SIZE)$(ASM_DEPS)$(S_DEPS)$(S_UPPER_DEPS)$(C_DEPS) SlaveChip.elf
 	-@

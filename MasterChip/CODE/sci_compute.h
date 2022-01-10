@@ -110,5 +110,7 @@ float AngleLimitPI(float angle);
 float AngleLimitDiff(float a, float b);
 void float2buffer(float src,uint8* dst);
 void int2buffer(int src,uint8* dst);
+float buffer2float(uint8* src);
+char *substring(char *dst, char *src, int start, int len);
 
 #endif

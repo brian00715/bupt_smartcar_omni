@@ -375,29 +375,4 @@ int CMD_CommandExe(int argc, char **argv)
 	return 1;
 }
 
-/**
- * @brief ½ØÈ¡×Ö·û´®
- * 
- * @param dst 
- * @param src 
- * @param start 
- * @param len 
- * @return char* 
- */
-char *substring(char *dst, char *src, int start, int len)
-{
-	char *p = dst;
-	char *q = src;
-	int length = strlen(src);
-	if (start >= length || start < 0)
-		return NULL;
-	if (len > length)
-		len = length - start;
-	q += start;
-	while (len--)
-	{
-		*(p++) = *(q++);
-	}
-	*(p++) = '\0';
-	return dst;
-}
+

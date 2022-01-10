@@ -51,6 +51,7 @@ void RPiComm_Exe(void)
 
     uart_putchar(UART_1, 0x00);
     uart_putchar(UART_1, 0xff);
+
     // IMU数据
     uint8 transfer_buffer[4];
     float2buffer(icm_acc_x, transfer_buffer);
@@ -62,14 +63,21 @@ void RPiComm_Exe(void)
     float2buffer(MecanumChassis.PostureStatus.yaw, transfer_buffer);
     uart_putbuff(UART_1, transfer_buffer, 4);
     // 编码器数据
-    uart_putchar(UART_1, (encoder_data[0]>>8)&0x00ff);
-    uart_putchar(UART_1, encoder_data[0]&0x00ff);
-    uart_putchar(UART_1, (encoder_data[1]>>8)&0x00ff);
-    uart_putchar(UART_1, encoder_data[1]&0x00ff);
-    uart_putchar(UART_1, (encoder_data[2]>>8)&0x00ff);
-    uart_putchar(UART_1, encoder_data[2]&0x00ff);
-    uart_putchar(UART_1, (encoder_data[3]>>8)&0x00ff);
-    uart_putchar(UART_1, encoder_data[3]&0x00ff);
+//    uart_putchar(UART_1, (encoder_data[0] >> 8) & 0x00ff);
+//    uart_putchar(UART_1, encoder_data[0] & 0x00ff);
+//    uart_putchar(UART_1, (encoder_data[1] >> 8) & 0x00ff);
+//    uart_putchar(UART_1, encoder_data[1] & 0x00ff);
+//    uart_putchar(UART_1, (encoder_data[2] >> 8) & 0x00ff);
+//    uart_putchar(UART_1, encoder_data[2] & 0x00ff);
+//    uart_putchar(UART_1, (encoder_data[3] >> 8) & 0x00ff);
+//    uart_putchar(UART_1, encoder_data[3] & 0x00ff);
+    // 车轮转速数据
+    for(int i=0;i<4;i++)
+    {
+        float2buffer(MecanumChassis.motor[i].now_rpm, transfer_buffer);
+        uart_putbuff(UART_1, transfer_buffer, 4);
+    }
+
     uart_putchar(UART_1, 0xee);
     uart_putchar(UART_1, 0x11);
 }
@@ -80,5 +88,20 @@ void RPiComm_Exe(void)
  */
 void RPiComm_UARTCallback(void)
 {
-    // RPiMsg
+    if(UART1_RxBuffer[0]==0x00 && UART1_RxBuffer[1]==0xff)
+    {
+//        uint8 ctrl_mode = UART1_RxBuffer[2];
+
+        uint8 sub_buffer[4];
+        substring(sub_buffer, UART1_RxBuffer, 3, 4);
+        MecanumChassis.target_speed = buffer2float(sub_buffer);
+        substring(sub_buffer, UART1_RxBuffer, 7, 4);
+        MecanumChassis.target_dir = buffer2float(sub_buffer);
+        substring(sub_buffer, UART1_RxBuffer, 11, 4);
+        MecanumChassis.target_omega = buffer2float(sub_buffer);
+
+//        int16 cam_pwm =  UART1_RxBuffer[15]<<8 | UART1_RxBuffer[16];
+
+
+    }
 }

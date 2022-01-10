@@ -21,8 +21,13 @@
 
 #include "headfile.h"
 
+#define UART3_RX_BUFFER_SIZE (30)
 
 extern int32 time_count;
+extern uint8_t UART3_RxBuffer[UART3_RX_BUFFER_SIZE];
+extern uint8_t UART3_RxBufferCnt;
+extern uint8_t UART3_RxOK;
+extern uint8_t UART3_RxLen;
 
 #endif
 

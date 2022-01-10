@@ -56,12 +56,12 @@ typedef struct
 
 #define finall_first 22
 #define finall_second 23
-#define stop 24
+#define STOP 24
 
-#define start 25
+#define START 25
 #define finall_first_go 26
 
-#define start0 27
+#define START0 27
 
 #define leftsancha_out_done 28
 #define rightsancha_out_done 29

@@ -25,8 +25,8 @@ typedef struct Motor_t
     int16 now_duty;
     int16 last_duty;
     int16 target_duty;
-    int16 now_rpm;
-    int16 target_rpm;
+    float now_rpm;
+    float target_rpm;
 } Motor_t;
 
 extern PID_t MotorPID[4];

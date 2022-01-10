@@ -133,7 +133,8 @@ int MecanumChassis_OmniDrive(float speed, float dir, float omega)
 	//m/s转为占空比
 	for (int i = 0; i < 4; i++)
 	{
-		MecanumChassis.motor[i].target_rpm = target_speed[i] * 100; // target_speed单位m/s，target_rpm对应编码器数值
+	    float target_omega = target_speed[i]/DRIVE_WHEEL_RADIUS;// target_speed单位m/s
+		MecanumChassis.motor[i].target_rpm = target_omega*30/PI;
 	}
 
 	Motor_RpmCtrl();

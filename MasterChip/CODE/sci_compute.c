@@ -110,6 +110,19 @@ void float2buffer(float src,uint8* dst)
     dst[3]=tmp.ui[3];
 }
 
+/**
+ * @brief uint数组转为float（32位）
+ */
+float buffer2float(uint8* src)
+{
+    UARTMsg_u tmp;
+    tmp.ui[0]=src[0];
+    tmp.ui[1]=src[1];
+    tmp.ui[2]=src[2];
+    tmp.ui[3]=src[3];
+    return tmp.fl;
+}
+
 
 /**
  * @brief int（16位）转为uint数组
@@ -119,3 +132,32 @@ void int2buffer(int src,uint8* dst)
     dst[0]=(src>>8)&0xff;
     dst[1]=(src)&0xff;
 }
+
+/**
+ * @brief 截取字符串
+ *
+ * @param dst
+ * @param src
+ * @param start
+ * @param len
+ * @return char*
+ */
+char *substring(char *dst, char *src, int start, int len)
+{
+    char *p = dst;
+    char *q = src;
+    int length = strlen(src);
+    if (start >= length || start < 0)
+        return NULL;
+    if (len > length)
+        len = length - start;
+    q += start;
+    while (len--)
+    {
+        *(p++) = *(q++);
+    }
+    *(p++) = '\0';
+    return dst;
+}
+
+

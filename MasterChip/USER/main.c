@@ -38,7 +38,7 @@ int main(void)
 
 	// Timer1初始化
 	// pwm_init(PWM1_CH2_A9, 200, 2000); // 摄像头舵机初始化
-	timer_pit_interrupt_ms(TIMER_1, 5);
+	timer_pit_interrupt_ms(TIMER_1, 5); // 周期5ms
 	TIM_ITConfig((TIM_TypeDef *)TIM1_BASE, TIM_IT_Update, ENABLE); //使能TIM中断,允许更新中断
 	TIM_ClearITPendingBit((TIM_TypeDef *)TIM1_BASE, TIM_IT_Update);
 	nvic_init(TIM1_UP_IRQn, 0, 2, ENABLE); // 定时中断最高优先级

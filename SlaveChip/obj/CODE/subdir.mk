@@ -1,22 +1,25 @@
 ################################################################################
-# Automatically-generated file. Do not edit!
+# 自动生成的文件。不要编辑！
 ################################################################################
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../CODE/encoder.c \
 ../CODE/imageprocessing.c \
-../CODE/inducercontrol.c 
+../CODE/inducercontrol.c \
+../CODE/master_comm.c 
 
 OBJS += \
 ./CODE/encoder.o \
 ./CODE/imageprocessing.o \
-./CODE/inducercontrol.o 
+./CODE/inducercontrol.o \
+./CODE/master_comm.o 
 
 C_DEPS += \
 ./CODE/encoder.d \
 ./CODE/imageprocessing.d \
-./CODE/inducercontrol.d 
+./CODE/inducercontrol.d \
+./CODE/master_comm.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
