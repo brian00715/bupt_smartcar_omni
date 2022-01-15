@@ -41,8 +41,8 @@ void Init_Fun(void)
     nvic_init(DMA1_Channel3_IRQn, 1, 2, ENABLE);                        // 配置DMA NVIC
 
     /**************初始化按键*************/
-    gpio_init(C8, GPI, 1, SPEED_50MHZ | IN_PULLUP);        //初始化C8按钮，用作增加二值化阈值
-    gpio_init(C9, GPI, 1, SPEED_50MHZ | IN_PULLUP);        //初始化C9按钮，用作降低二值化阈值
+    gpio_init(C8, GPI, 1, SPEED_50MHZ | IN_PULLUP);        //初始化C8按钮，用作启动电机自检
+    gpio_init(C9, GPI, 1, SPEED_50MHZ | IN_PULLUP);        //初始化C9按钮，用作切换IPS内容
     gpio_init(B2, GPI, 1, SPEED_50MHZ | IN_PULLUP);        //初始化B2按钮，用作控制屏幕显示图像或从机数据发送，两者不同时进行
     gpio_init(B15, GPO, 0, GPIO_PIN_CONFIG);
 
@@ -75,17 +75,23 @@ int main(void)
     uint8 cnt_50ms=0;
     while (1)
     {
-        ips114_showstr(0, 0, "---SlaveChip---");
+        ips114_showstr(IPS114_X_MAX/4, 0, "---SlaveChip---");
         if (Image_Show_Flag==0)
         {
             ips114_showstr(0, 1, "Transferring to MasterChip...");
-            ips114_showint16(0, 2, encoder_data[0]);
-            ips114_showint16(0, 3, encoder_data[1]);
+            ips114_showstr(0,2,"encoder3:");
+            ips114_showint16(73, 2, encoder_data[0]);
+            ips114_showstr(0,3,"encoder4:");
+            ips114_showint16(73, 3, encoder_data[1]);
 
-            ips114_showfloat(0, 4, wheel_rpm[0],4,2);
-            ips114_showfloat(0, 5, wheel_rpm[1],4,2);
-            ips114_showfloat(0, 6, wheel_rpm[2],4,2);
-            ips114_showfloat(0, 7, wheel_rpm[3],4,2);
+            ips114_showstr(0,4,"rpm1:");
+            ips114_showfloat(41, 4, wheel_rpm[0],4,2);
+            ips114_showstr(0,5,"rpm1:");
+            ips114_showfloat(41, 5, wheel_rpm[1],4,2);
+            ips114_showstr(0,6,"rpm1:");
+            ips114_showfloat(41, 6, wheel_rpm[2],4,2);
+            ips114_showstr(0,7,"rpm1:");
+            ips114_showfloat(41, 7, wheel_rpm[3],4,2);
         }
         else
         {

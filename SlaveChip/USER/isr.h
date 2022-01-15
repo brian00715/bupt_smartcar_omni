@@ -29,6 +29,8 @@ extern uint8_t UART3_RxBufferCnt;
 extern uint8_t UART3_RxOK;
 extern uint8_t UART3_RxLen;
 
+extern uint8_t SlaveComm_MotorSelfCheck;
+
 #endif
 
 

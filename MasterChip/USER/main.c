@@ -45,7 +45,7 @@ int main(void)
 
 	EnableGlobalIRQ(0);
 	uprintf("\r\n==Init Done==\r\n");
-	MecanumChassis.ctrl_mode = CTRL_MODE_TUNING;
+	//	MecanumChassis.ctrl_mode = CTRL_MODE_TUNING;
 	//	MecanumChassis.pos_mode = POS_MODE_ABSOLUTE;
 	//	MecanumChassis.target_speed = 0.8;
 	//	MecanumChassis.target_dir = 1.57;
@@ -60,6 +60,11 @@ int main(void)
 		if (TIM1_100ms_Flag)
 		{
 			//		    uprintf("servo:%d\r\n",MecanumChassis.cam_servo_duty);
+		}
+		if(SlaveComm_MotorSelfCheck)
+		{
+		    Motor_SelfCheck();
+		    SlaveComm_MotorSelfCheck = 0;
 		}
 		if (gpio_get(KEY1) == RESET)
 		{

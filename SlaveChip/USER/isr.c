@@ -174,6 +174,7 @@ void TIM3_IRQHandler(void)
 
 uint8 stop_count_ass1 = 0;
 //uint8 Uart_SendData[20]={0};
+uint8 SlaveComm_MotorSelfCheck = 0;
 void TIM4_IRQHandler(void)
 {
     if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)
@@ -226,6 +227,10 @@ void TIM4_IRQHandler(void)
             Threshold_ChaHe += 5;
             Gpio_Sup_Up[2] = 0;
             Gpio_Sup_Down[2] = 0;
+            SlaveComm_MotorSelfCheck = 1;
+        }
+        else {
+            SlaveComm_MotorSelfCheck = 0;
         }
         /******************屏幕显示图像与从机发送数据不同时进行********************/
         if (Image_Show_Flag == 0)
@@ -247,8 +252,10 @@ void TIM4_IRQHandler(void)
             /*************************给主片定时发送数据*****************************/
             uart_putchar(UART_3, 0x00);
             uart_putchar(UART_3, 0xff); //帧头1-2位
+
             uart_putdoublechar(UART_3, encoder_data[0]);
             uart_putdoublechar(UART_3, encoder_data[1]); //发送编码器数据3-6位
+            uart_putchar(UART_3, SlaveComm_MotorSelfCheck);
 
             uart_putchar(UART_3, 0xee);
             uart_putchar(UART_3, 0x11); //帧尾

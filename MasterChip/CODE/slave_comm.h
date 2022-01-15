@@ -8,5 +8,6 @@ void SlaveComm_UARTCallback();
 void SlaveComm_Exe();
 
 extern uint8_t EncoderDataUpdated;
+extern uint8_t SlaveComm_MotorSelfCheck;
 
 #endif

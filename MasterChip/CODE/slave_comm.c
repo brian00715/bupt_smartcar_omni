@@ -31,6 +31,7 @@ void SlaveComm_Init()
 }
 
 uint8 EncoderDataUpdated = 0; // 接收到从机数据编码器数值才会更新，不更新就不能跑速度环
+uint8 SlaveComm_MotorSelfCheck = 0; // 来自从片的自检命令
 /**
  * @brief 从机通信串口中断回调函数
  * 
@@ -56,6 +57,10 @@ void SlaveComm_UARTCallback()
     }
 
     EncoderDataUpdated = 1;
+    if( UART3_RxBuffer[6]==1)
+    {
+        SlaveComm_MotorSelfCheck = 1; // 外部置0
+    }
 
     memset(UART3_RxBuffer, 0, sizeof(uint8_t) * UART3_RX_BUFFER_SIZE);
     UART3_RxOK = 1;
