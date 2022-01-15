@@ -106,7 +106,7 @@ int MecanumChassis_OmniDrive(float speed, float dir, float omega)
 	float vx = speed * cos(dir); // 速度分量
 	float vy = speed * sin(dir);
 	__LIMIT(omega, MAX_ROTATE_VEL); // omega需要参与运算，故提前限制大小
-	float target_speed[4];
+	float target_speed[4]; // 每个车轮的切向速度
 	float a = WHEEL_LEFT2RIGHT / 2, b = WHEEL_FRONT2BACK / 2;
 
 	//>>>直接计算法<<<

@@ -290,7 +290,7 @@ int CMD_CommandExe(int argc, char **argv)
 	 	for (int i = 0; i < 4; i++)
 	 	{
 	 		MecanumChassis.motor[i].target_rpm = atoi(argv[i + 1]);
-	 		uprintf("[%d]:%d", i, MecanumChassis.motor[i].target_rpm);
+	 		uprintf("[%d]:%f", i, MecanumChassis.motor[i].target_rpm);
 	 	}
 	 	uprintf("\r\n");
 	 }

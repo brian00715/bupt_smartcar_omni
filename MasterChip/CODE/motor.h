@@ -40,5 +40,7 @@ void Motor_SetDuty(int32_t duty1,int32_t duty2,int32_t duty3,int32_t duty4);
 void Motor_SelfCheck(void);
 void Motor_RpmCtrl(void);
 int16 Motor_TargetDuty2TargetRpm(int16 duty);
+float Motor_Encoder2RPM(int16 encoder);
+int16 Motor_RPM2Encoder(float rpm);
 
 #endif

@@ -21,7 +21,7 @@
 
 extern BaseChassis_t MecanumChassis;
 // kp ki kd int_duty int_max int_sum last_err last_delta_err use_sub_pid sub_pid_kp sub_pid_thres
-PID_t MotorPID[4] ={0};
+PID_t MotorPID[4] = {0};
 
 void Motor_Init(void)
 {
@@ -39,48 +39,49 @@ void Motor_Init(void)
 	pwm_init(MOTOR4_B, 17000, 0);
 
 	MotorPID[0].kp = 0.5;
-	MotorPID[0].ki = 3.5;
+	MotorPID[0].ki = 5;
 	MotorPID[0].kd = 0.0;
-	MotorPID[0].ctrl_max = 340;
-//	MotorPID[0].int_duty = 0.032;
+	MotorPID[0].ctrl_max = 340; // 单位是脉冲
 	MotorPID[0].int_max = 800;
-//	MotorPID[0].use_sub_pid = 1;
-//	MotorPID[0].sub_pid_thres = 2;
-//	MotorPID[0].sub_pid_kp = 0.5;
-	MotorPID[0].dead_th = 3;
-//
+	//	MotorPID[0].int_duty = 0.032;
+	//	MotorPID[0].use_sub_pid = 1;
+	//	MotorPID[0].sub_pid_thres = 2;
+	//	MotorPID[0].sub_pid_kp = 0.5;
+	MotorPID[0].dead_th = 2;
+	//
 	MotorPID[1].kp = 0.5;
-	MotorPID[1].ki = 3.5;
+	MotorPID[1].ki = 5;
 	MotorPID[1].kd = 0.0;
 	MotorPID[1].ctrl_max = 340;
-//	MotorPID[1].int_duty = 0.032;
 	MotorPID[1].int_max = 800;
-//	MotorPID[1].use_sub_pid = 1;
-//	MotorPID[1].sub_pid_thres = 2;
-//	MotorPID[1].sub_pid_kp = 0.5;
-	MotorPID[1].dead_th = 3;
-//
+	//	MotorPID[1].int_duty = 0.032;
+	//	MotorPID[1].use_sub_pid = 1;
+	//	MotorPID[1].sub_pid_thres = 2;
+	//	MotorPID[1].sub_pid_kp = 0.5;
+	MotorPID[1].dead_th = 2;
+	//
 	MotorPID[2].kp = 0.5;
-	MotorPID[2].ki = 3.5;
+	MotorPID[2].ki = 5;
 	MotorPID[2].kd = 0.0;
 	MotorPID[2].ctrl_max = 340;
-//	MotorPID[2].int_duty = 0.032;
 	MotorPID[2].int_max = 800;
-//	MotorPID[2].use_sub_pid = 1;
-//	MotorPID[2].sub_pid_thres = 2;
-//	MotorPID[2].sub_pid_kp = 0.5;
-	MotorPID[2].dead_th = 3;
-//
+	//	MotorPID[2].int_duty = 0.032;
+	//	MotorPID[2].use_sub_pid = 1;
+	//	MotorPID[2].sub_pid_thres = 2;
+	//	MotorPID[2].sub_pid_kp = 0.5;
+	MotorPID[2].dead_th = 2;
+	//
 	MotorPID[3].kp = 0.5;
-	MotorPID[3].ki = 3.5;
+	MotorPID[3].ki = 5;
 	MotorPID[3].kd = 0.0;
 	MotorPID[3].ctrl_max = 340;
-//	MotorPID[3].int_duty = 0.032;
 	MotorPID[3].int_max = 800;
-//	MotorPID[3].use_sub_pid = 1;
-//	MotorPID[3].sub_pid_thres = 2;
-//	MotorPID[3].sub_pid_kp = 0.5;
-	MotorPID[3].dead_th = 3;
+	//	MotorPID[3].int_duty = 0.032;
+	//	MotorPID[3].use_sub_pid = 1;
+	//	MotorPID[3].sub_pid_thres = 2;
+	//	MotorPID[3].sub_pid_kp = 0.5;
+	MotorPID[3].dead_th = 2;
+
 	Motor_SetDuty(0, 0, 0, 0);
 }
 
@@ -176,7 +177,7 @@ void Motor_DutyCtrl()
 	}
 }
 
- #define DEBUG
+#define DEBUG
 /**
  * @brief 转速环
  */
@@ -192,22 +193,23 @@ void Motor_RpmCtrl(void)
 		// uprintf("## Can't get updated encoder value, check uart3 comm! ##\r\n");
 		return;
 	}
-	int rpm_value[4] = {0};
+	// 使用编码器数值进行PID运算,由于转速精度为10rpm，直接用转速进行PID运算会放大占空比的控制误差
+	int16 ctrl_value[4] = {0};
 	for (int i = 0; i < 4; i++)
 	{
-		rpm_value[i] = MecanumChassis.motor[i].now_rpm+ (int32_t)PID_GetIncrementOutput(&MotorPID[i],
-											  MecanumChassis.motor[i].target_rpm,
-											  MecanumChassis.motor[i].now_rpm);
+		int16 target_encoder = Motor_RPM2Encoder(MecanumChassis.motor[i].target_rpm);
+		ctrl_value[i] = encoder_data[i] + PID_GetIncrementOutput(&MotorPID[i],
+																 target_encoder, encoder_data[i]);
 #ifdef DEBUG
 		if (wave_index == i)
 		{
 			if (TIM1_20ms_Flag)
 			{
-				uprintf("Tuning|[%d] now:%d target:%d err:%d ctrl:%d\r\n", i,
-						MecanumChassis.motor[i].now_rpm,
-						MecanumChassis.motor[i].target_rpm,
-						MecanumChassis.motor[i].target_rpm - MecanumChassis.motor[i].now_rpm,
-						rpm_value[i]);
+				uprintf("Tuning|[%d] now:%d target:%d err:%d ctrl:%d \r\n", i,
+						encoder_data[i],
+						target_encoder,
+						target_encoder - encoder_data[i],
+						ctrl_value[i]);
 			}
 		}
 #endif
@@ -215,7 +217,8 @@ void Motor_RpmCtrl(void)
 	int16 duty_ctrl[4];
 	for (int i = 0; i < 4; i++)
 	{
-		duty_ctrl[i] = rpm_value[i] * (10000.0f / 314.0f);
+		// 60%占空比对应转速1900； 30%占空比对应编码器脉冲75
+		duty_ctrl[i] = ctrl_value[i] * (3000.0f / 75.0f);
 	}
 	if (MecanumChassis.send_ctrl_msg_flag)
 	{
@@ -304,4 +307,21 @@ void DriveMotors_LimitSpeed(float speed[4])
 	{
 		__LIMIT_FROM_TO(speed[i], DRIVE_WHEEL_MIN_SPEED, DRIVE_WHEEL_MAX_SPEED);
 	}
+}
+
+float Motor_Encoder2RPM(int16 encoder)
+{
+	/*
+    float encoder_rpm = encoder*1.0f/(512*0.005f)*60.0f; // 512线编码器，采样周期5ms
+    float motor_rpm = encoder_rpm*45.0f/104.0f;// 编码器45齿，车轮104齿
+
+    rpm_motor = f(encoder)   = encoder  * 10.141226
+    encoder   = f(rpm_motor) = rpm_motor* 0.0986
+    */
+	return encoder * 10.141226f;
+}
+
+int16 Motor_RPM2Encoder(float rpm)
+{
+	return (int16)(rpm * 0.0986);
 }

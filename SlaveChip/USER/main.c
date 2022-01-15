@@ -82,7 +82,7 @@ int main(void)
             ips114_showint16(0, 2, encoder_data[0]);
             ips114_showint16(0, 3, encoder_data[1]);
 
-            ips114_showfloat(0, 4, wheel_rpm[1],4,2);
+            ips114_showfloat(0, 4, wheel_rpm[0],4,2);
             ips114_showfloat(0, 5, wheel_rpm[1],4,2);
             ips114_showfloat(0, 6, wheel_rpm[2],4,2);
             ips114_showfloat(0, 7, wheel_rpm[3],4,2);

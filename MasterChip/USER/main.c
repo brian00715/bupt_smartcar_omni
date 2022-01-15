@@ -20,7 +20,6 @@
 #include "zf_pit.h"
 #include "rpi_comm.h"
 
-
 int main(void)
 {
 	DisableGlobalIRQ();
@@ -34,11 +33,11 @@ int main(void)
 	Encoder_Init();		   // 编码器初始化
 	MecanumChassis_Init(); // 底盘初始化
 	icm20602_init_spi();
-						   //	PathFollowing_Init();
+	//	PathFollowing_Init();
 
 	// Timer1初始化
-	// pwm_init(PWM1_CH2_A9, 200, 2000); // 摄像头舵机初始化
-	timer_pit_interrupt_ms(TIMER_1, 5); // 周期5ms
+	//	pwm_init(PWM1_CH2_A9, 200, 2000); // 摄像头舵机初始化(使用UART1时无法使用舵机）
+	timer_pit_interrupt_ms(TIMER_1, 5);							   // 周期5ms
 	TIM_ITConfig((TIM_TypeDef *)TIM1_BASE, TIM_IT_Update, ENABLE); //使能TIM中断,允许更新中断
 	TIM_ClearITPendingBit((TIM_TypeDef *)TIM1_BASE, TIM_IT_Update);
 	nvic_init(TIM1_UP_IRQn, 0, 2, ENABLE); // 定时中断最高优先级
@@ -46,9 +45,11 @@ int main(void)
 
 	EnableGlobalIRQ(0);
 	uprintf("\r\n==Init Done==\r\n");
-	MecanumChassis.ctrl_mode = CTRL_MODE_NONE;
-	MecanumChassis.pos_mode = POS_MODE_ABSOLUTE;
-
+	MecanumChassis.ctrl_mode = CTRL_MODE_TUNING;
+	//	MecanumChassis.pos_mode = POS_MODE_ABSOLUTE;
+	//	MecanumChassis.target_speed = 0.8;
+	//	MecanumChassis.target_dir = 1.57;
+	int duty = 0;
 	while (1)
 	{
 		CMD_Exe();
@@ -56,6 +57,10 @@ int main(void)
 		MecanumChassis_Exe();
 		RPiComm_Exe();
 
+		if (TIM1_100ms_Flag)
+		{
+			//		    uprintf("servo:%d\r\n",MecanumChassis.cam_servo_duty);
+		}
 		if (gpio_get(KEY1) == RESET)
 		{
 			systick_delay_ms(80);
@@ -70,6 +75,8 @@ int main(void)
 			systick_delay_ms(80);
 			if (gpio_get(KEY2) == RESET)
 			{
+				duty = (duty + 1000) % 9000;
+				uprintf("duty:%d\r\n", duty);
 			}
 		}
 		if (gpio_get(KEY3) == RESET)
@@ -77,9 +84,9 @@ int main(void)
 			systick_delay_ms(80);
 			if (gpio_get(KEY3) == RESET)
 			{
+				duty = (duty - 1000) % 9000;
 			}
 		}
-
-        systick_delay_ms(10);
+		systick_delay_ms(10);
 	}
 }
